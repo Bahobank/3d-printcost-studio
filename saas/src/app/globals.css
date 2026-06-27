@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+Thai:wght@400;500;600;700;800;900&family=Prompt:wght@400;500;600;700;800;900&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -27,7 +29,7 @@ body {
     radial-gradient(circle at 80% 8%, rgba(16, 185, 129, 0.12), transparent 28rem),
     var(--bg);
   color: var(--ink);
-  font-family: Arial, "Noto Sans Thai", sans-serif;
+  font-family: "Inter", "Noto Sans Thai", "Prompt", "Sarabun", sans-serif;
 }
 
 a {
@@ -83,4 +85,5 @@ a {
   margin-bottom: 0.45rem;
   font-weight: 700;
 }
+
 

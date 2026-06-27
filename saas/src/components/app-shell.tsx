@@ -1,9 +1,11 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { Calculator, ChartLine, CreditCard, Gauge, History, Layers3, LogOut, MessageCircle, Printer, Settings, User } from "lucide-react";
+import { LOCAL_DEV_AUTH_COOKIE, localDevAuthEnabled } from "@/lib/auth-config";
 import { createClient } from "@/lib/supabase/server";
-import { getSessionAndProfile, type UserProfile } from "@/lib/subscription";
-import { TrialBanner } from "@/components/trial-banner";
+import { canUseMainApp, getSessionAndProfile, trialDaysLeft, type UserProfile } from "@/lib/subscription";
+import { TrialSubscriptionControl } from "@/components/pricing-modal";
 
 const navItems = [
   { href: "/dashboard", label: "แดชบอร์ด", icon: Gauge },
@@ -20,6 +22,12 @@ const navItems = [
 
 async function signOut() {
   "use server";
+  if (localDevAuthEnabled()) {
+    const cookieStore = await cookies();
+    cookieStore.delete(LOCAL_DEV_AUTH_COOKIE);
+    redirect("/login");
+  }
+
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");
@@ -27,6 +35,8 @@ async function signOut() {
 
 export async function AppShell({ children, profile }: { children: React.ReactNode; profile?: UserProfile }) {
   const session = profile ? { profile } : await getSessionAndProfile();
+  const daysLeft = trialDaysLeft(session.profile);
+  const canUseApp = canUseMainApp(session.profile);
 
   return (
     <div className="min-h-screen p-5">
@@ -59,11 +69,16 @@ export async function AppShell({ children, profile }: { children: React.ReactNod
           </form>
         </aside>
         <main className="flex-1 space-y-5">
-          <TrialBanner profile={session.profile} />
-          {children}
+          <TrialSubscriptionControl canUseApp={canUseApp} daysLeft={daysLeft} profile={session.profile} />
+          {canUseApp ? children : (
+            <section className="card p-7 text-center">
+              <h1 className="text-3xl font-black">ทดลองใช้ฟรีครบ 7 วันแล้ว</h1>
+              <p className="mt-2 font-semibold text-slate-500">เลือกแผนที่เหมาะกับธุรกิจของคุณเพื่อใช้งานต่อ</p>
+              <p className="mt-4 text-sm font-bold text-emerald-700">ข้อมูลของคุณยังถูกเก็บไว้อย่างปลอดภัย</p>
+            </section>
+          )}
         </main>
       </div>
     </div>
   );
 }
-

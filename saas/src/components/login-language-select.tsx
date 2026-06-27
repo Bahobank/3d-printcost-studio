@@ -16,7 +16,7 @@ const options = [
 
 export function LoginLanguageSelect({ current }: LoginLanguageSelectProps) {
   return (
-    <label className="absolute right-5 top-5 z-20 flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/80 px-3 py-2 text-sm font-bold text-slate-700 shadow-sm backdrop-blur">
+    <label className="flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-3 py-2 text-sm font-bold text-slate-700 shadow-sm backdrop-blur">
       <Languages size={16} className="text-blue-600" />
       <select
         aria-label="Language"

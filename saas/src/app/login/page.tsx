@@ -1,27 +1,232 @@
 import { BarChart3, Box, DollarSign, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
-import { signInWithOAuth, signInWithPassword, signUpWithPassword } from "./actions";
+import { LoginLanguageSelect } from "@/components/login-language-select";
+import { PendingSubmitButton } from "@/components/pending-submit";
+import { signInWithOAuth, signInWithPassword } from "./actions";
 
-const features = [
+type LoginLanguage = "th" | "en" | "zh" | "ja" | "ko";
+
+const loginCopy = {
+  th: {
+    heroTitle: "3D PrintCost Studio",
+    heroAccent: "คำนวณต้นทุนงานพิมพ์ 3D ได้แม่นยำกว่าเดิม",
+    heroTagline: "จัดการต้นทุนวัสดุ ค่าไฟ เวลาเครื่องพิมพ์ สต๊อก และกำไรของงานพิมพ์ FDM / Resin ในระบบเดียว",
+    heroDescription: "",
+    securityNote: "ข้อมูลของคุณถูกเข้ารหัสและจัดเก็บอย่างปลอดภัย พร้อมใช้งานได้ทุกที่ทุกเวลา",
+    welcome: "เข้าสู่ระบบ",
+    subtitle: "เข้าสู่ระบบเพื่อจัดการต้นทุนงานพิมพ์ 3D ของคุณ",
+    email: "อีเมล",
+    password: "รหัสผ่าน",
+    forgotPassword: "ลืมรหัสผ่าน?",
+    rememberMe: "จดจำการเข้าสู่ระบบ",
+    signIn: "เข้าสู่ระบบ",
+    divider: "หรือ",
+    google: "เข้าสู่ระบบด้วย Google",
+    apple: "เข้าสู่ระบบด้วย Apple",
+    noAccount: "ยังไม่มีบัญชี?",
+    createAccount: "เริ่มทดลองใช้ฟรี",
+    errorTitle: "เข้าสู่ระบบไม่สำเร็จ",
+    features: [
+      {
+        title: "คำนวณต้นทุน FDM และ Resin",
+        description: "คำนวณต้นทุนแยกตามประเภทงานพิมพ์ได้อย่างแม่นยำ",
+      },
+      {
+        title: "ติดตามสต๊อกวัสดุ",
+        description: "รู้จำนวนวัสดุคงเหลือและต้นทุนที่ใช้ไปในแต่ละงาน",
+      },
+      {
+        title: "วิเคราะห์กำไรงานพิมพ์",
+        description: "ดูได้ทันทีว่างานไหนกำไร และงานไหนควรปรับราคา",
+      },
+    ],
+  },
+  en: {
+    heroTitle: "3D PrintCost Studio",
+    heroAccent: "Calculate 3D print costs more accurately",
+    heroTagline: "Manage material costs, electricity, printer time, stock, and FDM / Resin print profits in one system.",
+    heroDescription: "",
+    securityNote: "Your data is encrypted, securely stored, and ready whenever you need it.",
+    welcome: "Welcome back",
+    subtitle: "Sign in to manage your print jobs, costs, and studio data.",
+    email: "Email",
+    password: "Password",
+    forgotPassword: "Forgot password?",
+    rememberMe: "Keep me signed in",
+    signIn: "Sign in",
+    divider: "or",
+    google: "Continue with Google",
+    apple: "Continue with Apple",
+    noAccount: "New here?",
+    createAccount: "Create an account",
+    errorTitle: "Sign in failed",
+    features: [
+      {
+        title: "Calculate FDM and Resin costs",
+        description: "Accurately calculate costs by print job type.",
+      },
+      {
+        title: "Track material stock",
+        description: "Know your remaining materials and the cost used in each job.",
+      },
+      {
+        title: "Analyze print profits",
+        description: "See which jobs are profitable and which ones need price adjustments.",
+      },
+    ],
+  },
+  zh: {
+    heroTitle: "3D PrintCost Studio",
+    heroAccent: "更精准地计算 3D 打印成本",
+    heroTagline: "在一个系统中管理材料成本、电费、打印机时间、库存，以及 FDM / Resin 打印利润。",
+    heroDescription: "",
+    securityNote: "你的数据会被加密并安全存储，随时可用。",
+    welcome: "登录",
+    subtitle: "登录后继续管理你的 3D 打印成本。",
+    email: "邮箱",
+    password: "密码",
+    forgotPassword: "忘记密码？",
+    rememberMe: "记住登录状态",
+    signIn: "登录",
+    divider: "或",
+    google: "使用 Google 登录",
+    apple: "使用 Apple 登录",
+    noAccount: "还没有账号？",
+    createAccount: "免费开始试用",
+    errorTitle: "登录失败",
+    features: [
+      {
+        title: "计算 FDM 和 Resin 成本",
+        description: "按打印任务类型精准计算成本。",
+      },
+      {
+        title: "跟踪材料库存",
+        description: "了解剩余材料数量，以及每个任务消耗的成本。",
+      },
+      {
+        title: "分析打印利润",
+        description: "立即查看哪些任务有利润，哪些任务需要调整价格。",
+      },
+    ],
+  },
+  ja: {
+    heroTitle: "3D PrintCost Studio",
+    heroAccent: "3Dプリントの原価をより正確に計算",
+    heroTagline: "材料費、電気代、プリンター稼働時間、在庫、FDM / Resin のプリント利益をひとつのシステムで管理します。",
+    heroDescription: "",
+    securityNote: "あなたのデータは暗号化され、安全に保存され、必要なときにいつでも利用できます。",
+    welcome: "ログイン",
+    subtitle: "ログインして 3D プリント原価を管理しましょう。",
+    email: "メールアドレス",
+    password: "パスワード",
+    forgotPassword: "パスワードをお忘れですか？",
+    rememberMe: "ログイン状態を保持する",
+    signIn: "ログイン",
+    divider: "または",
+    google: "Googleでログイン",
+    apple: "Appleでログイン",
+    noAccount: "アカウントをお持ちでないですか？",
+    createAccount: "無料で始める",
+    errorTitle: "ログインできませんでした",
+    features: [
+      {
+        title: "FDM と Resin の原価を計算",
+        description: "プリント作業の種類ごとに原価を正確に計算します。",
+      },
+      {
+        title: "材料在庫を追跡",
+        description: "残りの材料数と、各作業で使用したコストを把握できます。",
+      },
+      {
+        title: "プリント利益を分析",
+        description: "利益が出ている作業と、価格を見直すべき作業をすぐに確認できます。",
+      },
+    ],
+  },
+  ko: {
+    heroTitle: "3D PrintCost Studio",
+    heroAccent: "3D 프린트 작업 원가를 더 정확하게 계산",
+    heroTagline: "재료비, 전기료, 프린터 작동 시간, 재고, FDM / Resin 프린트 작업 수익을 하나의 시스템에서 관리합니다.",
+    heroDescription: "",
+    securityNote: "사용자 데이터는 암호화되어 안전하게 저장되며, 언제든 사용할 수 있습니다.",
+    welcome: "로그인",
+    subtitle: "로그인하여 3D 출력 원가를 관리하세요.",
+    email: "이메일",
+    password: "비밀번호",
+    forgotPassword: "비밀번호를 잊으셨나요?",
+    rememberMe: "로그인 상태 유지",
+    signIn: "로그인",
+    divider: "또는",
+    google: "Google로 로그인",
+    apple: "Apple로 로그인",
+    noAccount: "계정이 없으신가요?",
+    createAccount: "무료로 시작하기",
+    errorTitle: "로그인에 실패했습니다",
+    features: [
+      {
+        title: "FDM 및 Resin 원가 계산",
+        description: "프린트 작업 유형별로 원가를 정확하게 계산합니다.",
+      },
+      {
+        title: "재료 재고 추적",
+        description: "남은 재료 수량과 각 작업에 사용된 비용을 확인합니다.",
+      },
+      {
+        title: "프린트 작업 수익 분석",
+        description: "어떤 작업이 수익이 나는지, 어떤 작업의 가격을 조정해야 하는지 바로 확인합니다.",
+      },
+    ],
+  },
+} satisfies Record<LoginLanguage, {
+  heroTitle: string;
+  heroAccent: string;
+  heroTagline: string;
+  heroDescription: string;
+  securityNote: string;
+  welcome: string;
+  subtitle: string;
+  email: string;
+  password: string;
+  forgotPassword: string;
+  rememberMe: string;
+  signIn: string;
+  divider: string;
+  google: string;
+  apple: string;
+  noAccount: string;
+  createAccount: string;
+  errorTitle: string;
+  features: Array<{ title: string; description: string }>;
+}>;
+const featureVisuals = [
   {
     icon: Box,
-    title: "รองรับ FDM และ Resin",
-    description: "คำนวณต้นทุนได้ครบทุกประเภทการพิมพ์",
     tone: "from-blue-100 to-indigo-100 text-blue-600",
   },
   {
     icon: BarChart3,
-    title: "ติดตามต้นทุนอัตโนมัติ",
-    description: "บันทึกการใช้วัสดุและคำนวณต้นทุนให้อัตโนมัติ",
     tone: "from-violet-100 to-purple-100 text-violet-600",
   },
   {
     icon: DollarSign,
-    title: "วิเคราะห์กำไรต่อชิ้นงาน",
-    description: "วิเคราะห์กำไรต่อชิ้นงานและช่วยตัดสินใจได้ดีขึ้น",
     tone: "from-emerald-100 to-green-100 text-emerald-600",
   },
 ];
 
+function getLanguage(value: string | undefined): LoginLanguage {
+  return value === "en" || value === "zh" || value === "ja" || value === "ko" ? value : "th";
+}
+
+function loginMessageTitle(language: LoginLanguage) {
+  const copy: Record<LoginLanguage, string> = {
+    th: "แจ้งเตือน",
+    en: "Notice",
+    zh: "通知",
+    ja: "お知らせ",
+    ko: "알림",
+  };
+
+  return copy[language];
+}
 function GoogleMark() {
   return (
     <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
@@ -56,14 +261,16 @@ function AppleMark() {
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams?: Promise<{ error?: string; message?: string }>;
+  searchParams?: Promise<{ error?: string; lang?: string; message?: string }>;
 }) {
   const params = searchParams ? await searchParams : undefined;
+  const currentLanguage = getLanguage(params?.lang);
+  const copy = loginCopy[currentLanguage];
 
   return (
-    <main className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_0%,#eaf3ff_0%,transparent_27%),radial-gradient(circle_at_92%_8%,#f4edff_0%,transparent_30%),linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] px-4 py-5 text-slate-950 sm:px-6 lg:px-[28px]">
-      <section className="relative mx-auto grid min-h-[calc(100vh-40px)] w-full max-w-[1626px] overflow-hidden rounded-[28px] border border-white/90 bg-white shadow-[0_30px_95px_rgba(30,41,59,0.16)] lg:grid-cols-[1.48fr_1fr]">
-        <aside className="relative hidden min-h-[720px] overflow-hidden bg-[linear-gradient(135deg,#f0f8ff_0%,#edf5ff_45%,#fbf1ff_100%)] px-8 py-12 sm:px-12 lg:block lg:px-[96px] lg:py-[92px]">
+    <main className="flex min-h-screen items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_10%_0%,#eaf3ff_0%,transparent_27%),radial-gradient(circle_at_92%_8%,#f4edff_0%,transparent_30%),linear-gradient(135deg,#f8fbff_0%,#eef5ff_100%)] px-6 py-3 text-slate-950">
+      <section className="relative mx-auto grid h-auto w-full max-w-[1080px] overflow-hidden rounded-[28px] border border-white/90 bg-white shadow-[0_30px_95px_rgba(30,41,59,0.16)] min-[900px]:max-h-[calc(100vh-24px)] min-[900px]:grid-cols-[58fr_42fr]">
+        <aside className="relative min-h-[420px] overflow-hidden bg-[linear-gradient(135deg,#f0f8ff_0%,#edf5ff_45%,#fbf1ff_100%)] px-6 py-8 sm:px-8 min-[900px]:block min-[900px]:px-10 min-[900px]:py-10">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -left-24 top-20 h-80 w-80 rotate-45 rounded-[5rem] bg-white/45" />
             <div className="absolute right-28 top-24 grid grid-cols-6 gap-3">
@@ -83,38 +290,37 @@ export default async function LoginPage({
           <div className="relative z-10 flex min-h-full flex-col">
             <img
               alt="3D PrintCost Studio"
-              className="h-[92px] w-auto object-contain object-left"
+              className="h-14 w-auto object-contain object-left"
               src="/assets/official-3d-printcost-logo.png"
             />
 
-            <div className="mt-24 max-w-[660px]">
-              <h1 className="text-4xl font-black leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-[3.2rem]">
-                คำนวณต้นทุนงานพิมพ์ 3D
-                <span className="mt-2 block text-blue-600">อย่างแม่นยำ</span>
+            <div className="mt-10 max-w-[560px]">
+              <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 sm:text-[2.15rem]">
+                {copy.heroTitle}
+                <span className="mt-2 block text-[1.75rem] leading-tight text-blue-600 sm:text-[2rem]">{copy.heroAccent}</span>
               </h1>
-              <p className="mt-8 text-2xl font-bold leading-relaxed text-slate-700">
-                ติดตามวัสดุ • คำนวณกำไร • จัดการสต็อก
-              </p>
-              <p className="mt-3 text-lg leading-8 text-slate-600">
-                จัดการข้อมูลงานพิมพ์ของคุณได้อย่างมีประสิทธิภาพ เพิ่มกำไร ลดต้นทุน ตัดสินใจได้ดีขึ้น
-              </p>
+              <p className="mt-5 text-base font-bold leading-7 text-slate-700 sm:text-lg">{copy.heroTagline}</p>
+              {copy.heroDescription ? (
+                <p className="mt-3 text-base leading-7 text-slate-600">{copy.heroDescription}</p>
+              ) : null}
             </div>
 
-            <div className="mt-16 grid max-w-[760px] grid-cols-3 gap-6">
-              {features.map((feature) => {
-                const Icon = feature.icon;
+            <div className="mt-2 grid max-w-[620px] grid-cols-1 gap-3 sm:grid-cols-3">
+              {copy.features.map((feature, index) => {
+                const visual = featureVisuals[index];
+                const Icon = visual.icon;
                 return (
                   <div
-                    className="rounded-[18px] border border-white/70 bg-white/62 p-6 text-center shadow-[0_18px_50px_rgba(90,105,150,0.12)] backdrop-blur-xl"
+                    className="rounded-[16px] border border-white/70 bg-white/62 p-4 text-center shadow-[0_18px_50px_rgba(90,105,150,0.12)] backdrop-blur-xl"
                     key={feature.title}
                   >
                     <div
-                      className={`mx-auto mb-5 flex h-[68px] w-[68px] items-center justify-center rounded-3xl bg-gradient-to-br ${feature.tone}`}
+                      className={"mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br " + visual.tone}
                     >
-                      <Icon className="h-9 w-9" strokeWidth={2.2} />
+                      <Icon className="h-7 w-7" strokeWidth={2.2} />
                     </div>
-                    <h2 className="text-lg font-black text-slate-950">{feature.title}</h2>
-                    <p className="mt-3 text-base leading-7 text-slate-600">{feature.description}</p>
+                    <h2 className="text-base font-black leading-6 text-slate-950">{feature.title}</h2>
+                    <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
                   </div>
                 );
               })}
@@ -124,126 +330,132 @@ export default async function LoginPage({
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500 text-white shadow-lg shadow-blue-300/50">
                 <ShieldCheck className="h-4 w-4" />
               </span>
-              ปลอดภัย น่าเชื่อถือ ข้อมูลของคุณจะถูกเข้ารหัสและเก็บรักษาอย่างปลอดภัย
+              {copy.securityNote}
             </div>
           </div>
         </aside>
 
-        <section className="flex min-h-[720px] items-center justify-center bg-white px-6 py-12 sm:px-10 lg:px-[70px]">
-          <div className="w-full max-w-[540px]">
-            <img
-              alt="3D PrintCost Studio"
-              className="mb-12 h-20 w-auto object-contain object-left lg:hidden"
-              src="/assets/official-3d-printcost-logo.png"
-            />
+        <section className="flex min-h-[520px] flex-col bg-white px-5 py-5 sm:px-8 min-[900px]:px-9 min-[900px]:py-6">
+          <div className="flex justify-end">
+            <LoginLanguageSelect current={currentLanguage} />
+          </div>
 
-            <div className="mb-10">
-              <h2 className="text-4xl font-black tracking-tight text-slate-950">ยินดีต้อนรับกลับ</h2>
-              <p className="mt-4 text-lg leading-8 text-slate-500">
-                เข้าสู่ระบบเพื่อใช้งานข้อมูลและงานพิมพ์ของคุณ
-              </p>
-            </div>
+          <div className="flex flex-1 items-center justify-center py-4">
+            <div className="w-full max-w-[400px]">
+              <img
+                alt="3D PrintCost Studio"
+                className="mb-8 h-14 w-auto object-contain object-left min-[900px]:hidden"
+                src="/assets/official-3d-printcost-logo.png"
+              />
 
-            {params?.error ? (
-              <div className="mb-6 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
-                {params.error}
+              <div className="mb-7">
+                <h2 className="text-3xl font-black tracking-tight text-slate-950">{copy.welcome}</h2>
+                <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base sm:leading-7">{copy.subtitle}</p>
               </div>
-            ) : null}
 
-            <form action={signInWithPassword} className="space-y-7">
-              <label className="block">
-                <span className="mb-3 block text-base font-black text-slate-950">อีเมล</span>
-                <span className="flex h-16 items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
-                  <Mail className="h-6 w-6 text-slate-400" />
+              <form action={signInWithPassword} className="space-y-4" noValidate>
+                <input name="lang" type="hidden" value={currentLanguage} />
+                {params?.error ? (
+                  <p className="-mb-1 text-sm font-black leading-6 text-red-600" role="alert">
+                    {copy.errorTitle}: {params.error}
+                  </p>
+                ) : null}
+                {params?.message ? (
+                  <p className="-mb-1 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black leading-6 text-emerald-700" role="status">
+                    {loginMessageTitle(currentLanguage)}: {params.message}
+                  </p>
+                ) : null}
+                <label className="block">
+                  <span className="mb-2 block text-sm font-black text-slate-950">{copy.email}</span>
+                  <span className={(params?.error ? "border-red-300 ring-4 ring-red-50 " : "border-slate-200 focus-within:border-blue-400 focus-within:ring-blue-100 ") + "flex h-12 items-center gap-3 rounded-xl border bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:ring-4"}>
+                    <Mail className="h-5 w-5 text-slate-400" />
+                    <input
+                      aria-label={copy.email}
+                      autoComplete="email"
+                      className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400"
+                      name="email"
+                      placeholder="name@example.com"
+                      required
+                      type="email"
+                    />
+                  </span>
+                </label>
+
+                <label className="block">
+                  <span className="mb-2 flex items-center justify-between text-sm font-black text-slate-950">
+                    {copy.password}
+                    <a className="text-sm font-bold text-blue-600 hover:text-blue-700" href={`/forgot-password?lang=${currentLanguage}`}>
+                      {copy.forgotPassword}
+                    </a>
+                  </span>
+                  <span className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
+                    <LockKeyhole className="h-5 w-5 text-slate-400" />
+                    <input
+                      aria-label={copy.password}
+                      autoComplete="current-password"
+                      className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400"
+                      name="password"
+                      placeholder="********"
+                      required
+                      type="password"
+                    />
+                  </span>
+                </label>
+
+                <label className="flex items-center gap-3 text-sm font-semibold text-slate-500">
                   <input
-                    autoComplete="email"
-                    className="h-full min-w-0 flex-1 bg-transparent text-lg font-semibold text-slate-950 outline-none placeholder:text-slate-400"
-                    name="email"
-                    placeholder="name@example.com"
-                    required
-                    type="email"
+                    className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    defaultChecked
+                    type="checkbox"
                   />
-                </span>
-              </label>
+                  {copy.rememberMe}
+                </label>
 
-              <label className="block">
-                <span className="mb-3 flex items-center justify-between text-base font-black text-slate-950">
-                  รหัสผ่าน
-                  <a className="text-sm font-bold text-blue-600 hover:text-blue-700" href="#">
-                    ลืมรหัสผ่าน?
-                  </a>
-                </span>
-                <span className="flex h-16 items-center gap-4 rounded-2xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
-                  <LockKeyhole className="h-6 w-6 text-slate-400" />
-                  <input
-                    autoComplete="current-password"
-                    className="h-full min-w-0 flex-1 bg-transparent text-lg font-semibold text-slate-950 outline-none placeholder:text-slate-400"
-                    name="password"
-                    placeholder="••••••••"
-                    required
-                    type="password"
-                  />
-                </span>
-              </label>
-
-              <label className="flex items-center gap-3 text-base font-semibold text-slate-500">
-                <input
-                  className="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                  defaultChecked
-                  type="checkbox"
+                <PendingSubmitButton
+                  className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
+                  icon={<LockKeyhole className="h-5 w-5" />}
+                  idleText={copy.signIn}
+                  pendingText="กำลังเข้าสู่ระบบ..."
                 />
-                จดจำฉันไว้ในระบบ
-              </label>
-
-              <button
-                className="flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-blue-600 text-xl font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700"
-                type="submit"
-              >
-                <LockKeyhole className="h-6 w-6" />
-                เข้าสู่ระบบ
-              </button>
-            </form>
-
-            <div className="my-9 flex items-center gap-4 text-base font-semibold text-slate-400">
-              <span className="h-px flex-1 bg-slate-200" />
-              หรือ
-              <span className="h-px flex-1 bg-slate-200" />
-            </div>
-
-            <div className="space-y-4">
-              <form action={signInWithOAuth}>
-                <input name="provider" type="hidden" value="google" />
-                <button
-                  className="flex h-16 w-full items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40"
-                  type="submit"
-                >
-                  <GoogleMark />
-                  เข้าสู่ระบบด้วย Google
-                </button>
               </form>
 
-              <form action={signInWithOAuth}>
-                <input name="provider" type="hidden" value="apple" />
-                <button
-                  className="flex h-16 w-full items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-slate-300 hover:bg-slate-50"
-                  type="submit"
-                >
-                  <AppleMark />
-                  เข้าสู่ระบบด้วย Apple
-                </button>
-              </form>
-            </div>
+              <div className="my-6 flex items-center gap-4 text-sm font-semibold text-slate-400">
+                <span className="h-px flex-1 bg-slate-200" />
+                {copy.divider}
+                <span className="h-px flex-1 bg-slate-200" />
+              </div>
 
-            <form action={signUpWithPassword} className="mt-9 text-center">
-              <input name="email" type="hidden" value="" />
-              <input name="password" type="hidden" value="" />
-              <p className="text-base font-semibold text-slate-500">
-                ยังไม่มีบัญชี?{" "}
-                <button className="font-black text-blue-600 hover:text-blue-700" type="submit">
-                  สร้างบัญชีใหม่
-                </button>
+              <div className="space-y-3">
+                <form action={signInWithOAuth}>
+                  <input name="lang" type="hidden" value={currentLanguage} />
+                  <input name="provider" type="hidden" value="google" />
+                  <PendingSubmitButton
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
+                    icon={<GoogleMark />}
+                    idleText={copy.google}
+                    pendingText="กำลังเชื่อมต่อกับ Google..."
+                  />
+                </form>
+
+                <form action={signInWithOAuth}>
+                  <input name="lang" type="hidden" value={currentLanguage} />
+                  <input name="provider" type="hidden" value="apple" />
+                  <PendingSubmitButton
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
+                    icon={<AppleMark />}
+                    idleText={copy.apple}
+                    pendingText="กำลังเชื่อมต่อกับ Apple..."
+                  />
+                </form>
+              </div>
+
+              <p className="mt-6 text-center text-sm font-semibold text-slate-500">
+                {copy.noAccount}{" "}
+                <a className="font-black text-blue-600 hover:text-blue-700" href={`/signup?lang=${currentLanguage}`}>
+                  {copy.createAccount}
+                </a>
               </p>
-            </form>
+            </div>
           </div>
         </section>
       </section>
