@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { getPriceId, getStripe } from "@/lib/stripe";
 
-type CheckoutMode = "subscription" | "promptpay_period" | "promptpay_subscription" | "truemoney_subscription";
+type CheckoutMode = "subscription" | "promptpay_period";
 type CheckoutLanguage = "th" | "en";
 
 function appUrl() {
@@ -38,7 +38,7 @@ function paymentUnavailableUrl(request: Request, paymentMode: CheckoutMode, plan
 }
 
 function isCheckoutMode(value: string): value is CheckoutMode {
-  return value === "subscription" || value === "promptpay_period" || value === "promptpay_subscription" || value === "truemoney_subscription";
+  return value === "subscription" || value === "promptpay_period";
 }
 
 function productionStripeIsInTestMode() {
@@ -246,59 +246,6 @@ export async function POST(request: Request) {
     } catch (error) {
       console.error("Unable to create Stripe PromptPay Checkout Session", error);
       return NextResponse.redirect(paymentUnavailableUrl(request, "promptpay_period", planValue, billingCycleValue, "promptpay-unavailable"), 303);
-    }
-  }
-
-  if (checkoutModeValue === "promptpay_subscription" || checkoutModeValue === "truemoney_subscription") {
-    try {
-      const paymentMethodTypes = [
-        checkoutModeValue === "promptpay_subscription"
-          ? "promptpay"
-          : checkoutModeValue === "truemoney_subscription"
-            ? "truemoney"
-            : "card",
-      ];
-
-      const session = await stripe.checkout.sessions.create({
-        mode: "subscription",
-        customer: customerId,
-        client_reference_id: userData.user.id,
-        payment_method_types: paymentMethodTypes as any,
-        locale: language === "en" ? "en" : "th",
-        submit_type: "pay",
-        line_items: [{ price: priceId, quantity: 1 }],
-        discounts,
-        metadata: {
-          billing_cycle: billingCycleValue,
-          payment_mode: checkoutModeValue,
-          payment_type: checkoutModeValue === "promptpay_subscription" ? "promptpay_subscription" : "truemoney_subscription",
-          plan: planValue,
-          promo_code_id: promo?.valid ? promo.code.id : "",
-          promo_discount_amount: promo?.valid ? String(promo.discountAmount) : "0",
-          user_id: userData.user.id,
-        },
-        success_url: `${appUrl()}/billing?checkout=success&paymentMode=${checkoutModeValue}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${appUrl()}/pricing?lang=${language}&checkout=cancelled`,
-        subscription_data: {
-          metadata: {
-            billing_cycle: billingCycleValue,
-            payment_mode: checkoutModeValue,
-            payment_type: checkoutModeValue === "promptpay_subscription" ? "promptpay_subscription" : "truemoney_subscription",
-            plan: planValue,
-            promo_code_id: promo?.valid ? promo.code.id : "",
-            user_id: userData.user.id,
-          },
-        },
-      });
-
-      if (!session.url) {
-        return NextResponse.redirect(paymentUnavailableUrl(request, checkoutModeValue, planValue, billingCycleValue, "missing-checkout-url"), 303);
-      }
-
-      return NextResponse.redirect(session.url, 303);
-    } catch (error) {
-      console.error(`Unable to create Stripe ${checkoutModeValue} Checkout Session`, error);
-      return NextResponse.redirect(paymentUnavailableUrl(request, checkoutModeValue, planValue, billingCycleValue, `${checkoutModeValue}-unavailable`), 303);
     }
   }
 

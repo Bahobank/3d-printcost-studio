@@ -48,12 +48,6 @@ function checkoutSuccessText(paymentMode?: string) {
   if (paymentMode === "promptpay_period") {
     return "Stripe ยืนยันการชำระเงิน PromptPay แล้ว ระบบจะเปิดใช้งานแพ็กเกจตามช่วงเวลาที่คุณชำระ";
   }
-  if (paymentMode === "promptpay_subscription") {
-    return "Stripe ยืนยันการชำระเงิน PromptPay แล้ว ระบบจะเปิดใช้งานแพ็กเกจและต่ออายุอัตโนมัติให้ตามรอบที่เลือก";
-  }
-  if (paymentMode === "truemoney_subscription") {
-    return "Stripe ยืนยันการชำระเงิน TrueMoney Wallet แล้ว ระบบจะเปิดใช้งานแพ็กเกจและต่ออายุอัตโนมัติให้ตามรอบที่เลือก";
-  }
   if (paymentMode === "wallet") {
     return "ระบบหักยอดจาก Wallet และเปิดใช้งานแพ็กเกจแล้ว";
   }
@@ -160,11 +154,9 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             </div>
             <h1 className="mt-5 text-3xl font-black tracking-tight">ไม่สามารถเปิดช่องทางชำระเงินนี้ได้</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-orange-50">
-              {paymentMode === "promptpay_period" || paymentMode === "promptpay_subscription"
+              {paymentMode === "promptpay_period"
                 ? "PromptPay is not available for this payment. Please use card payment or contact support."
-                : paymentMode === "truemoney_subscription"
-                  ? "TrueMoney Wallet is not available for this payment. Please use card payment or contact support."
-                  : "Stripe Checkout is temporarily unavailable. Please try again or use another payment method."}
+                : "Stripe Checkout is temporarily unavailable. Please try again or use another payment method."}
             </p>
           </div>
 
@@ -210,7 +202,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
 
 function PaymentMethodOptions({ hasStripeCustomer }: { hasStripeCustomer: boolean }) {
   return (
-    <div className="mt-6 grid gap-4 lg:grid-cols-4">
+    <div className="mt-6 grid gap-4 lg:grid-cols-3">
       <div className="rounded-2xl border border-blue-100 bg-blue-50/60 p-5">
         <div className="flex items-start gap-3">
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-[#2563EB] shadow-sm">
@@ -243,28 +235,12 @@ function PaymentMethodOptions({ hasStripeCustomer }: { hasStripeCustomer: boolea
           </div>
           <div>
             <h2 className="text-lg font-black text-slate-950">PromptPay ผ่าน Stripe</h2>
-            <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">จ่ายด้วย QR ผ่าน Stripe PromptPay สำหรับสมัครแพ็กเกจรายเดือน/รายปี</p>
+            <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">จ่ายด้วย QR ผ่าน Stripe PromptPay แบบจ่ายครั้งเดียวต่อรอบ (รายเดือน/รายปี) ไม่ต่ออายุอัตโนมัติ</p>
           </div>
         </div>
         <Link className="btn mt-5 w-full border-emerald-700 bg-emerald-600 text-white hover:bg-emerald-700" href="/pricing?lang=th">
           <QrCode size={18} />
           เลือก PromptPay
-        </Link>
-      </div>
-
-      <div className="rounded-2xl border border-amber-100 bg-amber-50/70 p-5">
-        <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-white text-amber-600 shadow-sm">
-            <Wallet size={22} />
-          </div>
-          <div>
-            <h2 className="text-lg font-black text-slate-950">TrueMoney Wallet ผ่าน Stripe</h2>
-            <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">ชำระด้วย TrueMoney Wallet สำหรับสมัครแพ็กเกจรายเดือน/รายปี</p>
-          </div>
-        </div>
-        <Link className="btn mt-5 w-full border-amber-700 bg-amber-600 text-white hover:bg-amber-700" href="/pricing?lang=th">
-          <Wallet size={18} />
-          เลือก TrueMoney Wallet
         </Link>
       </div>
 

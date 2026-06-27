@@ -105,18 +105,13 @@ async function handleCheckoutSession(session: Stripe.Checkout.Session) {
     return;
   }
 
-  if (paymentMode === "subscription" || paymentMode === "promptpay_subscription" || paymentMode === "truemoney_subscription") {
-    await updateProfileFromCheckoutSession(session);
-    return;
-  }
-
   await updateProfileFromCheckoutSession(session);
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const paymentMode = paymentIntent.metadata?.payment_mode;
 
-  if (paymentMode === "wallet_topup" || paymentMode === "promptpay_period" || paymentMode === "promptpay_subscription" || paymentMode === "truemoney_subscription") {
+  if (paymentMode === "wallet_topup" || paymentMode === "promptpay_period") {
     console.info("[stripe-webhook] PaymentIntent succeeded; Checkout Session completion handles fulfillment", {
       id: paymentIntent.id,
       paymentMode,
@@ -126,7 +121,7 @@ async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent)
 
 async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
   const paymentMode = paymentIntent.metadata?.payment_mode;
-  if (paymentMode === "wallet_topup" || paymentMode === "promptpay_period" || paymentMode === "promptpay_subscription" || paymentMode === "truemoney_subscription") {
+  if (paymentMode === "wallet_topup" || paymentMode === "promptpay_period") {
     console.warn("[stripe-webhook] Stripe payment failed", {
       id: paymentIntent.id,
       lastPaymentError: paymentIntent.last_payment_error?.message,

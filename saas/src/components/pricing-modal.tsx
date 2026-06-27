@@ -68,10 +68,6 @@ type PricingCopy = {
   plans: Record<PlanKey, PlanCopy>;
   priceLabel: string;
   promoDiscount: string;
-  truemoneyCta: string;
-  truemoneyNote: string;
-  truemoneySubtitle: string;
-  truemoneyTitle: string;
   promoInvalid: string;
   promoLabel: string;
   promoPlaceholder: string;
@@ -157,12 +153,8 @@ const thCopy: PricingCopy = {
   promptPaySubtitle: "ชำระด้วย QR Code ผ่าน Stripe PromptPay",
   promptPayNote: "PromptPay เป็นการชำระเงินครั้งเดียวและไม่ต่ออายุอัตโนมัติ เมื่อครบกำหนด กรุณาชำระเงินอีกครั้งเพื่อใช้งานต่อ",
   promptPayCta: "ชำระผ่าน Stripe PromptPay",
-  truemoneyTitle: "TrueMoney Wallet (ลูกค้าไทย)",
-  truemoneySubtitle: "ชำระด้วย TrueMoney Wallet ผ่าน Stripe สำหรับสมัครแพ็กเกจรายเดือน/รายปี",
-  truemoneyNote: "TrueMoney Wallet ใช้สำหรับสมัครแพ็กเกจและต่ออายุอัตโนมัติตามรอบที่เลือก",
-  truemoneyCta: "ชำระด้วย TrueMoney Wallet",
   walletTitle: "Wallet",
-  walletSubtitle: "ใช้ยอดเงินใน Wallet เพื่อชำระแพ็กเกจ",
+  walletSubtitle: "ใช้ยอดเงินใน Wallet เพื่อชำระแพ็กเกจ (เติมเงินผ่าน PromptPay หรือบัตรได้)",
   payWithWallet: "ใช้ Wallet ชำระเงิน",
   topUp: "เติมเงิน Wallet",
   topUpAmountLabel: "ยอดเติมเงิน",
@@ -237,12 +229,8 @@ const enCopy: PricingCopy = {
   promptPaySubtitle: "Pay by QR Code through Stripe PromptPay.",
   promptPayNote: "PromptPay is a one-time payment and does not renew automatically. When the period ends, pay again to continue using the app.",
   promptPayCta: "Pay with Stripe PromptPay",
-  truemoneyTitle: "TrueMoney Wallet (Thailand)",
-  truemoneySubtitle: "Pay with TrueMoney Wallet through Stripe for monthly or yearly plan subscriptions.",
-  truemoneyNote: "TrueMoney Wallet is used for recurring plan subscriptions and auto-renewals based on the selected billing cycle.",
-  truemoneyCta: "Pay with TrueMoney Wallet",
   walletTitle: "Wallet",
-  walletSubtitle: "Use your Wallet balance to pay for the selected plan.",
+  walletSubtitle: "Use your Wallet balance to pay for the selected plan (top up via PromptPay or card).",
   payWithWallet: "Pay with Wallet",
   topUp: "Top Up Wallet",
   topUpAmountLabel: "Top-up amount",
@@ -558,7 +546,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
 
           <form action="/api/stripe/checkout" className="rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.05)]" method="POST">
             <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
-            <input name="paymentMode" type="hidden" value="promptpay_subscription" />
+            <input name="paymentMode" type="hidden" value="promptpay_period" />
             <div className="flex gap-3">
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white">
                 <QrCode size={25} />
@@ -578,32 +566,6 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
             </div>
             <button className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-black text-white transition hover:bg-emerald-700" type="submit">
               {copy.promptPayCta}
-              <ArrowRight size={17} />
-            </button>
-          </form>
-
-          <form action="/api/stripe/checkout" className="rounded-2xl border border-amber-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.05)]" method="POST">
-            <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
-            <input name="paymentMode" type="hidden" value="truemoney_subscription" />
-            <div className="flex gap-3">
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-amber-500 text-white">
-                <Wallet size={25} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.truemoneyTitle}</h3>
-                  <span className="rounded border border-amber-200 bg-amber-50 px-2 py-1 text-[11px] font-black text-amber-700">TrueMoney</span>
-                </div>
-                <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.truemoneySubtitle}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Benefit>{copy.autoRenewal}</Benefit>
-                  <Benefit>{copy.instantActivation}</Benefit>
-                  <Benefit tone="slate">{copy.securePayment}</Benefit>
-                </div>
-              </div>
-            </div>
-            <button className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-600 px-4 text-sm font-black text-white transition hover:bg-amber-700" type="submit">
-              {copy.truemoneyCta}
               <ArrowRight size={17} />
             </button>
           </form>
