@@ -6,6 +6,7 @@ import { LOCAL_DEV_AUTH_COOKIE, localDevAuthEnabled } from "@/lib/auth-config";
 import { createClient } from "@/lib/supabase/server";
 import { canUseMainApp, getSessionAndProfile, trialDaysLeft, type UserProfile } from "@/lib/subscription";
 import { TrialSubscriptionControl } from "@/components/pricing-modal";
+import { LegacyDataMigration } from "@/components/legacy-data-migration";
 
 const navItems = [
   { href: "/dashboard", label: "แดชบอร์ด", icon: Gauge },
@@ -79,6 +80,7 @@ export async function AppShell({ children, profile }: { children: React.ReactNod
           )}
         </main>
       </div>
+      <LegacyDataMigration userEmail={session.profile.email || ""} />
     </div>
   );
 }
