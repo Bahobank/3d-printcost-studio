@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { CheckoutSuccessPopup } from "@/components/checkout-success-popup";
 import { LegacyDashboardShell } from "@/components/legacy-dashboard-shell";
+import { ReferralCapture } from "@/components/referral-capture";
 import { localDevAuthEnabled } from "@/lib/auth-config";
 import { getSessionAndProfile } from "@/lib/subscription";
 
@@ -27,6 +28,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       <Suspense fallback={null}>
         <CheckoutSuccessPopup />
       </Suspense>
+      <ReferralCapture />
       <LegacyDashboardShell profile={previewProfile} />
     </>
   );

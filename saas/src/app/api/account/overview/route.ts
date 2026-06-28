@@ -43,6 +43,17 @@ export async function GET() {
     referral: { code, link: referralLinkFromCode(code) },
   };
 
+  // Persist the referral code so /r/CODE can resolve it back to this user (best-effort).
+  try {
+    const admin = createAdminClient();
+    const { data: existing } = await admin.from("user_profiles").select("referral_code").eq("user_id", user.id).maybeSingle();
+    if (existing && !existing.referral_code) {
+      await admin.from("user_profiles").update({ referral_code: code }).eq("user_id", user.id);
+    }
+  } catch (error) {
+    // referral columns may not exist yet — ignore
+  }
+
   // Wallet (admin client; RLS-free) — balance + transaction summary + recent history.
   try {
     const admin = createAdminClient();

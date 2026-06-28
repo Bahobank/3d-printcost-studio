@@ -147,6 +147,7 @@ async function updateProfileFromCheckoutSession(session: Stripe.Checkout.Session
   });
 
   await recordPromoFromSession(session, userId, String(session.subscription ?? ""), null, null);
+  await creditReferrer(userId, paidAmountFromSession(session));
 }
 
 async function activatePromptPayPeriod(session: Stripe.Checkout.Session) {
@@ -172,6 +173,40 @@ async function activatePromptPayPeriod(session: Stripe.Checkout.Session) {
   });
 
   await recordPromoFromSession(session, userId, null, now.toISOString(), endsAt);
+  await creditReferrer(userId, paidAmountFromSession(session));
+}
+
+// Single-tier referral: when a referred user makes their first successful payment,
+// credit the referrer 5% of the paid amount to their Wallet. Credited once, and any
+// failure here is swallowed so it can never break payment processing.
+const REFERRAL_RATE = 0.05;
+
+async function creditReferrer(userId: string, amountThb: number) {
+  try {
+    if (!userId || amountThb <= 0) return;
+    const supabase = createAdminClient();
+    const { data: profile } = await supabase
+      .from("user_profiles")
+      .select("referred_by, referral_credited")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!profile?.referred_by || profile.referral_credited) return;
+
+    const credit = Math.round(amountThb * REFERRAL_RATE);
+    if (credit > 0) {
+      await adjustWalletBalance({
+        amount: credit,
+        description: "Referral reward",
+        supabase,
+        type: "adjustment",
+        userId: String(profile.referred_by),
+      });
+    }
+    await supabase.from("user_profiles").update({ referral_credited: true }).eq("user_id", userId);
+  } catch (error) {
+    console.error("[referral] credit failed", error);
+  }
 }
 
 async function creditWalletFromCheckoutSession(session: Stripe.Checkout.Session) {

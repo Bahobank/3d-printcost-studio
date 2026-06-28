@@ -397,3 +397,13 @@ revoke all on public.promo_codes from anon, authenticated;
 alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
 alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
 notify pgrst, 'reload schema';
+
+-- ===== 006_referral.sql =====
+alter table public.user_profiles
+  add column if not exists referral_code text,
+  add column if not exists referred_by uuid references auth.users(id) on delete set null,
+  add column if not exists referral_credited boolean not null default false;
+create unique index if not exists user_profiles_referral_code_key on public.user_profiles (upper(referral_code));
+create index if not exists user_profiles_referred_by_idx on public.user_profiles (referred_by);
+grant all on all tables in schema public to anon, authenticated, service_role;
+notify pgrst, 'reload schema';

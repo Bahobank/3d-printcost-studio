@@ -415,6 +415,12 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
     try {
       const response = await fetch("/api/stripe/cancel", { method: "POST" });
       if (!response.ok) throw new Error();
+      try {
+        const refreshed = (await fetch("/api/account/overview").then((r) => r.json())) as Overview;
+        setData(refreshed);
+      } catch {
+        // keep existing data; the success message still shows the known period end
+      }
       setCancelState("done");
     } catch {
       setCancelState("error");
@@ -568,7 +574,10 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
             {plan?.canCancel ? (
               <SectionCard icon={<Crown size={18} />} title={copy.manageSection}>
                 {cancelState === "done" ? (
-                  <p className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-sm font-black text-emerald-700">{copy.cancelSuccess}</p>
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
+                    <p className="text-sm font-black text-emerald-700">{copy.cancelSuccess}</p>
+                    {periodValue ? <p className="mt-1 text-sm font-black text-emerald-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
+                  </div>
                 ) : cancelState === "confirm" || cancelState === "loading" || cancelState === "error" ? (
                   <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
                     <p className="text-sm font-black text-slate-950">{copy.cancelTitle}</p>
