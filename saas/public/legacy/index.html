@@ -319,8 +319,13 @@
     .profit-chart { width: 100%; height: 260px; display: block; overflow: visible; }
     .chart-tools { display: grid; grid-template-columns: auto auto auto auto auto; grid-auto-rows: min-content; align-items: center; gap: 10px; justify-content: end; min-width: 0; }
     .chart-tools label[for="dashboardRange"] { grid-column: 1; grid-row: 1; }
-    .chart-tools label[for="dashboardStartDate"] { grid-column: 2; grid-row: 1; }
-    .chart-tools label[for="dashboardEndDate"] { grid-column: 3; grid-row: 1; }
+    .chart-tools #dashboardStartField { grid-column: 2; grid-row: 1; }
+    .chart-tools #dashboardEndField { grid-column: 3; grid-row: 1; }
+    .range-date-control { position: relative; }
+    .range-date-button { display: inline-flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 132px; min-height: 32px; padding: 4px 10px; border: 1px solid var(--input-border); border-radius: 6px; background: var(--input-bg); color: var(--ink); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .range-date-button .icon { width: 16px; height: 16px; color: var(--muted); }
+    .range-date-button.disabled-input { opacity: .55; cursor: not-allowed; }
+    .range-date-native { position: absolute; left: 0; bottom: 0; width: 100%; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; margin: 0; }
     .chart-tools #dashboardRangeWindow { grid-column: 4; grid-row: 1; }
     .chart-tools #dashboardLineStyleToggle { grid-column: 5; grid-row: 1; justify-self: end; }
     .chart-tools .chart-zoom-controls { grid-column: 4; grid-row: 2; justify-self: end; }
@@ -2109,14 +2114,16 @@
                         <option value="custom">Custom</option>
                       </select>
                     </label>
-                    <label class="sort-control" for="dashboardStartDate">
+                    <div class="sort-control range-date-control" id="dashboardStartField">
                       <span id="dashboardStartLabel">From</span>
-                      <input id="dashboardStartDate" type="date">
-                    </label>
-                    <label class="sort-control" for="dashboardEndDate">
+                      <button class="range-date-button" id="dashboardStartButton" type="button"><span id="dashboardStartText"></span><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg></button>
+                      <input class="range-date-native" id="dashboardStartDate" type="date">
+                    </div>
+                    <div class="sort-control range-date-control" id="dashboardEndField">
                       <span id="dashboardEndLabel">To</span>
-                      <input id="dashboardEndDate" type="date">
-                    </label>
+                      <button class="range-date-button" id="dashboardEndButton" type="button"><span id="dashboardEndText"></span><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg></button>
+                      <input class="range-date-native" id="dashboardEndDate" type="date">
+                    </div>
                     <span class="chart-range-window" id="dashboardRangeWindow"></span>
                     <div class="chart-style-toggle" id="dashboardLineStyleToggle" aria-label="Line style">
                       <button class="chart-style-btn active" type="button" data-dashboard-line-style="curved" title="Curved">
@@ -3526,6 +3533,11 @@
     Object.assign(i18n.zh, { rangeFrom: "从", rangeTo: "至" });
     Object.assign(i18n.ja, { rangeFrom: "開始", rangeTo: "終了" });
     Object.assign(i18n.ko, { rangeFrom: "시작", rangeTo: "종료" });
+    Object.assign(i18n.th, { datePlaceholder: "ว./ด./ป." });
+    Object.assign(i18n.en, { datePlaceholder: "dd/mm/yyyy" });
+    Object.assign(i18n.zh, { datePlaceholder: "年/月/日" });
+    Object.assign(i18n.ja, { datePlaceholder: "年/月/日" });
+    Object.assign(i18n.ko, { datePlaceholder: "년/월/일" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -5211,6 +5223,7 @@
       setText("#stockListTitle", dt("stockList"));
       setText("#dashboardStartLabel", t("rangeFrom"));
       setText("#dashboardEndLabel", t("rangeTo"));
+      updateRangeDateDisplay();
       renderStockSortOptions();
       setText("#catalogSavedTitle", dt("catalogSavedTitle"));
       setText("#historySavedTitle", dt("historySavedTitle"));
@@ -6195,6 +6208,13 @@
       return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString(dateLocale(), { dateStyle: "medium", timeStyle: "short" });
     }
 
+    function updateRangeDateDisplay() {
+      const start = $("dashboardStartText");
+      const end = $("dashboardEndText");
+      if (start) start.textContent = fields.dashboardStartDate?.value ? formatLocalizedDate(fields.dashboardStartDate.value, { dateStyle: "medium" }) : t("datePlaceholder");
+      if (end) end.textContent = fields.dashboardEndDate?.value ? formatLocalizedDate(fields.dashboardEndDate.value, { dateStyle: "medium" }) : t("datePlaceholder");
+    }
+
     function updateProducedAtDisplay() {
       const display = $("producedAtDisplay");
       const buttonText = $("producedAtButtonText");
@@ -6354,6 +6374,11 @@
         const button = $(id);
         if (button) button.disabled = isCustomRange;
       });
+      ["dashboardStartButton", "dashboardEndButton"].forEach((id) => {
+        const button = $(id);
+        if (button) button.classList.toggle("disabled-input", !isCustomRange);
+      });
+      updateRangeDateDisplay();
     }
 
     function updateDashboardLineStyleButtons() {
@@ -6559,6 +6584,7 @@
     }
 
     function renderDashboard() {
+      updateRangeDateDisplay();
       const jobs = state.jobs.filter((job) => (job.mode || "filament") === state.mode);
       const orders = visibleOrders();
       const totalCost = jobs.reduce((sum, job) => sum + num(job.totalCost), 0);
@@ -7683,6 +7709,16 @@
       updateDashboardLineStyleButtons();
       persist({ skipRender: true });
       renderDashboard();
+    });
+    $("dashboardStartButton")?.addEventListener("click", () => {
+      const input = fields.dashboardStartDate;
+      if (!input || input.disabled) return;
+      try { input.showPicker(); } catch (error) { input.focus(); }
+    });
+    $("dashboardEndButton")?.addEventListener("click", () => {
+      const input = fields.dashboardEndDate;
+      if (!input || input.disabled) return;
+      try { input.showPicker(); } catch (error) { input.focus(); }
     });
     fields.dashboardRange?.addEventListener("change", () => {
       state.settings.dashboardRange = fields.dashboardRange.value || "month";
