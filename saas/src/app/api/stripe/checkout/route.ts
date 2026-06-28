@@ -58,6 +58,10 @@ export async function POST(request: Request) {
   const checkoutModeValue = String(formData.get("paymentMode") ?? "subscription");
   const language = cleanLanguage(formData.get("language"));
   const promoCode = normalizePromoCode(String(formData.get("promoCode") ?? ""));
+  // Thai customers pay in THB; every other language is presented and charged in USD
+  // (the subscription Prices carry a USD currency_option).
+  const rawLanguage = String(formData.get("language") ?? "").toLowerCase();
+  const presentmentCurrency = rawLanguage && !rawLanguage.startsWith("th") ? "usd" : "thb";
 
   if (!isPlan(planValue) || !isBillingCycle(billingCycleValue)) {
     return new Response("Invalid plan", { status: 400 });
@@ -253,8 +257,9 @@ export async function POST(request: Request) {
     mode: "subscription",
     customer: customerId,
     client_reference_id: userData.user.id,
+    currency: presentmentCurrency,
     line_items: [{ price: priceId, quantity: 1 }],
-    discounts,
+    discounts: presentmentCurrency === "thb" ? discounts : undefined,
     metadata: {
       billing_cycle: billingCycleValue,
       payment_mode: "subscription",

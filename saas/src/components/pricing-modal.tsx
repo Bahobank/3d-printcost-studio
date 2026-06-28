@@ -134,6 +134,28 @@ function formatCurrency(amount: number, language: PricingLanguage) {
   }).format(amount);
 }
 
+// Thai customers are billed in THB; every other language is shown and charged in USD.
+const USD_PRICES: Record<PlanKey, Record<BillingCycle, number>> = {
+  maker: { monthly: 5.99, yearly: 53.9 },
+  studio: { monthly: 8.99, yearly: 83.9 },
+};
+const USD_MONTHLY_EQUIVALENT: Record<PlanKey, number> = { maker: 4.49, studio: 6.99 };
+
+function usesUsd(language: PricingLanguage) {
+  return language !== "th";
+}
+
+function planDisplayAmount(plan: PlanKey, billingCycle: BillingCycle, language: PricingLanguage) {
+  return usesUsd(language) ? USD_PRICES[plan][billingCycle] : getPlanAmount(plan, billingCycle);
+}
+
+function formatMoney(amount: number, language: PricingLanguage) {
+  if (usesUsd(language)) {
+    return new Intl.NumberFormat("en-US", { currency: "USD", maximumFractionDigits: 2, minimumFractionDigits: 2, style: "currency" }).format(amount);
+  }
+  return formatCurrency(amount, language);
+}
+
 const thCopy: PricingCopy = {
   title: "เลือกแพ็กเกจ 3D PrintCost Studio",
   expiredTitle: "ทดลองใช้ฟรี 7 วันสิ้นสุดแล้ว",
@@ -326,8 +348,11 @@ function PlanCard({ billingCycle, copy, expired, language, onSelect, plan }: { b
   const config = copy.plans[plan];
   const Icon = plan === "maker" ? Boxes : FlaskConical;
   const recommended = plan === "studio";
-  const monthlyEquivalent = billingCycle === "yearly" ? (plan === "maker" ? 149 : 233) : getPlanAmount(plan, "monthly");
-  const yearlyAmount = getPlanAmount(plan, "yearly");
+  const usd = usesUsd(language);
+  const monthlyEquivalent = usd
+    ? (billingCycle === "yearly" ? USD_MONTHLY_EQUIVALENT[plan] : USD_PRICES[plan].monthly)
+    : (billingCycle === "yearly" ? (plan === "maker" ? 149 : 233) : getPlanAmount(plan, "monthly"));
+  const yearlyAmount = planDisplayAmount(plan, "yearly", language);
 
   return (
     <article className={["relative flex min-h-[390px] flex-col rounded-2xl border bg-white p-4 shadow-[0_16px_44px_rgba(15,23,42,0.07)] sm:p-5", recommended ? "border-[#2563EB] ring-2 ring-blue-100" : "border-slate-200"].join(" ")}>
@@ -355,11 +380,11 @@ function PlanCard({ billingCycle, copy, expired, language, onSelect, plan }: { b
 
       <div>
         <div className="flex flex-wrap items-end gap-2">
-          <span className={["text-4xl font-black", recommended ? "text-[#2563EB]" : "text-blue-700"].join(" ")}>{formatCurrency(monthlyEquivalent, language)}</span>
+          <span className={["text-4xl font-black", recommended ? "text-[#2563EB]" : "text-blue-700"].join(" ")}>{formatMoney(monthlyEquivalent, language)}</span>
           <span className="pb-2 text-lg font-black text-slate-950">{copy.monthlyUnit}</span>
         </div>
         {billingCycle === "yearly" ? (
-          <p className="mt-2 text-sm font-black text-emerald-600">{copy.yearlyChargePrefix} {formatCurrency(yearlyAmount, language)}</p>
+          <p className="mt-2 text-sm font-black text-emerald-600">{copy.yearlyChargePrefix} {formatMoney(yearlyAmount, language)}</p>
         ) : (
           <p className="mt-2 text-sm font-bold text-slate-500">{copy.cancelAnytime}</p>
         )}
@@ -488,6 +513,8 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
   const hiddenPromoCode = promoCode.trim();
   const walletPayable = canPayWithWallet && !walletUnavailable;
   const ctaDisabled = method === "wallet" && !walletPayable;
+  const usd = usesUsd(language);
+  const displayAmountDue = usd ? planDisplayAmount(plan, billingCycle, language) : amountDue;
 
   function submitSelected() {
     if (method === "card") cardFormRef.current?.requestSubmit();
@@ -539,13 +566,14 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
           <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-white p-4 ring-1 ring-blue-100">
             <p className="text-xs font-black text-slate-500">{copy.priceLabel}</p>
             <p className="mt-1 flex items-end gap-1">
-              <span className="text-4xl font-black text-[#2563EB]">{formatCurrency(amountDue, language)}</span>
+              <span className="text-4xl font-black text-[#2563EB]">{formatMoney(displayAmountDue, language)}</span>
               <span className="pb-1 text-sm font-black text-slate-500">{billingCycle === "yearly" ? copy.yearlyUnit : copy.monthlyUnit}</span>
             </p>
-            <p className="mt-1 text-xs font-bold text-slate-400">{copy.vatIncluded}</p>
-            {discount > 0 ? <p className="mt-1 text-xs font-black text-emerald-700">{copy.promoDiscount}: -{formatCurrency(discount, language)}</p> : null}
+            {!usd ? <p className="mt-1 text-xs font-bold text-slate-400">{copy.vatIncluded}</p> : null}
+            {!usd && discount > 0 ? <p className="mt-1 text-xs font-black text-emerald-700">{copy.promoDiscount}: -{formatCurrency(discount, language)}</p> : null}
           </div>
 
+          {!usd ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-3">
             <label className="text-xs font-black text-slate-950" htmlFor="promo-code">{copy.promoQuestion}</label>
             <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto] lg:grid-cols-1 xl:grid-cols-[1fr_auto]">
@@ -564,6 +592,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
             ) : null}
             {promoState.status === "invalid" ? <p className="mt-2 rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">{copy.promoInvalid}</p> : null}
           </div>
+          ) : null}
 
           <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold leading-5 text-slate-500">{copy.checkoutDataSafe}</p>
         </aside>
@@ -607,6 +636,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
             </div>
           </div>
 
+          {!usd ? (
           <div className={["cursor-pointer rounded-2xl border bg-white p-4 transition", method === "promptpay" ? "border-[#2563EB] ring-2 ring-blue-100 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" : "border-slate-200 hover:border-slate-300"].join(" ")} onClick={() => setMethod("promptpay")} role="button">
             <div className="flex gap-3">
               <MethodRadio selected={method === "promptpay"} />
@@ -624,7 +654,9 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
               </div>
             </div>
           </div>
+          ) : null}
 
+          {!usd ? (
           <div className={["cursor-pointer rounded-2xl border bg-white p-4 transition", method === "wallet" ? "border-[#2563EB] ring-2 ring-blue-100 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" : "border-slate-200 hover:border-slate-300"].join(" ")} onClick={() => setMethod("wallet")} role="button">
             <div className="flex gap-3">
               <MethodRadio selected={method === "wallet"} />
@@ -686,6 +718,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
               </div>
             </div>
           </div>
+          ) : null}
 
           <button className="mt-1 flex h-14 w-full flex-col items-center justify-center rounded-2xl bg-[#2563EB] px-4 font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={ctaDisabled} onClick={submitSelected} type="button">
             <span className="flex items-center gap-2 text-base"><Lock size={16} /> {copy.proceedPayment}</span>
