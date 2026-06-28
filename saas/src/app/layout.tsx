@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "3D PrintCost Studio",
   description: "ระบบคำนวณต้นทุนและบริหารงานพิมพ์ 3D สำหรับร้านค้าและผู้ขายงานพิมพ์",
+  icons: {
+    icon: "/assets/official-3d-printcost-logo.png",
+    shortcut: "/assets/official-3d-printcost-logo.png",
+    apple: "/assets/official-3d-printcost-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -818,6 +818,17 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
   }, []);
 
   useEffect(() => {
+    function handleLanguage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "printcost:language") return;
+      setLanguage(normalizePricingLanguage(event.data?.language));
+    }
+
+    window.addEventListener("message", handleLanguage);
+    return () => window.removeEventListener("message", handleLanguage);
+  }, []);
+
+  useEffect(() => {
     if (expired) {
       setOpen(true);
       return;

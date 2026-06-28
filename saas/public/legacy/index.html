@@ -196,6 +196,10 @@
     .app:not(.printer-settings-active) .layout > section { grid-column: 1; }
     .layout > aside.panel { display: none; }
     .app.printer-settings-active .layout > aside.panel { display: block; }
+    .layout > aside.panel { min-width: 0; }
+    .layout > aside.panel .grid-2 { min-width: 0; }
+    .layout > aside.panel .field { min-width: 0; }
+    .layout > aside.panel .field input, .layout > aside.panel .field select { min-width: 0; max-width: 100%; }
     .panel { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; backdrop-filter: blur(14px); }
     #materialForm { overflow: visible; }
     .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--panel-head); }
@@ -3514,6 +3518,11 @@
     Object.assign(i18n.zh, { stockCopied: "已复制材料" });
     Object.assign(i18n.ja, { stockCopied: "材料をコピーしました" });
     Object.assign(i18n.ko, { stockCopied: "재료를 복사했습니다" });
+    Object.assign(i18n.th, { rangeFrom: "จาก", rangeTo: "ถึง" });
+    Object.assign(i18n.en, { rangeFrom: "From", rangeTo: "To" });
+    Object.assign(i18n.zh, { rangeFrom: "从", rangeTo: "至" });
+    Object.assign(i18n.ja, { rangeFrom: "開始", rangeTo: "終了" });
+    Object.assign(i18n.ko, { rangeFrom: "시작", rangeTo: "종료" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -5049,6 +5058,8 @@
       if (fields.onboardingLanguageSelect) fields.onboardingLanguageSelect.value = lang();
       fields.themeSelect.value = theme();
       document.documentElement.lang = lang();
+      try { localStorage.setItem("printCostLanguage", lang()); } catch (error) {}
+      window.parent?.postMessage({ type: "printcost:language", language: lang() }, window.location.origin);
       renderSidebarLabels();
       setText("#languageLabel", t("language"));
       setText("#onboardingLanguageLabel", t("language"));
@@ -5195,6 +5206,8 @@
       setText("#dashboardRecentTitle", t("recentPrintJobs"));
       setText("#dashboardViewAllText", t("viewAll"));
       setText("#stockListTitle", dt("stockList"));
+      setText("#dashboardStartLabel", t("rangeFrom"));
+      setText("#dashboardEndLabel", t("rangeTo"));
       renderStockSortOptions();
       setText("#catalogSavedTitle", dt("catalogSavedTitle"));
       setText("#historySavedTitle", dt("historySavedTitle"));
