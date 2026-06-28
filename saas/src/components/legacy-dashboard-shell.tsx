@@ -14,7 +14,7 @@ export function LegacyDashboardShell({ profile }: { profile: UserProfile }) {
       {canUseApp ? (
         <>
           <LegacyProfileBridge profile={profile} />
-          <LegacyTrialBridge canUseApp={canUseApp} daysLeft={daysLeft} status={profile.subscription_status ?? null} />
+          <LegacyTrialBridge canUseApp={canUseApp} daysLeft={daysLeft} status={profile.subscription_status ?? null} plan={profile.subscription_plan ?? null} />
           <iframe
             className="block h-screen w-full border-0 bg-white"
             id="legacy-dashboard-frame"

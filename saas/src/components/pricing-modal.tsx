@@ -15,6 +15,9 @@ type PricingDialogProps = {
   locked?: boolean;
   onClose?: () => void;
   open: boolean;
+  currentPlan?: PlanKey | null;
+  currentCycle?: BillingCycle | null;
+  canCancel?: boolean;
 };
 
 type TrialSubscriptionControlProps = {
@@ -90,6 +93,12 @@ type PricingCopy = {
   securePayment: string;
   selectPlanCta: string;
   selectedPlan: string;
+  currentPlanBadge: string;
+  cancelPlan: string;
+  keepPlan: string;
+  cancelConfirmText: string;
+  cancelSuccess: string;
+  cancelError: string;
   statusExpired: string;
   statusPastDue: string;
   statusTrialPrefix: string;
@@ -182,6 +191,12 @@ const thCopy: PricingCopy = {
   yearlyUnit: "/ ปี",
   selectedPlan: "แพ็กเกจที่เลือก",
   selectPlanCta: "เลือกแพ็กเกจ",
+  currentPlanBadge: "แพ็กเกจปัจจุบัน",
+  cancelPlan: "ยกเลิกแพ็กเกจ",
+  keepPlan: "ใช้ต่อ",
+  cancelConfirmText: "ยืนยันการยกเลิก? คุณจะยังใช้งานได้จนถึงสิ้นรอบการชำระเงินปัจจุบัน",
+  cancelSuccess: "ยกเลิกแล้ว คุณจะใช้งานได้จนถึงสิ้นรอบการชำระเงินปัจจุบัน",
+  cancelError: "ยกเลิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   priceLabel: "ราคา",
   checkoutDataSafe: "ข้อมูลการพิมพ์ สต๊อก และประวัติงานทั้งหมดของคุณจะยังคงอยู่ครบถ้วนหลังอัปเกรด",
   cardTitle: "บัตรเครดิต / เดบิต",
@@ -266,6 +281,12 @@ const enCopy: PricingCopy = {
   yearlyUnit: "/ year",
   selectedPlan: "Selected Plan",
   selectPlanCta: "Choose",
+  currentPlanBadge: "Current plan",
+  cancelPlan: "Cancel plan",
+  keepPlan: "Keep plan",
+  cancelConfirmText: "Cancel your plan? You'll keep access until the end of the current billing period.",
+  cancelSuccess: "Canceled. You'll keep access until the end of the current billing period.",
+  cancelError: "Couldn't cancel. Please try again.",
   priceLabel: "Price",
   checkoutDataSafe: "Your print data, stock, and full job history will remain available after upgrading.",
   cardTitle: "Credit / Debit Card",
@@ -350,6 +371,12 @@ const zhCopy: PricingCopy = {
   yearlyUnit: "/ 年",
   selectedPlan: "已选方案",
   selectPlanCta: "选择",
+  currentPlanBadge: "当前方案",
+  cancelPlan: "取消方案",
+  keepPlan: "继续使用",
+  cancelConfirmText: "确认取消？在当前计费周期结束前您仍可使用。",
+  cancelSuccess: "已取消。在当前计费周期结束前您仍可使用。",
+  cancelError: "取消失败，请重试。",
   priceLabel: "价格",
   checkoutDataSafe: "升级后，您的打印数据、库存和完整工作记录都会保留。",
   cardTitle: "信用卡 / 借记卡",
@@ -434,6 +461,12 @@ const jaCopy: PricingCopy = {
   yearlyUnit: "/ 年",
   selectedPlan: "選択中のプラン",
   selectPlanCta: "選択",
+  currentPlanBadge: "現在のプラン",
+  cancelPlan: "プランを解約",
+  keepPlan: "継続する",
+  cancelConfirmText: "解約しますか？現在の請求期間の終了までご利用いただけます。",
+  cancelSuccess: "解約しました。現在の請求期間の終了までご利用いただけます。",
+  cancelError: "解約できませんでした。もう一度お試しください。",
   priceLabel: "価格",
   checkoutDataSafe: "アップグレード後も印刷データ、在庫、作業履歴はすべて保持されます。",
   cardTitle: "クレジット / デビットカード",
@@ -518,6 +551,12 @@ const koCopy: PricingCopy = {
   yearlyUnit: "/ 년",
   selectedPlan: "선택한 요금제",
   selectPlanCta: "선택",
+  currentPlanBadge: "현재 요금제",
+  cancelPlan: "요금제 해지",
+  keepPlan: "유지하기",
+  cancelConfirmText: "해지하시겠어요? 현재 청구 기간이 끝날 때까지 계속 사용할 수 있습니다.",
+  cancelSuccess: "해지되었습니다. 현재 청구 기간이 끝날 때까지 사용할 수 있습니다.",
+  cancelError: "해지하지 못했습니다. 다시 시도해 주세요.",
   priceLabel: "가격",
   checkoutDataSafe: "업그레이드 후에도 프린팅 데이터, 재고, 전체 작업 이력이 유지됩니다.",
   cardTitle: "신용카드 / 체크카드",
@@ -596,10 +635,11 @@ function BrandLockup({ copy }: { copy: PricingCopy }) {
   );
 }
 
-function PlanCard({ billingCycle, copy, expired, language, onSelect, plan }: { billingCycle: BillingCycle; copy: PricingCopy; expired: boolean; language: PricingLanguage; onSelect: (plan: PlanKey) => void; plan: PlanKey }) {
+function PlanCard({ billingCycle, copy, currentPlan, expired, language, onSelect, plan }: { billingCycle: BillingCycle; copy: PricingCopy; currentPlan: PlanKey | null; expired: boolean; language: PricingLanguage; onSelect: (plan: PlanKey) => void; plan: PlanKey }) {
   const config = copy.plans[plan];
   const Icon = plan === "maker" ? Boxes : FlaskConical;
   const recommended = plan === "studio";
+  const isCurrent = currentPlan === plan;
   const usd = usesUsd(language);
   const monthlyEquivalent = usd
     ? (billingCycle === "yearly" ? USD_MONTHLY_EQUIVALENT[plan] : USD_PRICES[plan].monthly)
@@ -612,6 +652,12 @@ function PlanCard({ billingCycle, copy, expired, language, onSelect, plan }: { b
         <div className="absolute -top-3 right-5 inline-flex items-center gap-1.5 rounded-full bg-[#2563EB] px-3 py-1.5 text-xs font-black text-white shadow-md shadow-blue-100">
           <Star size={12} fill="currentColor" />
           {copy.recommended}
+        </div>
+      ) : null}
+      {isCurrent ? (
+        <div className="absolute -top-3 left-5 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-black text-white shadow-md">
+          <CheckCircle2 size={12} fill="currentColor" />
+          {copy.currentPlanBadge}
         </div>
       ) : null}
 
@@ -651,8 +697,8 @@ function PlanCard({ billingCycle, copy, expired, language, onSelect, plan }: { b
         ))}
       </ul>
 
-      <button className={["mt-5 grid h-12 min-h-12 place-items-center rounded-xl px-4 py-3 text-base font-black transition hover:-translate-y-0.5", recommended ? "bg-gradient-to-r from-[#2563EB] to-blue-500 text-white shadow-lg shadow-blue-100 hover:from-blue-700 hover:to-[#2563EB]" : "border-2 border-[#2563EB] bg-white text-[#2563EB] hover:bg-blue-50"].join(" ")} onClick={() => onSelect(plan)} type="button">
-        {copy.selectPlanCta} {expired ? config.title : ""}
+      <button className={["mt-5 grid h-12 min-h-12 place-items-center rounded-xl px-4 py-3 text-base font-black transition", isCurrent ? "cursor-default border-2 border-emerald-500 bg-emerald-50 text-emerald-700" : recommended ? "hover:-translate-y-0.5 bg-gradient-to-r from-[#2563EB] to-blue-500 text-white shadow-lg shadow-blue-100 hover:from-blue-700 hover:to-[#2563EB]" : "hover:-translate-y-0.5 border-2 border-[#2563EB] bg-white text-[#2563EB] hover:bg-blue-50"].join(" ")} disabled={isCurrent} onClick={() => onSelect(plan)} type="button">
+        {isCurrent ? copy.currentPlanBadge : <>{copy.selectPlanCta} {expired ? config.title : ""}</>}
       </button>
     </article>
   );
@@ -984,9 +1030,55 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
   );
 }
 
-export function PricingDialog({ expired = false, language = defaultLanguage, locked = false, onClose, open }: PricingDialogProps) {
+function CancelPlanControl({ copy }: { copy: PricingCopy }) {
+  const [state, setState] = useState<"idle" | "confirm" | "loading" | "done" | "error">("idle");
+
+  async function cancel() {
+    setState("loading");
+    try {
+      const response = await fetch("/api/stripe/cancel", { method: "POST" });
+      if (!response.ok) throw new Error();
+      setState("done");
+    } catch {
+      setState("error");
+    }
+  }
+
+  if (state === "done") {
+    return (
+      <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-black text-emerald-700">
+        {copy.cancelSuccess}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center">
+      {state === "confirm" || state === "loading" ? (
+        <>
+          <p className="text-sm font-bold text-slate-600">{copy.cancelConfirmText}</p>
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+            <button className="h-10 rounded-xl border border-rose-200 bg-white px-4 text-sm font-black text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60" disabled={state === "loading"} onClick={cancel} type="button">
+              {copy.cancelPlan}
+            </button>
+            <button className="h-10 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60" disabled={state === "loading"} onClick={() => setState("idle")} type="button">
+              {copy.keepPlan}
+            </button>
+          </div>
+        </>
+      ) : (
+        <button className="text-sm font-black text-slate-500 underline-offset-2 transition hover:text-rose-600 hover:underline" onClick={() => setState("confirm")} type="button">
+          {copy.cancelPlan}
+        </button>
+      )}
+      {state === "error" ? <p className="mt-2 text-xs font-black text-rose-600">{copy.cancelError}</p> : null}
+    </div>
+  );
+}
+
+export function PricingDialog({ canCancel = false, currentCycle = null, currentPlan = null, expired = false, language = defaultLanguage, locked = false, onClose, open }: PricingDialogProps) {
   const copy = pricingCopy[language];
-  const [billingCycle, setBillingCycle] = useState<BillingCycle>("yearly");
+  const [billingCycle, setBillingCycle] = useState<BillingCycle>(currentCycle ?? "yearly");
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
 
   useEffect(() => {
@@ -1041,9 +1133,11 @@ export function PricingDialog({ expired = false, language = defaultLanguage, loc
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <PlanCard billingCycle={billingCycle} copy={copy} expired={expired} language={language} onSelect={setCheckoutPlan} plan="maker" />
-              <PlanCard billingCycle={billingCycle} copy={copy} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
+              <PlanCard billingCycle={billingCycle} copy={copy} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="maker" />
+              <PlanCard billingCycle={billingCycle} copy={copy} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
             </div>
+
+            {canCancel ? <CancelPlanControl copy={copy} /> : null}
 
             <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm font-bold leading-6 text-slate-500">{copy.footer}</div>
           </>
@@ -1056,6 +1150,10 @@ export function PricingDialog({ expired = false, language = defaultLanguage, loc
 export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = false, listenForLegacyOpen = false, profile }: TrialSubscriptionControlProps) {
   const status = profile.subscription_status ?? "expired";
   const expired = !canUseApp;
+  const isActive = status === "active";
+  const currentPlan: PlanKey | null = isActive && (profile.subscription_plan === "maker" || profile.subscription_plan === "studio") ? profile.subscription_plan : null;
+  const currentCycle: BillingCycle | null = isActive && (profile.billing_cycle === "monthly" || profile.billing_cycle === "yearly") ? profile.billing_cycle : null;
+  const canCancel = isActive && Boolean(profile.stripe_subscription_id);
   const [open, setOpen] = useState(false);
   const [language, setLanguage] = useState<PricingLanguage>(defaultLanguage);
   const copy = pricingCopy[language];
@@ -1130,7 +1228,7 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
         </div>
       ) : null}
 
-      <PricingDialog expired={expired} language={language} locked={expired} onClose={() => setOpen(false)} open={open} />
+      <PricingDialog canCancel={canCancel} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} locked={expired} onClose={() => setOpen(false)} open={open} />
     </>
   );
 }

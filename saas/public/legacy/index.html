@@ -9106,13 +9106,13 @@
       if (!badge) return;
 
       const trialLabels = {
-        th: { left: (days) => "ทดลองใช้ฟรี เหลืออีก " + days + " วัน", expired: "ทดลองใช้ฟรีครบ 7 วันแล้ว" },
-        en: { left: (days) => "Free trial: " + days + " days left", expired: "Free trial ended" },
-        zh: { left: (days) => "免费试用，还剩 " + days + " 天", expired: "免费试用已结束" },
-        ja: { left: (days) => "無料トライアル 残り" + days + "日", expired: "無料トライアルは終了しました" },
-        ko: { left: (days) => "무료 체험 " + days + "일 남음", expired: "무료 체험이 종료되었습니다" }
+        th: { left: (days) => "ทดลองใช้ฟรี เหลืออีก " + days + " วัน", expired: "ทดลองใช้ฟรีครบ 7 วันแล้ว", plan: (name) => "แพ็กเกจ " + name },
+        en: { left: (days) => "Free trial: " + days + " days left", expired: "Free trial ended", plan: (name) => name + " plan" },
+        zh: { left: (days) => "免费试用，还剩 " + days + " 天", expired: "免费试用已结束", plan: (name) => name + " 套餐" },
+        ja: { left: (days) => "無料トライアル 残り" + days + "日", expired: "無料トライアルは終了しました", plan: (name) => name + " プラン" },
+        ko: { left: (days) => "무료 체험 " + days + "일 남음", expired: "무료 체험이 종료되었습니다", plan: (name) => name + " 요금제" }
       };
-      let latestTrialData = { canUseApp: true, daysLeft: 0, status: "trialing" };
+      let latestTrialData = { canUseApp: true, daysLeft: 0, status: "trialing", plan: "" };
 
       function currentTrialLang() {
         const select = document.getElementById("languageSelect");
@@ -9125,11 +9125,18 @@
         const status = latestTrialData.status || "trialing";
         const daysLeft = Number(latestTrialData.daysLeft || 0);
         const canUseApp = latestTrialData.canUseApp !== false;
-        if (!canUseApp || status === "active") {
+        const copy = trialLabels[currentTrialLang()] || trialLabels.en;
+        if (status === "active") {
+          const planKey = String(latestTrialData.plan || "").toLowerCase();
+          const planName = planKey === "studio" ? "Studio" : "Maker";
+          badge.textContent = copy.plan(planName);
+          badge.hidden = false;
+          return;
+        }
+        if (!canUseApp) {
           badge.hidden = true;
           return;
         }
-        const copy = trialLabels[currentTrialLang()] || trialLabels.en;
         badge.textContent = daysLeft > 0 ? copy.left(daysLeft) : copy.expired;
         badge.hidden = false;
       }
