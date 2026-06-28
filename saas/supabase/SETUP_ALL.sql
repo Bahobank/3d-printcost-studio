@@ -387,3 +387,13 @@ on public.promo_redemptions for select
 to authenticated
 using ((select auth.uid()) = user_id);
 
+
+-- ===== role grants (required so the service_role webhook can write) =====
+grant usage on schema public to anon, authenticated, service_role;
+grant all on all tables in schema public to anon, authenticated, service_role;
+grant all on all sequences in schema public to anon, authenticated, service_role;
+revoke all on public.stripe_webhook_events from anon, authenticated;
+revoke all on public.promo_codes from anon, authenticated;
+alter default privileges in schema public grant all on tables to anon, authenticated, service_role;
+alter default privileges in schema public grant all on sequences to anon, authenticated, service_role;
+notify pgrst, 'reload schema';
