@@ -36,3 +36,4 @@ work/
 # Large generated output folders
 outputs/recovered-job-images/
 outputs/**/*.bak
+.vercel

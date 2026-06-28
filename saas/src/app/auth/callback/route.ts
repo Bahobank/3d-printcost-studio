@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import type { EmailOtpType } from "@supabase/supabase-js";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { missingSupabaseConfigMessage, requireSupabaseConfig, supabaseAuthConfigured } from "@/lib/auth-config";
 import { authErrorMessage, logAuthError } from "@/lib/auth-errors";
 import { getAuthLanguage, resetPasswordCopy, type AuthLanguage } from "@/lib/auth-i18n";
@@ -153,6 +154,25 @@ export async function GET(request: Request) {
       return isResetFlow
         ? resetRedirect(requestUrl.origin, lang, resetCallbackErrorMessage(error, lang), cookiesToSet)
         : loginRedirect(requestUrl.origin, lang, authErrorMessage(error, copy.verify, lang), cookiesToSet);
+    }
+
+    // Link the referrer here (URL param survives the OAuth round-trip where the
+    // pc_ref cookie may be dropped). Only sets referred_by when it is still empty.
+    const referrerId = requestUrl.searchParams.get("ref");
+    if (referrerId && !isResetFlow) {
+      try {
+        const { data: userData } = await supabase.auth.getUser();
+        const userId = userData.user?.id;
+        if (userId && userId !== referrerId) {
+          const admin = createAdminClient();
+          const { data: profile } = await admin.from("user_profiles").select("referred_by").eq("user_id", userId).maybeSingle();
+          if (profile && !profile.referred_by) {
+            await admin.from("user_profiles").update({ referred_by: referrerId }).eq("user_id", userId);
+          }
+        }
+      } catch (referralError) {
+        console.error("[referral] callback link failed", referralError);
+      }
     }
   } catch (error) {
     logAuthError("auth callback unexpected", error);

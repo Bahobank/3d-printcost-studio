@@ -1,6 +1,6 @@
 "use server";
 
-import { headers } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Provider } from "@supabase/supabase-js";
 import { appUrl, missingSupabaseConfigMessage, supabaseAuthConfigured } from "@/lib/auth-config";
@@ -140,7 +140,12 @@ async function authCallbackUrl(lang: LoginLanguage) {
   // - http://localhost:3002/auth/callback
   // - https://3dprintcost.studio/auth/callback
   // Also enable Google and Apple providers in Supabase Dashboard before using OAuth login.
-  return `${await requestOrigin()}/auth/callback?lang=${lang}`;
+  let url = `${await requestOrigin()}/auth/callback?lang=${lang}`;
+  // Carry the referral id through OAuth in the URL — cookies can be dropped across
+  // the Google round-trip, so the callback links referred_by from this param instead.
+  const referrerId = (await cookies()).get("pc_ref")?.value;
+  if (referrerId) url += `&ref=${encodeURIComponent(referrerId)}`;
+  return url;
 }
 
 export async function signInWithPassword(formData: FormData) {
