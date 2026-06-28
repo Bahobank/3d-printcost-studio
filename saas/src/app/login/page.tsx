@@ -250,14 +250,6 @@ function GoogleMark() {
   );
 }
 
-function AppleMark() {
-  return (
-    <svg aria-hidden="true" className="h-5 w-5 shrink-0 fill-black" viewBox="0 0 24 24">
-      <path d="M16.53 12.4c-.03-3.03 2.48-4.49 2.6-4.56-1.42-2.08-3.63-2.36-4.4-2.39-1.87-.19-3.65 1.1-4.6 1.1-.94 0-2.39-1.07-3.94-1.04-2.03.03-3.9 1.18-4.95 3C-.88 12.18.7 17.61 2.76 20.59c1.01 1.46 2.22 3.1 3.8 3.04 1.53-.06 2.1-.98 3.94-.98s2.36.98 3.97.95c1.64-.03 2.68-1.49 3.68-2.96 1.16-1.7 1.64-3.35 1.67-3.43-.04-.02-3.25-1.25-3.29-4.81zM13.51 3.48C14.35 2.46 14.92 1.04 14.77 0c-1.21.05-2.67.81-3.54 1.82-.78.9-1.46 2.35-1.28 3.73 1.35.1 2.72-.69 3.56-2.07z" />
-    </svg>
-  );
-}
-
 export default async function LoginPage({
   searchParams,
 }: {
@@ -434,17 +426,6 @@ export default async function LoginPage({
                     icon={<GoogleMark />}
                     idleText={copy.google}
                     pendingText="กำลังเชื่อมต่อกับ Google..."
-                  />
-                </form>
-
-                <form action={signInWithOAuth}>
-                  <input name="lang" type="hidden" value={currentLanguage} />
-                  <input name="provider" type="hidden" value="apple" />
-                  <PendingSubmitButton
-                    className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-slate-300 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
-                    icon={<AppleMark />}
-                    idleText={copy.apple}
-                    pendingText="กำลังเชื่อมต่อกับ Apple..."
                   />
                 </form>
               </div>
