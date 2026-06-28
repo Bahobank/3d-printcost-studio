@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Boxes, CheckCircle2, CreditCard, FlaskConical, Info, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
 import { getPlanAmount } from "@/lib/billing-plans";
 import type { UserProfile } from "@/lib/subscription";
 
@@ -53,6 +53,14 @@ type PricingCopy = {
   checkoutDataSafe: string;
   choosePaymentSubtitle: string;
   choosePaymentTitlePrefix: string;
+  paymentMethodHeading: string;
+  cardWallets: string;
+  vatIncluded: string;
+  promoQuestion: string;
+  proceedPayment: string;
+  redirectSecureNote: string;
+  instantAccessNote: string;
+  yearlyUnit: string;
   currentBalance: string;
   expiredDataSafe: string;
   expiredSubtitle: string;
@@ -142,11 +150,19 @@ const thCopy: PricingCopy = {
   footer: "ข้อมูลของคุณเข้ารหัสและปลอดภัย",
   choosePaymentTitlePrefix: "เลือกแพ็กเกจ",
   choosePaymentSubtitle: "เลือกวิธีชำระเงินที่สะดวกสำหรับคุณ",
+  paymentMethodHeading: "เลือกวิธีชำระเงิน",
+  cardWallets: "Apple Pay, Google Pay",
+  vatIncluded: "รวมภาษีมูลค่าเพิ่มแล้ว",
+  promoQuestion: "มีโค้ดส่วนลด?",
+  proceedPayment: "ดำเนินการชำระเงิน",
+  redirectSecureNote: "คุณจะถูกนำไปยังหน้าชำระเงินที่ปลอดภัย",
+  instantAccessNote: "เมื่อชำระเงินสำเร็จ คุณจะได้รับสิทธิ์ใช้งานทันที",
+  yearlyUnit: "/ ปี",
   selectedPlan: "แพ็กเกจที่เลือก",
   selectPlanCta: "เลือกแพ็กเกจ",
   priceLabel: "ราคา",
   checkoutDataSafe: "ข้อมูลการพิมพ์ สต๊อก และประวัติงานทั้งหมดของคุณจะยังคงอยู่ครบถ้วนหลังอัปเกรด",
-  cardTitle: "บัตรเครดิต / เดบิต, Apple Pay, Google Pay",
+  cardTitle: "บัตรเครดิต / เดบิต",
   cardSubtitle: "ชำระผ่าน Stripe และต่ออายุอัตโนมัติทุกเดือนหรือทุกปี",
   cardCta: "ไปหน้า Stripe Checkout",
   promptPayTitle: "PromptPay (ลูกค้าไทย)",
@@ -218,11 +234,19 @@ const enCopy: PricingCopy = {
   footer: "Your payment data is encrypted and secure",
   choosePaymentTitlePrefix: "Choose plan",
   choosePaymentSubtitle: "Choose the payment method that works best for you.",
+  paymentMethodHeading: "Choose a payment method",
+  cardWallets: "Apple Pay, Google Pay",
+  vatIncluded: "VAT included",
+  promoQuestion: "Have a promo code?",
+  proceedPayment: "Proceed to payment",
+  redirectSecureNote: "You'll be taken to a secure payment page",
+  instantAccessNote: "Get instant access after successful payment",
+  yearlyUnit: "/ year",
   selectedPlan: "Selected Plan",
   selectPlanCta: "Choose",
   priceLabel: "Price",
   checkoutDataSafe: "Your print data, stock, and full job history will remain available after upgrading.",
-  cardTitle: "Credit / Debit Card, Apple Pay, Google Pay",
+  cardTitle: "Credit / Debit Card",
   cardSubtitle: "Pay with Stripe and renew automatically every month or year.",
   cardCta: "Continue to Stripe Checkout",
   promptPayTitle: "PromptPay (Thailand)",
@@ -377,6 +401,8 @@ function Benefit({ children, tone = "emerald" }: { children: React.ReactNode; to
   );
 }
 
+type PaymentMethod = "card" | "promptpay" | "wallet";
+
 function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { billingCycle: BillingCycle; copy: PricingCopy; language: PricingLanguage; onBack: () => void; plan: PlanKey }) {
   const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [walletUnavailable, setWalletUnavailable] = useState(false);
@@ -384,6 +410,11 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
   const [promoState, setPromoState] = useState<PromoState>({ status: "idle" });
   const [topUpAmount, setTopUpAmount] = useState("300");
   const [topUpMethod, setTopUpMethod] = useState<"auto" | "promptpay">("auto");
+  const [method, setMethod] = useState<PaymentMethod>("card");
+  const [showTopUp, setShowTopUp] = useState(false);
+  const cardFormRef = useRef<HTMLFormElement>(null);
+  const promptPayFormRef = useRef<HTMLFormElement>(null);
+  const walletPayFormRef = useRef<HTMLFormElement>(null);
   const planCopy = copy.plans[plan];
   const amount = getPlanAmount(plan, billingCycle);
   const amountDue = promoState.status === "valid" ? promoState.finalAmount : amount;
@@ -455,32 +486,48 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
   }
 
   const hiddenPromoCode = promoCode.trim();
+  const walletPayable = canPayWithWallet && !walletUnavailable;
+  const ctaDisabled = method === "wallet" && !walletPayable;
+
+  function submitSelected() {
+    if (method === "card") cardFormRef.current?.requestSubmit();
+    else if (method === "promptpay") promptPayFormRef.current?.requestSubmit();
+    else if (method === "wallet" && walletPayable) walletPayFormRef.current?.requestSubmit();
+  }
+
+  function MethodRadio({ selected }: { selected: boolean }) {
+    return (
+      <span className={["mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border-2 transition", selected ? "border-[#2563EB]" : "border-slate-300"].join(" ")}>
+        {selected ? <span className="h-2.5 w-2.5 rounded-full bg-[#2563EB]" /> : null}
+      </span>
+    );
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3 pr-12">
         <BrandLockup copy={copy} />
-        <button className="grid h-11 min-w-24 place-items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700 transition hover:bg-slate-100" onClick={onBack} type="button">
-          {copy.back}
-        </button>
-      </div>
-
-      <div className="flex flex-wrap items-end justify-between gap-3 border-y border-slate-100 py-3">
-        <div>
-          <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{copy.choosePaymentTitlePrefix} <span className="text-[#2563EB]">{planCopy.title}</span></h2>
-          <p className="mt-1 text-sm font-semibold text-slate-500">{copy.choosePaymentSubtitle}</p>
-        </div>
-        <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-2 text-xs font-black text-blue-700">
-          <ShieldCheck size={16} />
-          {copy.paymentSecure}
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-2 rounded-full bg-blue-50 px-3 py-2 text-xs font-black text-blue-700 sm:inline-flex">
+            <ShieldCheck size={16} />
+            {copy.paymentSecure}
+          </div>
+          <button className="grid h-11 min-w-20 place-items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700 transition hover:bg-slate-100" onClick={onBack} type="button">
+            {copy.back}
+          </button>
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-[0.78fr_1.22fr]">
+      <div className="border-y border-slate-100 py-3">
+        <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{copy.choosePaymentTitlePrefix} <span className="text-[#2563EB]">{planCopy.title}</span></h2>
+        <p className="mt-1 text-sm font-semibold text-slate-500">{copy.choosePaymentSubtitle}</p>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-[0.72fr_1.28fr]">
         <aside className="space-y-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.06)]">
           <div className="flex items-start gap-3">
-            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#2563EB]">
-              {plan === "maker" ? <Boxes size={26} /> : <FlaskConical size={26} />}
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-violet-50 text-violet-600">
+              <Crown size={26} />
             </div>
             <div className="min-w-0">
               <p className="text-xs font-black uppercase tracking-wide text-blue-700">{copy.selectedPlan}</p>
@@ -491,12 +538,16 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
 
           <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-white p-4 ring-1 ring-blue-100">
             <p className="text-xs font-black text-slate-500">{copy.priceLabel}</p>
-            <p className="mt-1 text-4xl font-black text-[#2563EB]">{formatCurrency(amountDue, language)}</p>
+            <p className="mt-1 flex items-end gap-1">
+              <span className="text-4xl font-black text-[#2563EB]">{formatCurrency(amountDue, language)}</span>
+              <span className="pb-1 text-sm font-black text-slate-500">{billingCycle === "yearly" ? copy.yearlyUnit : copy.monthlyUnit}</span>
+            </p>
+            <p className="mt-1 text-xs font-bold text-slate-400">{copy.vatIncluded}</p>
             {discount > 0 ? <p className="mt-1 text-xs font-black text-emerald-700">{copy.promoDiscount}: -{formatCurrency(discount, language)}</p> : null}
           </div>
 
           <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <label className="text-xs font-black text-slate-950" htmlFor="promo-code">{copy.promoLabel}</label>
+            <label className="text-xs font-black text-slate-950" htmlFor="promo-code">{copy.promoQuestion}</label>
             <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto] lg:grid-cols-1 xl:grid-cols-[1fr_auto]">
               <div className="relative">
                 <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
@@ -518,44 +569,52 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
         </aside>
 
         <section className="space-y-3">
-          <form action="/api/stripe/checkout" className="rounded-2xl border-2 border-[#2563EB] bg-white p-4 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" method="POST">
+          <p className="text-sm font-black text-slate-700">{copy.paymentMethodHeading}</p>
+
+          <form action="/api/stripe/checkout" className="hidden" method="POST" ref={cardFormRef}>
             <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
             <input name="paymentMode" type="hidden" value="subscription" />
+          </form>
+          <form action="/api/stripe/checkout" className="hidden" method="POST" ref={promptPayFormRef}>
+            <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
+            <input name="paymentMode" type="hidden" value="promptpay_period" />
+          </form>
+          <form action="/api/wallet/pay-subscription" className="hidden" method="POST" ref={walletPayFormRef}>
+            <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
+          </form>
+
+          <div className={["cursor-pointer rounded-2xl border bg-white p-4 transition", method === "card" ? "border-[#2563EB] ring-2 ring-blue-100 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" : "border-slate-200 hover:border-slate-300"].join(" ")} onClick={() => setMethod("card")} role="button">
             <div className="flex gap-3">
+              <MethodRadio selected={method === "card"} />
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-to-br from-[#2563EB] to-blue-500 text-white">
                 <CreditCard size={25} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.cardTitle}</h3>
-                  <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-black text-emerald-700">{copy.recommended}</span>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.cardTitle}</h3>
+                    <p className="text-xs font-bold text-slate-500">{copy.cardWallets}</p>
+                  </div>
+                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-black text-blue-700">{copy.recommended}</span>
                 </div>
                 <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.cardSubtitle}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Benefit>{copy.autoRenewal}</Benefit>
-                  <Benefit>{copy.instantActivation}</Benefit>
+                  <Benefit>{copy.cancelAnytime}</Benefit>
                   <Benefit>{copy.securePayment}</Benefit>
                 </div>
               </div>
             </div>
-            <button className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-[#2563EB] px-4 text-sm font-black text-white transition hover:bg-blue-700" type="submit">
-              {copy.cardCta}
-              <ArrowRight size={17} />
-            </button>
-          </form>
+          </div>
 
-          <form action="/api/stripe/checkout" className="rounded-2xl border border-emerald-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.05)]" method="POST">
-            <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
-            <input name="paymentMode" type="hidden" value="promptpay_period" />
+          <div className={["cursor-pointer rounded-2xl border bg-white p-4 transition", method === "promptpay" ? "border-[#2563EB] ring-2 ring-blue-100 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" : "border-slate-200 hover:border-slate-300"].join(" ")} onClick={() => setMethod("promptpay")} role="button">
             <div className="flex gap-3">
+              <MethodRadio selected={method === "promptpay"} />
               <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-emerald-500 text-white">
                 <QrCode size={25} />
               </div>
               <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.promptPayTitle}</h3>
-                  <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-1 text-[11px] font-black text-emerald-700">PromptPay</span>
-                </div>
+                <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.promptPayTitle}</h3>
                 <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.promptPaySubtitle}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Benefit>{copy.qrPayment}</Benefit>
@@ -564,78 +623,76 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
                 </div>
               </div>
             </div>
-            <button className="mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 text-sm font-black text-white transition hover:bg-emerald-700" type="submit">
-              {copy.promptPayCta}
-              <ArrowRight size={17} />
-            </button>
-          </form>
+          </div>
 
-          <div className="rounded-2xl border border-violet-200 bg-white p-4 shadow-[0_16px_45px_rgba(15,23,42,0.05)]">
-            <div className="grid gap-4 xl:grid-cols-[0.92fr_1.08fr]">
-              <div>
-                <div className="flex gap-3">
-                  <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-violet-500 text-white">
-                    <Wallet size={25} />
-                  </div>
-                  <div className="min-w-0 flex-1">
+          <div className={["cursor-pointer rounded-2xl border bg-white p-4 transition", method === "wallet" ? "border-[#2563EB] ring-2 ring-blue-100 shadow-[0_16px_45px_rgba(37,99,235,0.10)]" : "border-slate-200 hover:border-slate-300"].join(" ")} onClick={() => setMethod("wallet")} role="button">
+            <div className="flex gap-3">
+              <MethodRadio selected={method === "wallet"} />
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-violet-500 text-white">
+                <Wallet size={25} />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="min-w-0">
                     <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.walletTitle}</h3>
                     <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.walletSubtitle}</p>
                   </div>
-                </div>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
-                  <div className="rounded-xl bg-slate-50 p-3">
-                    <p className="text-[11px] font-black text-slate-500">{copy.currentBalance}</p>
-                    <p className="mt-1 text-lg font-black text-slate-950">{walletBalance === null ? "..." : formatCurrency(walletBalance, language)}</p>
-                  </div>
-                  <div className="rounded-xl bg-slate-50 p-3">
-                    <p className="text-[11px] font-black text-slate-500">{copy.remainingBalance}</p>
-                    <p className={["mt-1 text-lg font-black", walletRemaining !== null && walletRemaining < 0 ? "text-rose-600" : "text-emerald-700"].join(" ")}>{walletRemaining === null ? "..." : formatCurrency(walletRemaining, language)}</p>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="text-[11px] font-black text-slate-500">{copy.currentBalance}</p>
+                      <p className="text-lg font-black text-slate-950">{walletBalance === null ? "..." : formatCurrency(walletBalance, language)}</p>
+                    </div>
+                    <button className="h-10 shrink-0 rounded-xl border border-violet-200 bg-violet-50 px-3 text-xs font-black text-violet-700 transition hover:bg-violet-100" onClick={(event) => { event.stopPropagation(); setMethod("wallet"); setShowTopUp((value) => !value); }} type="button">
+                      {copy.topUp}
+                    </button>
                   </div>
                 </div>
                 {!canPayWithWallet || walletUnavailable ? <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold leading-5 text-amber-800">{copy.lowBalance}</p> : null}
-                <form action="/api/wallet/pay-subscription" className="mt-3" method="POST">
-                  <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
-                  <button className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={!canPayWithWallet || walletUnavailable} type="submit">
-                    {copy.payWithWallet}
-                  </button>
-                </form>
-              </div>
 
-              <form action="/api/stripe/wallet-topup" className="rounded-2xl bg-violet-50/70 p-3 ring-1 ring-violet-100" method="POST">
-                <input name="method" type="hidden" value={topUpMethod} />
-                <input name="paymentMode" type="hidden" value="wallet_topup" />
-                <input name="language" type="hidden" value={language} />
-                <input name="amount" type="hidden" value={topUpReady ? selectedTopUpAmount : ""} />
-                <p className="text-xs font-black text-violet-900">{copy.topUp}</p>
-                <p className="mt-2 text-[11px] font-black text-violet-700">{copy.topUpAmountLabel}</p>
-                <div className="mt-2 grid grid-cols-3 gap-2">
-                  {topUpAmounts.map((amountOption) => {
-                    const selected = selectedTopUpAmount === amountOption;
-                    return (
-                      <button className={["h-9 rounded-xl border text-[11px] font-black transition", selected ? "border-violet-600 bg-violet-600 text-white" : "border-violet-100 bg-white text-violet-700 hover:bg-violet-100"].join(" ")} key={amountOption} onClick={() => setTopUpAmount(String(amountOption))} type="button">
-                        {formatCurrency(amountOption, language)}
+                {showTopUp ? (
+                  <form action="/api/stripe/wallet-topup" className="mt-3 rounded-2xl bg-violet-50/70 p-3 ring-1 ring-violet-100" method="POST" onClick={(event) => event.stopPropagation()}>
+                    <input name="method" type="hidden" value={topUpMethod} />
+                    <input name="paymentMode" type="hidden" value="wallet_topup" />
+                    <input name="language" type="hidden" value={language} />
+                    <input name="amount" type="hidden" value={topUpReady ? selectedTopUpAmount : ""} />
+                    <p className="text-[11px] font-black text-violet-700">{copy.topUpAmountLabel}</p>
+                    <div className="mt-2 grid grid-cols-3 gap-2">
+                      {topUpAmounts.map((amountOption) => {
+                        const selected = selectedTopUpAmount === amountOption;
+                        return (
+                          <button className={["h-9 rounded-xl border text-[11px] font-black transition", selected ? "border-violet-600 bg-violet-600 text-white" : "border-violet-100 bg-white text-violet-700 hover:bg-violet-100"].join(" ")} key={amountOption} onClick={() => setTopUpAmount(String(amountOption))} type="button">
+                            {formatCurrency(amountOption, language)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <input className="mt-2 h-10 w-full rounded-xl border border-violet-100 bg-white px-3 text-sm font-bold outline-none focus:border-violet-500" min="50" onChange={(event) => setTopUpAmount(event.target.value)} placeholder={copy.topUpCustom} type="number" value={topUpAmounts.includes(selectedTopUpAmount) ? "" : topUpAmount} />
+
+                    <p className="mt-3 text-[11px] font-black text-violet-700">{copy.topUpMethodLabel}</p>
+                    <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "auto" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("auto")} type="button">
+                        {copy.topUpMethodAuto}
                       </button>
-                    );
-                  })}
-                </div>
-                <input className="mt-2 h-10 w-full rounded-xl border border-violet-100 bg-white px-3 text-sm font-bold outline-none focus:border-violet-500" min="50" onChange={(event) => setTopUpAmount(event.target.value)} placeholder={copy.topUpCustom} type="number" value={topUpAmounts.includes(selectedTopUpAmount) ? "" : topUpAmount} />
+                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "promptpay" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("promptpay")} type="button">
+                        {copy.topUpMethodPromptPay}
+                      </button>
+                    </div>
 
-                <p className="mt-3 text-[11px] font-black text-violet-700">{copy.topUpMethodLabel}</p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                  <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "auto" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("auto")} type="button">
-                    {copy.topUpMethodAuto}
-                  </button>
-                  <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "promptpay" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("promptpay")} type="button">
-                    {copy.topUpMethodPromptPay}
-                  </button>
-                </div>
-
-                <button className="mt-3 h-10 w-full rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={!topUpReady} type="submit">
-                  {copy.topUp}
-                </button>
-              </form>
+                    <button className="mt-3 h-10 w-full rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={!topUpReady} type="submit">
+                      {copy.topUp}
+                    </button>
+                  </form>
+                ) : null}
+              </div>
             </div>
           </div>
+
+          <button className="mt-1 flex h-14 w-full flex-col items-center justify-center rounded-2xl bg-[#2563EB] px-4 font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={ctaDisabled} onClick={submitSelected} type="button">
+            <span className="flex items-center gap-2 text-base"><Lock size={16} /> {copy.proceedPayment}</span>
+            {method !== "wallet" ? <span className="text-[11px] font-bold text-blue-100">{copy.redirectSecureNote}</span> : null}
+          </button>
+
+          <p className="text-center text-xs font-bold text-slate-400">{copy.instantAccessNote} • {copy.cancelAnytime}</p>
         </section>
       </div>
     </div>
