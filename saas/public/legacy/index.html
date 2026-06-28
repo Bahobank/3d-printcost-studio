@@ -1870,6 +1870,9 @@
               <div class="profile-summary-email" id="profileSummaryEmail">dev@3dprintcost.studio</div>
             </div>
             <button class="btn-secondary toolbar-action profile-action" id="editProfileBtn" type="button">แก้ไขโปรไฟล์</button>
+            <button class="btn-secondary toolbar-action" id="packagesBtn" type="button" title="แพ็กเกจและการชำระเงิน">
+              <svg class="icon" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>แพ็กเกจและการชำระเงิน
+            </button>
             <div class="profile-menu-divider"></div>
             <div class="profile-menu-title">Profile & settings</div>
             <label class="btn-secondary toolbar-picker" style="min-height:40px;border-radius:6px;display:inline-flex;align-items:center;gap:8px;padding:0 10px;font-weight:700">
@@ -1899,16 +1902,17 @@
               </select>
             </label>
             <div class="profile-menu-divider"></div>
-            <button class="btn-secondary toolbar-action" id="feedbackBtn" type="button" title="ส่งคำขอเพิ่มหรือแก้ไขโปรแกรม">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>ส่งคำขอ
+            <button class="btn-secondary toolbar-action" id="exportBtn" title="สำรองข้อมูลทั้งหมดเป็นไฟล์ JSON">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>สำรองข้อมูล
             </button>
-            <button class="btn-secondary toolbar-action" id="exportBtn" title="ส่งออกข้อมูลทั้งหมดเป็นไฟล์ JSON">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>ส่งออก
-            </button>
-            <label class="btn-secondary toolbar-action" title="นำเข้าข้อมูล JSON" style="min-height:40px;border-radius:6px;display:inline-flex;align-items:center;gap:8px;padding:0 13px;font-weight:700;cursor:pointer">
-              <svg class="icon" viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m17 14-5-5-5 5"/><path d="M5 3h14"/></svg>นำเข้า
+            <label class="btn-secondary toolbar-action" title="กู้คืนข้อมูลจากไฟล์ JSON" style="min-height:40px;border-radius:6px;display:inline-flex;align-items:center;gap:8px;padding:0 13px;font-weight:700;cursor:pointer">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M12 21V9"/><path d="m17 14-5-5-5 5"/><path d="M5 3h14"/></svg>กู้คืนข้อมูล
               <input id="importFile" type="file" accept="application/json" hidden>
-            </label>            <button class="btn-secondary toolbar-action logout-action" id="logoutBtn" type="button">
+            </label>
+            <button class="btn-secondary toolbar-action" id="feedbackBtn" type="button" title="ติดต่อทีมงาน">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="m22 6-10 7L2 6"/></svg>ติดต่อทีมงาน
+            </button>
+            <button class="btn-secondary toolbar-action logout-action" id="logoutBtn" type="button">
               <svg class="icon" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg><span class="logoutText">Log out</span>
             </button>
           </div>
@@ -3559,6 +3563,11 @@
     Object.assign(i18n.zh, { renameTone: "重命名颜色分组" });
     Object.assign(i18n.ja, { renameTone: "色グループ名を変更" });
     Object.assign(i18n.ko, { renameTone: "색상 그룹 이름 변경" });
+    Object.assign(i18n.th, { feedback: "ติดต่อทีมงาน", export: "สำรองข้อมูล", import: "กู้คืนข้อมูล", packages: "แพ็กเกจและการชำระเงิน" });
+    Object.assign(i18n.en, { feedback: "Contact us", export: "Back up data", import: "Restore data", packages: "Plan & billing" });
+    Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单" });
+    Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求" });
+    Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -5111,6 +5120,7 @@
       setText(".brand p", t("appSubtitle"));
       setButtonLabel("#feedbackBtn", t("feedback"));
       setButtonLabel("#exportBtn", t("export"));
+      setButtonLabel("#packagesBtn", t("packages"));
       const importLabel = document.querySelector("label.btn-secondary input#importFile")?.parentElement;
       if (importLabel) {
         const input = importLabel.querySelector("input");
@@ -9007,6 +9017,10 @@
       if (event.target.id === "orderJobModal") closeOrderJobModal();
     });
     $("feedbackBtn").addEventListener("click", openFeedbackModal);
+    $("packagesBtn")?.addEventListener("click", () => {
+      document.getElementById("profileMenu")?.classList.remove("open");
+      try { window.parent?.postMessage({ type: "printcost:open-pricing", language: lang() }, window.location.origin); } catch (error) {}
+    });
     $("feedbackClose").addEventListener("click", closeFeedbackModal);
     $("feedbackModal").addEventListener("click", (event) => {
       if (event.target.id === "feedbackModal") closeFeedbackModal();
