@@ -4824,17 +4824,17 @@
     function materialBrandKey() { return state.mode === "resin" ? "resin" : "filament"; }
     function stockSortLabels() {
       const labels = {
-        th: { label: "เรียง", name: "ชื่อ A-Z", brand: "ยี่ห้อ A-Z", type: "ประเภท A-Z", remainingDesc: "คงเหลือ มาก-น้อย", remainingAsc: "คงเหลือ น้อย-มาก", costDesc: "ต้นทุน สูง-ต่ำ", costAsc: "ต้นทุน ต่ำ-สูง" },
-        en: { label: "Sort", name: "Name A-Z", brand: "Brand A-Z", type: "Type A-Z", remainingDesc: "Remaining high-low", remainingAsc: "Remaining low-high", costDesc: "Cost high-low", costAsc: "Cost low-high" },
-        zh: { label: "排序", name: "名称 A-Z", brand: "品牌 A-Z", type: "类型 A-Z", remainingDesc: "剩余 多-少", remainingAsc: "剩余 少-多", costDesc: "成本 高-低", costAsc: "成本 低-高" },
-        ja: { label: "並び替え", name: "名前 A-Z", brand: "ブランド A-Z", type: "タイプ A-Z", remainingDesc: "残量 多-少", remainingAsc: "残量 少-多", costDesc: "原価 高-低", costAsc: "原価 低-高" },
-        ko: { label: "정렬", name: "이름 A-Z", brand: "브랜드 A-Z", type: "유형 A-Z", remainingDesc: "잔량 많은순", remainingAsc: "잔량 적은순", costDesc: "비용 높은순", costAsc: "비용 낮은순" }
+        th: { label: "เรียง", name: "ชื่อ A-Z", brand: "ยี่ห้อ A-Z", type: "ประเภท A-Z", color: "โทนสี", remainingDesc: "คงเหลือ มาก-น้อย", remainingAsc: "คงเหลือ น้อย-มาก", costDesc: "ต้นทุน สูง-ต่ำ", costAsc: "ต้นทุน ต่ำ-สูง" },
+        en: { label: "Sort", name: "Name A-Z", brand: "Brand A-Z", type: "Type A-Z", color: "Color tone", remainingDesc: "Remaining high-low", remainingAsc: "Remaining low-high", costDesc: "Cost high-low", costAsc: "Cost low-high" },
+        zh: { label: "排序", name: "名称 A-Z", brand: "品牌 A-Z", type: "类型 A-Z", color: "色系", remainingDesc: "剩余 多-少", remainingAsc: "剩余 少-多", costDesc: "成本 高-低", costAsc: "成本 低-高" },
+        ja: { label: "並び替え", name: "名前 A-Z", brand: "ブランド A-Z", type: "タイプ A-Z", color: "色調", remainingDesc: "残量 多-少", remainingAsc: "残量 少-多", costDesc: "原価 高-低", costAsc: "原価 低-高" },
+        ko: { label: "정렬", name: "이름 A-Z", brand: "브랜드 A-Z", type: "유형 A-Z", color: "색상 톤", remainingDesc: "잔량 많은순", remainingAsc: "잔량 적은순", costDesc: "비용 높은순", costAsc: "비용 낮은순" }
       };
       return labels[lang()] || labels.en;
     }
     function renderStockSortOptions() {
       const labels = stockSortLabels();
-      const options = ["name", "brand", "type", "remainingDesc", "remainingAsc", "costDesc", "costAsc"];
+      const options = ["name", "brand", "type", "color", "remainingDesc", "remainingAsc", "costDesc", "costAsc"];
       $("stockSortLabel").textContent = labels.label;
       fields.stockSort.innerHTML = options.map((value) => `<option value="${value}">${escapeHtml(labels[value])}</option>`).join("");
       if (!options.includes(state.stockSort)) state.stockSort = "name";
@@ -6107,17 +6107,59 @@
       applyPrinterSelection(false);
     }
 
+    const COLOR_TONES = [
+      { id: "red", order: 1, labels: { th: "แดง", en: "Red", zh: "红色", ja: "赤", ko: "빨강" } },
+      { id: "orange", order: 2, labels: { th: "ส้ม", en: "Orange", zh: "橙色", ja: "オレンジ", ko: "주황" } },
+      { id: "brown", order: 3, labels: { th: "น้ำตาล", en: "Brown", zh: "棕色", ja: "茶", ko: "갈색" } },
+      { id: "yellow", order: 4, labels: { th: "เหลือง", en: "Yellow", zh: "黄色", ja: "黄", ko: "노랑" } },
+      { id: "green", order: 5, labels: { th: "เขียว", en: "Green", zh: "绿色", ja: "緑", ko: "초록" } },
+      { id: "cyan", order: 6, labels: { th: "ฟ้า", en: "Cyan", zh: "青色", ja: "シアン", ko: "청록" } },
+      { id: "blue", order: 7, labels: { th: "น้ำเงิน", en: "Blue", zh: "蓝色", ja: "青", ko: "파랑" } },
+      { id: "purple", order: 8, labels: { th: "ม่วง", en: "Purple", zh: "紫色", ja: "紫", ko: "보라" } },
+      { id: "pink", order: 9, labels: { th: "ชมพู", en: "Pink", zh: "粉色", ja: "ピンク", ko: "분홍" } },
+      { id: "white", order: 10, labels: { th: "ขาว", en: "White", zh: "白色", ja: "白", ko: "흰색" } },
+      { id: "gray", order: 11, labels: { th: "เทา", en: "Gray", zh: "灰色", ja: "グレー", ko: "회색" } },
+      { id: "black", order: 12, labels: { th: "ดำ", en: "Black", zh: "黑色", ja: "黒", ko: "검정" } },
+      { id: "other", order: 13, labels: { th: "อื่น ๆ", en: "Other", zh: "其他", ja: "その他", ko: "기타" } }
+    ];
+    function toneOrder(id) { const t = COLOR_TONES.find((x) => x.id === id); return t ? t.order : 99; }
+    function toneLabel(id) { const t = COLOR_TONES.find((x) => x.id === id) || COLOR_TONES[COLOR_TONES.length - 1]; return t.labels[lang()] || t.labels.en; }
+    function colorToneId(item) {
+      const hex = String(item.colorHex || "").trim().replace(/^#/, "");
+      if (!/^[0-9a-fA-F]{6}$/.test(hex)) return "other";
+      const r = parseInt(hex.slice(0, 2), 16) / 255, g = parseInt(hex.slice(2, 4), 16) / 255, b = parseInt(hex.slice(4, 6), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2, d = max - min;
+      const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
+      if (l >= 0.92 && s < 0.2) return "white";
+      if (l <= 0.1) return "black";
+      if (s < 0.15) return l > 0.72 ? "white" : (l < 0.25 ? "black" : "gray");
+      let h = 0;
+      if (max === r) h = ((g - b) / d) % 6;
+      else if (max === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60; if (h < 0) h += 360;
+      if (h < 15 || h >= 345) return "red";
+      if (h < 45) return l < 0.4 ? "brown" : "orange";
+      if (h < 70) return "yellow";
+      if (h < 165) return "green";
+      if (h < 200) return "cyan";
+      if (h < 255) return "blue";
+      if (h < 290) return "purple";
+      return "pink";
+    }
     function sortMaterials(materials) {
       const sorted = [...materials];
       const byName = (a, b) => compareText(a.name, b.name) || compareText(a.brand, b.brand);
       const byBrand = (a, b) => compareText(a.brand, b.brand) || compareText(a.name, b.name);
       const byType = (a, b) => compareText(a.material, b.material) || compareText(a.name, b.name);
+      const byColor = (a, b) => (toneOrder(colorToneId(a)) - toneOrder(colorToneId(b))) || byName(a, b);
       const byRemaining = (a, b) => num(a.remainingAmount) - num(b.remainingAmount) || byName(a, b);
       const byCost = (a, b) => materialCostPerUnit(a) - materialCostPerUnit(b) || byName(a, b);
       const sorters = {
         name: byName,
         brand: byBrand,
         type: byType,
+        color: byColor,
         remainingAsc: byRemaining,
         remainingDesc: (a, b) => byRemaining(b, a),
         costAsc: byCost,
@@ -6700,16 +6742,25 @@
       </div>`;
     }
 
+    function stockGroupLabel(item) {
+      if (state.stockSort === "brand") return item.brand || "-";
+      if (state.stockSort === "color") return toneLabel(colorToneId(item));
+      return item.material || "-";
+    }
     function stockGridHtml(materials) {
+      const grouped = state.stockSort === "type" || state.stockSort === "brand" || state.stockSort === "color";
+      if (!grouped) {
+        return `<div class="stock-grid">${materials.map(stockCardHtml).join("")}</div>`;
+      }
       const groups = new Map();
       materials.forEach((item) => {
-        const type = item.material || "-";
-        if (!groups.has(type)) groups.set(type, []);
-        groups.get(type).push(item);
+        const key = stockGroupLabel(item);
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(item);
       });
-      return Array.from(groups.entries()).map(([type, items]) => `
+      return Array.from(groups.entries()).map(([label, items]) => `
         <div class="stock-group">
-          <div class="stock-group-head"><span class="stock-group-name">${escapeHtml(type)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
+          <div class="stock-group-head"><span class="stock-group-name">${escapeHtml(label)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
           <div class="stock-grid">${items.map(stockCardHtml).join("")}</div>
         </div>`).join("");
     }
