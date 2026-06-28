@@ -635,11 +635,11 @@ function BrandLockup({ copy }: { copy: PricingCopy }) {
   );
 }
 
-function PlanCard({ billingCycle, copy, currentPlan, expired, language, onSelect, plan }: { billingCycle: BillingCycle; copy: PricingCopy; currentPlan: PlanKey | null; expired: boolean; language: PricingLanguage; onSelect: (plan: PlanKey) => void; plan: PlanKey }) {
+function PlanCard({ billingCycle, copy, currentCycle, currentPlan, expired, language, onSelect, plan }: { billingCycle: BillingCycle; copy: PricingCopy; currentCycle: BillingCycle | null; currentPlan: PlanKey | null; expired: boolean; language: PricingLanguage; onSelect: (plan: PlanKey) => void; plan: PlanKey }) {
   const config = copy.plans[plan];
   const Icon = plan === "maker" ? Boxes : FlaskConical;
   const recommended = plan === "studio";
-  const isCurrent = currentPlan === plan;
+  const isCurrent = currentPlan === plan && currentCycle === billingCycle;
   const usd = usesUsd(language);
   const monthlyEquivalent = usd
     ? (billingCycle === "yearly" ? USD_MONTHLY_EQUIVALENT[plan] : USD_PRICES[plan].monthly)
@@ -1121,20 +1121,20 @@ export function PricingDialog({ canCancel = false, currentCycle = null, currentP
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">{expired ? copy.expiredSubtitle : copy.subtitle}</p>
               {expired ? <p className="mt-2 text-sm font-bold text-emerald-700">{copy.expiredDataSafe}</p> : null}
 
-              <div className="mx-auto mt-4 grid h-14 max-w-[360px] grid-cols-2 rounded-full bg-slate-100 p-1.5 shadow-inner">
-                <button className={["rounded-full text-base font-black transition", billingCycle === "monthly" ? "bg-white text-slate-950 shadow" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("monthly")} type="button">
+              <div className="mx-auto mt-4 grid h-16 max-w-[380px] grid-cols-2 rounded-full bg-slate-100 p-1.5 shadow-inner">
+                <button className={["rounded-full text-xl font-black transition", billingCycle === "monthly" ? "bg-white text-slate-950 shadow" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("monthly")} type="button">
                   {copy.billingMonthly}
                 </button>
-                <button className={["relative flex items-center justify-center rounded-full text-base font-black transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
+                <button className={["relative flex items-center justify-center rounded-full text-xl font-black transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
                   {copy.billingYearly}
-                  <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-black leading-none text-emerald-700 shadow-sm">{copy.saveYearly}</span>
+                  <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-100 px-3.5 py-1 text-sm font-black leading-none text-emerald-700 shadow-sm">{copy.saveYearly}</span>
                 </button>
               </div>
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              <PlanCard billingCycle={billingCycle} copy={copy} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="maker" />
-              <PlanCard billingCycle={billingCycle} copy={copy} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
+              <PlanCard billingCycle={billingCycle} copy={copy} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="maker" />
+              <PlanCard billingCycle={billingCycle} copy={copy} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
             </div>
 
             {canCancel ? <CancelPlanControl copy={copy} /> : null}
