@@ -515,6 +515,14 @@
     .stock-group:first-child .stock-group-head { margin-top: 0; }
     .stock-group-name { font-size: 15px; font-weight: 900; letter-spacing: .01em; color: var(--ink); }
     .stock-group-head .hint { font-weight: 800; white-space: nowrap; }
+    .stock-group-side { display: inline-flex; align-items: center; gap: 8px; }
+    .stock-rename-btn { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: var(--panel); color: var(--muted); cursor: pointer; }
+    .stock-rename-btn:hover { color: var(--accent, var(--teal)); border-color: var(--accent, var(--teal)); }
+    .stock-rename-btn .icon { width: 14px; height: 14px; }
+    .stock-card-draggable { cursor: grab; }
+    .stock-card-draggable:active { cursor: grabbing; }
+    .stock-card.dragging { opacity: .45; }
+    .stock-group-tone.drop-target { outline: 2px dashed var(--accent, var(--teal)); outline-offset: 4px; border-radius: 12px; }
     .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .stock-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 18px rgba(15,23,42,.05); }
     .stock-card-head { display: flex; align-items: flex-start; gap: 10px; }
@@ -3330,7 +3338,7 @@
 
     const defaultState = {
       mode: "filament",
-      settings: { language: "th", theme: "light", dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "" },
+      settings: { language: "th", theme: "light", dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
       modeSettings: structuredClone(defaultModeSettings),
       stockSort: "name",
       onboardingCompleted: false,
@@ -3541,6 +3549,11 @@
     Object.assign(i18n.zh, { datePlaceholder: "年/月/日" });
     Object.assign(i18n.ja, { datePlaceholder: "年/月/日" });
     Object.assign(i18n.ko, { datePlaceholder: "년/월/일" });
+    Object.assign(i18n.th, { renameTone: "เปลี่ยนชื่อหมวดสี" });
+    Object.assign(i18n.en, { renameTone: "Rename color group" });
+    Object.assign(i18n.zh, { renameTone: "重命名颜色分组" });
+    Object.assign(i18n.ja, { renameTone: "色グループ名を変更" });
+    Object.assign(i18n.ko, { renameTone: "색상 그룹 이름 변경" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -4206,7 +4219,9 @@
         analyticsConsent: savedSettings.analyticsConsent === true,
         analyticsCountry: typeof savedSettings.analyticsCountry === "string" ? savedSettings.analyticsCountry : "",
         analyticsConsentVersion: savedSettings.analyticsConsentVersion || defaultState.settings.analyticsConsentVersion,
-        analyticsLastSentAt: savedSettings.analyticsLastSentAt || ""
+        analyticsLastSentAt: savedSettings.analyticsLastSentAt || "",
+        stockView: savedSettings.stockView === "grid" ? "grid" : "list",
+        toneLabels: (savedSettings.toneLabels && typeof savedSettings.toneLabels === "object") ? savedSettings.toneLabels : {}
       };
       const oldModeFields = ["electricityRate", "printerWatts", "wearRate", "markup", "printerId", "printerLabel", "customPrinterName", "customPrinterBrand"];
       const oldModeSettings = Object.fromEntries(oldModeFields.filter((key) => savedSettings[key] !== undefined).map((key) => [key, savedSettings[key]]));
@@ -6124,6 +6139,8 @@
     ];
     function toneOrder(id) { const t = COLOR_TONES.find((x) => x.id === id); return t ? t.order : 99; }
     function toneLabel(id) { const t = COLOR_TONES.find((x) => x.id === id) || COLOR_TONES[COLOR_TONES.length - 1]; return t.labels[lang()] || t.labels.en; }
+    function effectiveTone(item) { return (item.toneOverride && COLOR_TONES.some((x) => x.id === item.toneOverride)) ? item.toneOverride : colorToneId(item); }
+    function toneDisplayLabel(id) { return (state.settings.toneLabels && state.settings.toneLabels[id]) || toneLabel(id); }
     function colorToneId(item) {
       const hex = String(item.colorHex || "").trim().replace(/^#/, "");
       if (!/^[0-9a-fA-F]{6}$/.test(hex)) return "other";
@@ -6152,7 +6169,7 @@
       const byName = (a, b) => compareText(a.name, b.name) || compareText(a.brand, b.brand);
       const byBrand = (a, b) => compareText(a.brand, b.brand) || compareText(a.name, b.name);
       const byType = (a, b) => compareText(a.material, b.material) || compareText(a.name, b.name);
-      const byColor = (a, b) => (toneOrder(colorToneId(a)) - toneOrder(colorToneId(b))) || byName(a, b);
+      const byColor = (a, b) => (toneOrder(effectiveTone(a)) - toneOrder(effectiveTone(b))) || byName(a, b);
       const byRemaining = (a, b) => num(a.remainingAmount) - num(b.remainingAmount) || byName(a, b);
       const byCost = (a, b) => materialCostPerUnit(a) - materialCostPerUnit(b) || byName(a, b);
       const sorters = {
@@ -6725,10 +6742,10 @@
         }).join("")}</tbody></table>`;
     }
 
-    function stockCardHtml(item) {
+    function stockCardHtml(item, draggable) {
       const pct = Math.round((num(item.remainingAmount) / Math.max(1, num(item.packageAmount))) * 100);
       const remaining = num(item.remainingAmount);
-      return `<div class="stock-card">
+      return `<div class="stock-card${draggable ? " stock-card-draggable" : ""}"${draggable ? ` draggable="true" data-card-id="${escapeHtml(item.id)}"` : ""}>
         <div class="stock-card-head">
           ${swatchHtml(item)}
           <div class="stock-card-title"><strong>${escapeHtml(item.name)}</strong><span class="hint">${escapeHtml(item.brand || "-")}${item.colorName ? " · " + escapeHtml(item.colorName) : ""}</span></div>
@@ -6744,13 +6761,30 @@
 
     function stockGroupLabel(item) {
       if (state.stockSort === "brand") return item.brand || "-";
-      if (state.stockSort === "color") return toneLabel(colorToneId(item));
+      if (state.stockSort === "color") return toneDisplayLabel(effectiveTone(item));
       return item.material || "-";
     }
     function stockGridHtml(materials) {
-      const grouped = state.stockSort === "type" || state.stockSort === "brand" || state.stockSort === "color";
+      if (state.stockSort === "color") {
+        const groups = new Map();
+        materials.forEach((item) => {
+          const tid = effectiveTone(item);
+          if (!groups.has(tid)) groups.set(tid, []);
+          groups.get(tid).push(item);
+        });
+        const orderedIds = COLOR_TONES.map((tone) => tone.id).filter((id) => groups.has(id));
+        return orderedIds.map((tid) => {
+          const items = groups.get(tid);
+          return `
+        <div class="stock-group stock-group-tone" data-tone-id="${tid}">
+          <div class="stock-group-head"><span class="stock-group-name">${escapeHtml(toneDisplayLabel(tid))}</span><span class="stock-group-side"><button class="stock-rename-btn" type="button" data-rename-tone="${tid}" title="${escapeHtml(t("renameTone"))}" aria-label="${escapeHtml(t("renameTone"))}"><svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button><span class="hint">${items.length} ${dt("itemUnit")}</span></span></div>
+          <div class="stock-grid">${items.map((item) => stockCardHtml(item, true)).join("")}</div>
+        </div>`;
+        }).join("");
+      }
+      const grouped = state.stockSort === "type" || state.stockSort === "brand";
       if (!grouped) {
-        return `<div class="stock-grid">${materials.map(stockCardHtml).join("")}</div>`;
+        return `<div class="stock-grid">${materials.map((item) => stockCardHtml(item, false)).join("")}</div>`;
       }
       const groups = new Map();
       materials.forEach((item) => {
@@ -6761,7 +6795,7 @@
       return Array.from(groups.entries()).map(([label, items]) => `
         <div class="stock-group">
           <div class="stock-group-head"><span class="stock-group-name">${escapeHtml(label)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
-          <div class="stock-grid">${items.map(stockCardHtml).join("")}</div>
+          <div class="stock-grid">${items.map((item) => stockCardHtml(item, false)).join("")}</div>
         </div>`).join("");
     }
 
@@ -8034,6 +8068,19 @@
     });
 
     $("stockTable").addEventListener("click", (event) => {
+      const renameBtn = event.target.closest("[data-rename-tone]");
+      if (renameBtn) {
+        const tid = renameBtn.dataset.renameTone;
+        const next = prompt(t("renameTone"), toneDisplayLabel(tid));
+        if (next !== null) {
+          state.settings.toneLabels = state.settings.toneLabels || {};
+          const trimmed = next.trim();
+          if (trimmed && trimmed !== toneLabel(tid)) state.settings.toneLabels[tid] = trimmed;
+          else delete state.settings.toneLabels[tid];
+          persist();
+        }
+        return;
+      }
       const copyBtn = event.target.closest("[data-copy]");
       const editBtn = event.target.closest("[data-edit]");
       const deleteBtn = event.target.closest("[data-delete]");
@@ -8050,6 +8097,42 @@
       const btn = event.target.closest("[data-stock-view]");
       if (!btn) return;
       state.settings.stockView = btn.dataset.stockView === "grid" ? "grid" : "list";
+      persist();
+    });
+    let draggedStockCardId = null;
+    $("stockTable").addEventListener("dragstart", (event) => {
+      const card = event.target.closest("[data-card-id]");
+      if (!card) return;
+      draggedStockCardId = card.dataset.cardId;
+      card.classList.add("dragging");
+      try { event.dataTransfer.effectAllowed = "move"; event.dataTransfer.setData("text/plain", draggedStockCardId); } catch (error) {}
+    });
+    $("stockTable").addEventListener("dragend", () => {
+      draggedStockCardId = null;
+      document.querySelectorAll("#stockTable .stock-card.dragging").forEach((el) => el.classList.remove("dragging"));
+      document.querySelectorAll("#stockTable .drop-target").forEach((el) => el.classList.remove("drop-target"));
+    });
+    $("stockTable").addEventListener("dragover", (event) => {
+      if (!draggedStockCardId) return;
+      const group = event.target.closest("[data-tone-id]");
+      if (!group) return;
+      event.preventDefault();
+      try { event.dataTransfer.dropEffect = "move"; } catch (error) {}
+      document.querySelectorAll("#stockTable .drop-target").forEach((el) => { if (el !== group) el.classList.remove("drop-target"); });
+      group.classList.add("drop-target");
+    });
+    $("stockTable").addEventListener("drop", (event) => {
+      const group = event.target.closest("[data-tone-id]");
+      if (!group) return;
+      event.preventDefault();
+      const id = draggedStockCardId || (event.dataTransfer && event.dataTransfer.getData("text/plain"));
+      const toneId = group.dataset.toneId;
+      draggedStockCardId = null;
+      group.classList.remove("drop-target");
+      const item = state.materials.find((m) => m.id === id);
+      if (!item || !toneId) return;
+      if (colorToneId(item) === toneId) delete item.toneOverride;
+      else item.toneOverride = toneId;
       persist();
     });
     $("cancelEdit").addEventListener("click", resetMaterialForm);
