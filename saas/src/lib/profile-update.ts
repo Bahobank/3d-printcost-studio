@@ -38,7 +38,21 @@ async function updateProfileWhere(
 }
 
 export async function updateUserProfileByUserId(supabase: SupabaseClient, userId: string, update: ProfileUpdate) {
-  await updateProfileWhere(supabase, "user_id", userId, update);
+  // Upsert so the row is created if the user has no profile yet (no signup trigger),
+  // otherwise a payment webhook UPDATE would be a no-op and the user stays "trialing".
+  const row = { user_id: userId, ...update };
+  const { error } = await supabase.from("user_profiles").upsert(row, { onConflict: "user_id" });
+  if (!error) return;
+
+  if ("subscription_payment_source" in row && missingPaymentSourceColumn(error)) {
+    const { error: fallbackError } = await supabase
+      .from("user_profiles")
+      .upsert({ user_id: userId, ...withoutPaymentSource(update) }, { onConflict: "user_id" });
+    if (!fallbackError) return;
+    throw fallbackError;
+  }
+
+  throw error;
 }
 
 export async function updateUserProfileByCustomerId(supabase: SupabaseClient, customerId: string, update: ProfileUpdate) {
