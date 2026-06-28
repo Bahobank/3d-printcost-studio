@@ -493,6 +493,22 @@
     .stock-remaining.warn { color: #d98218; }
     .stock-remaining.danger { color: var(--red); }
     .stock-alert { display: inline-flex; align-items: center; flex: 0 0 auto; border-radius: 999px; padding: 2px 7px; background: color-mix(in srgb, var(--red) 14%, var(--panel)); color: var(--red); font-size: 11px; font-weight: 900; white-space: nowrap; }
+    .stock-view-toggle { display: inline-flex; gap: 2px; border: 1px solid var(--line); border-radius: 8px; padding: 2px; background: var(--panel); }
+    .stock-view-btn { display: grid; place-items: center; width: 34px; height: 30px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); cursor: pointer; }
+    .stock-view-btn .icon { width: 18px; height: 18px; }
+    .stock-view-btn:hover { background: var(--soft); }
+    .stock-view-btn.active { background: var(--ink); color: var(--panel); }
+    .stock-group { margin-bottom: 18px; }
+    .stock-group-head { display: flex; align-items: center; gap: 8px; margin: 2px 0 10px; }
+    .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+    .stock-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 18px rgba(15,23,42,.05); }
+    .stock-card-head { display: flex; align-items: flex-start; gap: 10px; }
+    .stock-card-title { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+    .stock-card-title strong { font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .stock-card-menu { margin-left: auto; }
+    .stock-card-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stock-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; border-top: 1px solid var(--line); padding-top: 8px; }
+    .stock-card-stats > div { display: flex; flex-direction: column; gap: 2px; font-weight: 800; }
     .finish-preview { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-head); padding: 12px; display: grid; gap: 10px; }
     .finish-preview-title { font-size: 13px; font-weight: 800; color: var(--ink); }
     .finish-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); gap: 10px; }
@@ -2250,6 +2266,10 @@
                 <h2 id="stockListTitle">รายการสต็อก</h2>
                 <div class="head-tools">
                   <label class="sort-control" for="stockSort"><span id="stockSortLabel">Sort</span><select id="stockSort"></select></label>
+                  <div class="stock-view-toggle" id="stockViewToggle">
+                    <button class="stock-view-btn active" type="button" data-stock-view="list" aria-label="List view" title="List view"><svg class="icon" viewBox="0 0 24 24"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></button>
+                    <button class="stock-view-btn" type="button" data-stock-view="grid" aria-label="Grid view" title="Grid view"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></button>
+                  </div>
                   <span class="pill" id="stockCount">0 รายการ</span>
                 </div>
               </div>
@@ -3282,7 +3302,7 @@
     const materialCatalog = {
       filamentBrands: ["Bambu Lab","Prusament","eSUN","Polymaker","PolyTerra","Panchroma","Creality","Anycubic","Elegoo","SUNLU","JAYO","Overture","Hatchbox","Raise3D","ColorFabb","Fillamentum","MatterHackers","Fiberlogy","Flashforge","BASF Ultrafuse","3DXTech","Inland","Geeetech","Kingroon","AMOLEN","Proto-pasta","NinjaTek","FormFutura","Spectrum","AzureFilm","Numakers","CC3D","Cookiecad","Ziro","Reflow","Kimya","Verbatim","อื่น ๆ / กรอกเอง"],
       resinBrands: ["Anycubic","Elegoo","Siraya Tech","Phrozen","Formlabs","Creality","SUNLU","eSUN","JAMG HE","AmeraLabs","Liqcreate","RESIONE","3DMaterials","Nova3D","Monocure3D","FunToDo","Harz Labs","BASF Ultracur3D","Loctite 3D","ApplyLabWork","Peopoly","Prusa Resin","UniFormation","Flashforge","MatterHackers","DruckWege","อื่น ๆ / กรอกเอง"],
-      filamentTypes: ["PLA","PLA+","Matte PLA","Silk PLA","High Speed PLA","PETG","PETG-CF","ABS","ASA","TPU","TPE","Nylon / PA","PA-CF","PA-GF","PC","PC-CF","PVA","BVOH","HIPS","PP","POM","PMMA","Wood-filled","Metal-filled","Carbon Fiber filled","Glass Fiber filled","Conductive","Glow in the dark","Support material","PPS-CF","PEI / Ultem","PEEK","PEKK","อื่น ๆ / กรอกเอง"],
+      filamentTypes: ["PLA","PLA+","PLA Matte","PLA Silk","PLA High Speed","PETG","PETG Matte","PETG-CF","ABS","ASA","TPU","TPE","Nylon / PA","PA-CF","PA-GF","PC","PC-CF","PVA","BVOH","HIPS","PP","POM","PMMA","Wood-filled","Metal-filled","Carbon Fiber filled","Glass Fiber filled","Conductive","Glow in the dark","Support material","PPS-CF","PEI / Ultem","PEEK","PEKK","อื่น ๆ / กรอกเอง"],
       resinTypes: ["Standard Resin","ABS-like","Tough","Durable","Rigid","Flexible","Elastic","Water Washable","Plant-based","Low Odor","High Speed / Draft","8K / 12K High Detail","Clear","Dental Model","Dental Surgical Guide","Biocompatible","Castable / Jewelry","High Temperature","Heat Resistant","Flame Retardant","Ceramic-filled","Engineering","Silicone-like","Wax-like","อื่น ๆ / กรอกเอง"]
     };
 
@@ -6588,14 +6608,19 @@
         }).join("")}</tbody></table>` : `<div class="empty">${t("noRecentJobs")}</div>`;
     }
 
-    function renderStockTable() {
-      const materials = visibleMaterials();
-      $("stockCount").textContent = `${materials.length} ${dt("itemUnit")}`;
-      if (!materials.length) {
-        $("stockTable").innerHTML = `<div class="empty">${dt("emptyStock", modeName(), unit())}</div>`;
-        return;
-      }
-      $("stockTable").innerHTML = `<table class="stock-table"><thead><tr><th>${t("material")}</th><th>${t("materialBrand")}</th><th>${t("materialType")}</th><th>${t("remainingMaterial")}</th><th>${dt("totalCost")}</th><th>${t("cost")}/${unit()}</th><th>${t("manage")}</th></tr></thead><tbody>
+    function syncStockViewToggle() {
+      const view = state.settings.stockView === "grid" ? "grid" : "list";
+      document.querySelectorAll("#stockViewToggle [data-stock-view]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.stockView === view);
+      });
+    }
+
+    function stockManageMenu(item) {
+      return `<details class="history-row-menu stock-row-menu"><summary aria-label="${escapeHtml(t("manage"))}" title="${escapeHtml(t("manage"))}">&#9776;</summary><div class="history-row-menu-panel"><button class="btn-ghost" data-copy="${item.id}">${t("copyJob")}</button><button class="btn-ghost" data-edit="${item.id}">${dt("editMaterial")}</button><button class="btn-ghost" data-delete="${item.id}">${t("delete")}</button></div></details>`;
+    }
+
+    function stockListHtml(materials) {
+      return `<table class="stock-table"><thead><tr><th>${t("material")}</th><th>${t("materialBrand")}</th><th>${t("materialType")}</th><th>${t("remainingMaterial")}</th><th>${dt("totalCost")}</th><th>${t("cost")}/${unit()}</th><th>${t("manage")}</th></tr></thead><tbody>
         ${materials.map((item) => {
           const pct = Math.round((num(item.remainingAmount) / Math.max(1, num(item.packageAmount))) * 100);
           const remaining = num(item.remainingAmount);
@@ -6606,9 +6631,51 @@
             <td>${stockRemainingHtml(remaining)}<br><span class="hint">${pct}% ${dt("ofPackage")}</span></td>
             <td>${money.format(num(item.packagePrice) + num(item.shippingCost))}</td>
             <td>${money.format(materialCostPerUnit(item))}</td>
-            <td><details class="history-row-menu stock-row-menu"><summary aria-label="${escapeHtml(t("manage"))}" title="${escapeHtml(t("manage"))}">&#9776;</summary><div class="history-row-menu-panel"><button class="btn-ghost" data-copy="${item.id}">${t("copyJob")}</button><button class="btn-ghost" data-edit="${item.id}">${dt("editMaterial")}</button><button class="btn-ghost" data-delete="${item.id}">${t("delete")}</button></div></details></td>
+            <td>${stockManageMenu(item)}</td>
           </tr>`;
         }).join("")}</tbody></table>`;
+    }
+
+    function stockCardHtml(item) {
+      const pct = Math.round((num(item.remainingAmount) / Math.max(1, num(item.packageAmount))) * 100);
+      const remaining = num(item.remainingAmount);
+      return `<div class="stock-card">
+        <div class="stock-card-head">
+          ${swatchHtml(item)}
+          <div class="stock-card-title"><strong>${escapeHtml(item.name)}</strong><span class="hint">${escapeHtml(item.brand || "-")}${item.colorName ? " · " + escapeHtml(item.colorName) : ""}</span></div>
+          <div class="stock-card-menu">${stockManageMenu(item)}</div>
+        </div>
+        <div class="stock-card-tags"><span class="pill">${escapeHtml(item.material)}</span><span class="effect-tag">${escapeHtml(finishLabel(item.finish))}</span></div>
+        <div class="stock-card-stats">
+          <div><span class="hint">${t("remainingMaterial")}</span><span>${stockRemainingHtml(remaining)} <span class="hint">${pct}%</span></span></div>
+          <div><span class="hint">${t("cost")}/${unit()}</span><strong>${money.format(materialCostPerUnit(item))}</strong></div>
+        </div>
+      </div>`;
+    }
+
+    function stockGridHtml(materials) {
+      const groups = new Map();
+      materials.forEach((item) => {
+        const type = item.material || "-";
+        if (!groups.has(type)) groups.set(type, []);
+        groups.get(type).push(item);
+      });
+      return Array.from(groups.entries()).map(([type, items]) => `
+        <div class="stock-group">
+          <div class="stock-group-head"><span class="pill">${escapeHtml(type)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
+          <div class="stock-grid">${items.map(stockCardHtml).join("")}</div>
+        </div>`).join("");
+    }
+
+    function renderStockTable() {
+      const materials = visibleMaterials();
+      $("stockCount").textContent = `${materials.length} ${dt("itemUnit")}`;
+      syncStockViewToggle();
+      if (!materials.length) {
+        $("stockTable").innerHTML = `<div class="empty">${dt("emptyStock", modeName(), unit())}</div>`;
+        return;
+      }
+      $("stockTable").innerHTML = state.settings.stockView === "grid" ? stockGridHtml(materials) : stockListHtml(materials);
     }
 
     function renderJobOptions() {
@@ -7870,6 +7937,12 @@
         queueAnonymousInsights("stock-delete");
         showToast(t("stockDeleted"));
       }
+    });
+    $("stockViewToggle")?.addEventListener("click", (event) => {
+      const btn = event.target.closest("[data-stock-view]");
+      if (!btn) return;
+      state.settings.stockView = btn.dataset.stockView === "grid" ? "grid" : "list";
+      persist();
     });
     $("cancelEdit").addEventListener("click", resetMaterialForm);
     fields.colorHex.addEventListener("input", () => { renderCostSummary(); renderFinishPreview(); });
