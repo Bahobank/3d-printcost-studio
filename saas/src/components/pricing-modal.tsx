@@ -1029,13 +1029,13 @@ export function PricingDialog({ expired = false, language = defaultLanguage, loc
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">{expired ? copy.expiredSubtitle : copy.subtitle}</p>
               {expired ? <p className="mt-2 text-sm font-bold text-emerald-700">{copy.expiredDataSafe}</p> : null}
 
-              <div className="mx-auto mt-4 grid h-12 max-w-[360px] grid-cols-2 rounded-full bg-slate-100 p-1.5 shadow-inner">
+              <div className="mx-auto mt-4 grid h-16 max-w-[360px] grid-cols-2 rounded-full bg-slate-100 p-1.5 shadow-inner">
                 <button className={["rounded-full text-sm font-black transition", billingCycle === "monthly" ? "bg-white text-slate-950 shadow" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("monthly")} type="button">
                   {copy.billingMonthly}
                 </button>
-                <button className={["relative flex flex-col items-center justify-center gap-0.5 rounded-full text-sm font-black leading-none transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
-                  <span>{copy.billingYearly}</span>
-                  <span className="rounded-full bg-emerald-100 px-2 py-px text-[10px] font-black text-emerald-700">{copy.saveYearly}</span>
+                <button className={["relative flex items-center justify-center rounded-full text-sm font-black transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
+                  {copy.billingYearly}
+                  <span className="absolute bottom-1 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-black leading-none text-emerald-700">{copy.saveYearly}</span>
                 </button>
               </div>
             </div>
