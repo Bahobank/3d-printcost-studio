@@ -1583,13 +1583,16 @@
     .legacy-trial-badge:hover { background: color-mix(in srgb, var(--panel) 78%, var(--accent) 22%); border-color: color-mix(in srgb, var(--accent) 48%, var(--line) 52%); }
     :root[data-theme="pastel"] .status-ok,
     :root[data-theme="pastel"] .stock-remaining.ok,
-    :root[data-theme="pastel"] .profit-positive,
-    :root[data-theme="pastel"] .order-profit-positive,
     :root[data-theme="pastel"] .ok,
     :root[data-theme="pastel"] .stat strong.stat-value-positive,
     :root[data-theme="pastel"] .metric-card small {
       color: color-mix(in srgb, var(--pastel-mint) 10%, var(--ink) 90%) !important;
       -webkit-text-fill-color: color-mix(in srgb, var(--pastel-mint) 10%, var(--ink) 90%) !important;
+    }
+    :root[data-theme="pastel"] .profit-positive,
+    :root[data-theme="pastel"] .order-profit-positive {
+      color: #15803d !important;
+      -webkit-text-fill-color: #15803d !important;
     }
     :root[data-theme="pastel"] .profit-negative,
     :root[data-theme="pastel"] .order-profit-negative,
