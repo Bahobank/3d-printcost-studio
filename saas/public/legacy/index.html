@@ -181,7 +181,9 @@
     .icon-button { width: 36px; height: 36px; min-height: 36px; border-radius: 50%; background: var(--control); color: var(--control-ink); padding: 0; }
     .studio-workspace { min-width: 0; }
     .modebar { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 16px; }
-    .mode { background: var(--control); color: var(--control-ink); padding: 0 16px; min-width: 140px; }
+    .mode { background: var(--control); color: var(--control-ink); padding: 0 16px; min-width: 140px; position: relative; }
+    .mode.mode-locked { opacity: .55; }
+    .mode.mode-locked::after { content: "🔒 Studio"; position: absolute; top: -9px; right: -8px; background: linear-gradient(135deg,#6d28d9,#4f46e5); color: #fff; font-size: 10px; font-weight: 900; line-height: 1; padding: 3px 7px; border-radius: 999px; box-shadow: 0 4px 10px rgba(109,40,217,.32); pointer-events: none; }
     .mode.active { background: var(--teal); color: #fff; box-shadow: 0 8px 20px color-mix(in srgb, var(--accent) 22%, transparent); }
     .stats { display: grid; grid-template-columns: repeat(4, minmax(160px, 1fr)); gap: 12px; margin-bottom: 16px; }
     .stat { background: color-mix(in srgb, var(--panel) 88%, transparent); border: 1px solid var(--line); border-radius: 16px; padding: 16px; min-height: 92px; box-shadow: 0 12px 28px rgba(36,54,89,.06); }
@@ -5779,7 +5781,38 @@
       fields.jobSalePrice.disabled = true;
     }
 
+    // Resin is a Studio-only feature. Maker subscribers are blocked from Resin mode.
+    function resinLocked() {
+      return String(window.__pcPlan || "").toLowerCase() === "maker";
+    }
+    function resinUpsellText() {
+      const code = typeof lang === "function" ? lang() : "th";
+      const map = {
+        th: "โหมดเรซิ่นใช้ได้เฉพาะแพ็กเกจ Studio — อัปเกรดเพื่อปลดล็อก",
+        en: "Resin mode requires the Studio plan — upgrade to unlock",
+        zh: "树脂模式仅限 Studio 套餐 — 升级以解锁",
+        ja: "レジンモードは Studio プラン限定です — アップグレードで解除",
+        ko: "레진 모드는 Studio 요금제 전용입니다 — 업그레이드하여 잠금 해제"
+      };
+      return map[code] || map.en;
+    }
+    function showResinUpsell() {
+      if (typeof showToast === "function") showToast(resinUpsellText());
+      try { window.parent?.postMessage({ type: "printcost:open-pricing", language: (typeof lang === "function" ? lang() : "th") }, window.location.origin); } catch (error) {}
+    }
+    function applyResinLock() {
+      const locked = resinLocked();
+      const resinBtn = document.querySelector('.mode[data-mode="resin"]');
+      if (resinBtn) resinBtn.classList.toggle("mode-locked", locked);
+      if (locked && state.mode === "resin") setMode("filament");
+    }
+    window.__pcApplyResinLock = applyResinLock;
+
     function setMode(mode) {
+      if (mode === "resin" && resinLocked()) {
+        showResinUpsell();
+        return;
+      }
       state.mode = mode;
       historyPage = 1;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -7788,6 +7821,7 @@
     }
 
     document.querySelectorAll(".mode").forEach((btn) => btn.addEventListener("click", () => setMode(btn.dataset.mode)));
+    applyResinLock();
     function selectOnboardingMode(btn) {
       document.querySelectorAll(".onboarding-mode").forEach((item) => item.classList.toggle("active", item === btn));
       renderOnboardingPrinters();
@@ -9122,6 +9156,8 @@
 
       function updateBadge(data = {}) {
         latestTrialData = { ...latestTrialData, ...data };
+        window.__pcPlan = String(latestTrialData.plan || "").toLowerCase();
+        if (typeof window.__pcApplyResinLock === "function") window.__pcApplyResinLock();
         const status = latestTrialData.status || "trialing";
         const canUseApp = latestTrialData.canUseApp !== false;
         const copy = trialLabels[currentTrialLang()] || trialLabels.en;
