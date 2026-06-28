@@ -523,7 +523,10 @@
     .stock-card-draggable:active { cursor: grabbing; }
     .stock-card.dragging { opacity: .45; }
     .stock-group-tone.drop-target { outline: 2px dashed var(--accent, var(--teal)); outline-offset: 4px; border-radius: 12px; }
-    .stock-card.drag-over { outline: 2px solid var(--accent, var(--teal)); outline-offset: 2px; }
+    .stock-card { position: relative; }
+    .stock-card.insert-before::before, .stock-card.insert-after::after { content: ""; position: absolute; top: 6px; bottom: 6px; width: 4px; border-radius: 4px; background: var(--accent, var(--teal)); box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--teal)) 25%, transparent); }
+    .stock-card.insert-before::before { left: -8px; }
+    .stock-card.insert-after::after { right: -8px; }
     .stock-group-rename-input { font: inherit; font-size: 15px; font-weight: 900; color: var(--ink); border: 1px solid var(--accent, var(--teal)); border-radius: 6px; padding: 2px 8px; background: var(--panel); max-width: 220px; outline: none; }
     .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .stock-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 18px rgba(15,23,42,.05); }
@@ -8133,7 +8136,7 @@
     });
     function clearStockDragMarks() {
       document.querySelectorAll("#stockTable .stock-card.dragging").forEach((el) => el.classList.remove("dragging"));
-      document.querySelectorAll("#stockTable .drag-over").forEach((el) => el.classList.remove("drag-over"));
+      document.querySelectorAll("#stockTable .insert-before, #stockTable .insert-after").forEach((el) => el.classList.remove("insert-before", "insert-after"));
       document.querySelectorAll("#stockTable .drop-target").forEach((el) => el.classList.remove("drop-target"));
     }
     $("stockTable").addEventListener("dragend", () => {
@@ -8147,10 +8150,14 @@
       if (!card && !group) return;
       event.preventDefault();
       try { event.dataTransfer.dropEffect = "move"; } catch (error) {}
-      document.querySelectorAll("#stockTable .drag-over").forEach((el) => el.classList.remove("drag-over"));
+      document.querySelectorAll("#stockTable .insert-before, #stockTable .insert-after").forEach((el) => el.classList.remove("insert-before", "insert-after"));
       document.querySelectorAll("#stockTable .drop-target").forEach((el) => el.classList.remove("drop-target"));
-      if (card && card.dataset.cardId !== draggedStockCardId) card.classList.add("drag-over");
-      else if (group) group.classList.add("drop-target");
+      if (card && card.dataset.cardId !== draggedStockCardId) {
+        const rect = card.getBoundingClientRect();
+        card.classList.add(event.clientX > rect.left + rect.width / 2 ? "insert-after" : "insert-before");
+      } else if (group) {
+        group.classList.add("drop-target");
+      }
     });
     $("stockTable").addEventListener("drop", (event) => {
       const id = draggedStockCardId || (event.dataTransfer && event.dataTransfer.getData("text/plain"));
@@ -8168,9 +8175,12 @@
       if (card && card.dataset.cardId !== id) {
         const target = state.materials.find((m) => m.id === card.dataset.cardId);
         if (target) {
+          const rect = card.getBoundingClientRect();
+          const after = event.clientX > rect.left + rect.width / 2;
           const fromIdx = state.materials.indexOf(dragged);
           if (fromIdx >= 0) state.materials.splice(fromIdx, 1);
-          const toIdx = state.materials.indexOf(target);
+          let toIdx = state.materials.indexOf(target);
+          if (after) toIdx += 1;
           state.materials.splice(toIdx, 0, dragged);
           changed = true;
         }
