@@ -1,6 +1,18 @@
 import { LockKeyhole, Mail, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { PendingSubmitButton } from "@/components/pending-submit";
+import { signInWithOAuth } from "@/app/login/actions";
 import { createAccount, resendConfirmationEmail } from "./actions";
+
+function GoogleMark() {
+  return (
+    <svg aria-hidden="true" className="h-5 w-5 shrink-0" viewBox="0 0 24 24">
+      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+      <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+      <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+    </svg>
+  );
+}
 
 type LoginLanguage = "th" | "en" | "zh" | "ja" | "ko";
 
@@ -17,6 +29,9 @@ const signupCopy = {
     pendingCta: "กำลังสมัคร...",
     alreadyHaveAccount: "มีบัญชีอยู่แล้ว?",
     signIn: "เข้าสู่ระบบ",
+    google: "สมัครด้วย Google",
+    googlePending: "กำลังเชื่อมต่อกับ Google...",
+    divider: "หรือ",
     securityNote: "ข้อมูลของคุณได้รับการเข้ารหัสและจัดเก็บอย่างปลอดภัย",
     noticeTitle: "ตรวจสอบอีเมลของคุณ",
     noticeBody: "เราส่งลิงก์ยืนยันบัญชีไปที่อีเมลของคุณแล้ว กรุณากดยืนยันในอีเมลก่อนเข้าสู่ระบบ",
@@ -37,6 +52,9 @@ const signupCopy = {
     pendingCta: "Creating account...",
     alreadyHaveAccount: "Already have an account?",
     signIn: "Sign in",
+    google: "Sign up with Google",
+    googlePending: "Connecting to Google...",
+    divider: "or",
     securityNote: "Your data is encrypted and stored securely.",
     noticeTitle: "Check your email",
     noticeBody: "We sent a confirmation link to your email. Please confirm your account before signing in.",
@@ -57,6 +75,9 @@ const signupCopy = {
     pendingCta: "正在创建账号...",
     alreadyHaveAccount: "已有账号？",
     signIn: "登录",
+    google: "使用 Google 注册",
+    googlePending: "正在连接 Google...",
+    divider: "或",
     securityNote: "你的数据会被加密并安全存储。",
     noticeTitle: "请查看你的邮箱",
     noticeBody: "我们已向你的邮箱发送确认链接。请先确认账号再登录。",
@@ -77,6 +98,9 @@ const signupCopy = {
     pendingCta: "登録中...",
     alreadyHaveAccount: "すでにアカウントをお持ちですか？",
     signIn: "ログイン",
+    google: "Googleで登録",
+    googlePending: "Googleに接続中...",
+    divider: "または",
     securityNote: "データは暗号化され、安全に保存されます。",
     noticeTitle: "メールを確認してください",
     noticeBody: "確認リンクをメールで送信しました。ログインする前にアカウントを確認してください。",
@@ -97,6 +121,9 @@ const signupCopy = {
     pendingCta: "가입 중...",
     alreadyHaveAccount: "이미 계정이 있나요?",
     signIn: "로그인",
+    google: "Google로 가입",
+    googlePending: "Google에 연결 중...",
+    divider: "또는",
     securityNote: "데이터는 암호화되어 안전하게 저장됩니다.",
     noticeTitle: "이메일을 확인해 주세요",
     noticeBody: "확인 링크를 이메일로 보냈습니다. 로그인하기 전에 계정을 확인해 주세요.",
@@ -117,6 +144,9 @@ const signupCopy = {
   pendingCta: string;
   alreadyHaveAccount: string;
   signIn: string;
+  google: string;
+  googlePending: string;
+  divider: string;
   securityNote: string;
   noticeTitle: string;
   noticeBody: string;
@@ -240,6 +270,23 @@ export default async function SignupPage({
               icon={<UserPlus className="h-4 w-4" />}
               idleText={copy.primaryCta}
               pendingText={copy.pendingCta}
+            />
+          </form>
+
+          <div className="my-3 flex items-center gap-3 text-sm font-semibold text-slate-400">
+            <span className="h-px flex-1 bg-slate-200" />
+            {copy.divider}
+            <span className="h-px flex-1 bg-slate-200" />
+          </div>
+
+          <form action={signInWithOAuth}>
+            <input name="lang" type="hidden" value={currentLanguage} />
+            <input name="provider" type="hidden" value="google" />
+            <PendingSubmitButton
+              className="flex h-10 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-base font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70"
+              icon={<GoogleMark />}
+              idleText={copy.google}
+              pendingText={copy.googlePending}
             />
           </form>
 
