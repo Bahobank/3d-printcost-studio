@@ -18,7 +18,7 @@ export function LegacyDashboardShell({ profile }: { profile: UserProfile }) {
           <iframe
             className="block h-screen w-full border-0 bg-white"
             id="legacy-dashboard-frame"
-            src={`/legacy/index.html?lang=th&user=${encodeURIComponent(profile.user_id)}`}
+            src={`/legacy/index.html?user=${encodeURIComponent(profile.user_id)}`}
             title="3D PrintCost Studio"
           />
         </>
