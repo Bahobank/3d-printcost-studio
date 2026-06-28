@@ -510,8 +510,11 @@
     .stock-view-btn .icon { width: 18px; height: 18px; }
     .stock-view-btn:hover { background: var(--soft); }
     .stock-view-btn.active { background: var(--ink); color: var(--panel); }
-    .stock-group { margin-bottom: 18px; }
-    .stock-group-head { display: flex; align-items: center; gap: 8px; margin: 2px 0 10px; }
+    .stock-group { margin-bottom: 22px; }
+    .stock-group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 16px 0 12px; padding: 10px 16px; background: var(--soft); border-radius: 10px; border-left: 5px solid var(--accent, var(--teal)); box-shadow: 0 4px 12px rgba(15,23,42,.04); }
+    .stock-group:first-child .stock-group-head { margin-top: 0; }
+    .stock-group-name { font-size: 15px; font-weight: 900; letter-spacing: .01em; color: var(--ink); }
+    .stock-group-head .hint { font-weight: 800; white-space: nowrap; }
     .stock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
     .stock-card { border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 12px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 18px rgba(15,23,42,.05); }
     .stock-card-head { display: flex; align-items: flex-start; gap: 10px; }
@@ -6706,7 +6709,7 @@
       });
       return Array.from(groups.entries()).map(([type, items]) => `
         <div class="stock-group">
-          <div class="stock-group-head"><span class="pill">${escapeHtml(type)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
+          <div class="stock-group-head"><span class="stock-group-name">${escapeHtml(type)}</span><span class="hint">${items.length} ${dt("itemUnit")}</span></div>
           <div class="stock-grid">${items.map(stockCardHtml).join("")}</div>
         </div>`).join("");
     }
