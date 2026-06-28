@@ -144,7 +144,7 @@ export async function POST(request: Request) {
         metadata,
       },
       success_url: `${appUrl()}/billing?checkout=wallet-topup-success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl()}/billing?checkout=wallet-topup-cancelled`,
+      cancel_url: `${appUrl()}/pricing?lang=${language}&checkout=cancelled`,
     };
 
     const session = await stripe.checkout.sessions.create(sessionParams);
