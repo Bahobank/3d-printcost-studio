@@ -4325,7 +4325,17 @@
     let cloudSyncTimer = null;
     let cloudSyncInFlight = false;
 
+    function stateHasData() {
+      return Boolean((state.jobs && state.jobs.length) || (state.materials && state.materials.length) || (state.orders && state.orders.length));
+    }
+
+    function cloudStateHasData(cloud) {
+      return Boolean(cloud && ((cloud.jobs && cloud.jobs.length) || (cloud.materials && cloud.materials.length) || (cloud.orders && cloud.orders.length)));
+    }
+
     function uploadCloudState() {
+      // Safety: never overwrite the cloud copy with an empty state.
+      if (!stateHasData()) return;
       if (cloudSyncInFlight) { scheduleCloudUpload(); return; }
       cloudSyncInFlight = true;
       fetch("/api/app-state", {
@@ -4341,8 +4351,10 @@
       cloudSyncTimer = setTimeout(uploadCloudState, 1500);
     }
 
-    function stateHasData() {
-      return Boolean((state.jobs && state.jobs.length) || (state.materials && state.materials.length) || (state.orders && state.orders.length) || Date.parse(state.updatedAt || 0));
+    function adoptCloudState(cloud) {
+      state = normalizeState(cloud);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      render();
     }
 
     async function initCloudSync() {
@@ -4353,23 +4365,23 @@
         if (response.ok) {
           const payload = await response.json();
           const cloud = payload && payload.data;
-          if (cloud && typeof cloud === "object") {
-            const cloudTime = Date.parse(cloud.updatedAt || 0) || 0;
-            const localTime = Date.parse(state.updatedAt || 0) || 0;
-            if (cloudTime > localTime) {
-              // Cloud copy is newer (e.g. fresh device / another machine) — adopt it.
-              state = normalizeState(cloud);
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-              render();
-            } else if (localTime > cloudTime && stateHasData()) {
-              cloudSyncReady = true;
-              uploadCloudState();
-            }
-          } else if (stateHasData()) {
-            // No cloud copy yet — seed it from this device.
+          const cloudHasData = cloudStateHasData(cloud);
+          const localHasData = stateHasData();
+          const cloudTime = Date.parse((cloud && cloud.updatedAt) || 0) || 0;
+          const localTime = Date.parse(state.updatedAt || 0) || 0;
+
+          if (cloudHasData && !localHasData) {
+            // Fresh device / empty local → restore everything from the cloud.
+            adoptCloudState(cloud);
+          } else if (cloudHasData && localHasData && localTime > 0 && cloudTime > localTime) {
+            // Both have data and are timestamped; cloud is strictly newer → take cloud.
+            adoptCloudState(cloud);
+          } else if (localHasData) {
+            // Local has data — NEVER let an empty/older cloud wipe it. Push local up.
             cloudSyncReady = true;
             uploadCloudState();
           }
+          // else: neither side has data → nothing to do.
         }
       } catch (error) {}
       cloudSyncReady = true;
