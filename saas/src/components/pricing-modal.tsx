@@ -3,11 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
 import { getPlanAmount } from "@/lib/billing-plans";
+import { SubscriptionCenter } from "@/components/subscription-center";
 import type { UserProfile } from "@/lib/subscription";
 
 type BillingCycle = "monthly" | "yearly";
 type PlanKey = "maker" | "studio";
-type PricingLanguage = "th" | "en" | "zh" | "ja" | "ko";
+export type PricingLanguage = "th" | "en" | "zh" | "ja" | "ko";
 
 type PricingDialogProps = {
   expired?: boolean;
@@ -17,7 +18,6 @@ type PricingDialogProps = {
   open: boolean;
   currentPlan?: PlanKey | null;
   currentCycle?: BillingCycle | null;
-  canCancel?: boolean;
 };
 
 type TrialSubscriptionControlProps = {
@@ -1030,53 +1030,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
   );
 }
 
-function CancelPlanControl({ copy }: { copy: PricingCopy }) {
-  const [state, setState] = useState<"idle" | "confirm" | "loading" | "done" | "error">("idle");
-
-  async function cancel() {
-    setState("loading");
-    try {
-      const response = await fetch("/api/stripe/cancel", { method: "POST" });
-      if (!response.ok) throw new Error();
-      setState("done");
-    } catch {
-      setState("error");
-    }
-  }
-
-  if (state === "done") {
-    return (
-      <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-center text-sm font-black text-emerald-700">
-        {copy.cancelSuccess}
-      </div>
-    );
-  }
-
-  return (
-    <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center">
-      {state === "confirm" || state === "loading" ? (
-        <>
-          <p className="text-sm font-bold text-slate-600">{copy.cancelConfirmText}</p>
-          <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-            <button className="h-10 rounded-xl border border-rose-200 bg-white px-4 text-sm font-black text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-60" disabled={state === "loading"} onClick={cancel} type="button">
-              {copy.cancelPlan}
-            </button>
-            <button className="h-10 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60" disabled={state === "loading"} onClick={() => setState("idle")} type="button">
-              {copy.keepPlan}
-            </button>
-          </div>
-        </>
-      ) : (
-        <button className="text-sm font-black text-slate-500 underline-offset-2 transition hover:text-rose-600 hover:underline" onClick={() => setState("confirm")} type="button">
-          {copy.cancelPlan}
-        </button>
-      )}
-      {state === "error" ? <p className="mt-2 text-xs font-black text-rose-600">{copy.cancelError}</p> : null}
-    </div>
-  );
-}
-
-export function PricingDialog({ canCancel = false, currentCycle = null, currentPlan = null, expired = false, language = defaultLanguage, locked = false, onClose, open }: PricingDialogProps) {
+export function PricingDialog({ currentCycle = null, currentPlan = null, expired = false, language = defaultLanguage, locked = false, onClose, open }: PricingDialogProps) {
   const copy = pricingCopy[language];
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(currentCycle ?? "yearly");
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
@@ -1137,8 +1091,6 @@ export function PricingDialog({ canCancel = false, currentCycle = null, currentP
               <PlanCard billingCycle={billingCycle} copy={copy} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
             </div>
 
-            {canCancel ? <CancelPlanControl copy={copy} /> : null}
-
             <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm font-bold leading-6 text-slate-500">{copy.footer}</div>
           </>
         )}
@@ -1153,8 +1105,8 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
   const isActive = status === "active";
   const currentPlan: PlanKey | null = isActive && (profile.subscription_plan === "maker" || profile.subscription_plan === "studio") ? profile.subscription_plan : null;
   const currentCycle: BillingCycle | null = isActive && (profile.billing_cycle === "monthly" || profile.billing_cycle === "yearly") ? profile.billing_cycle : null;
-  const canCancel = isActive && Boolean(profile.stripe_subscription_id);
-  const [open, setOpen] = useState(false);
+  const [pricingOpen, setPricingOpen] = useState(false);
+  const [centerOpen, setCenterOpen] = useState(false);
   const [language, setLanguage] = useState<PricingLanguage>(defaultLanguage);
   const copy = pricingCopy[language];
 
@@ -1180,10 +1132,10 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
 
   useEffect(() => {
     if (expired) {
-      setOpen(true);
+      setPricingOpen(true);
       return;
     }
-    setOpen(false);
+    setPricingOpen(false);
   }, [expired]);
 
   useEffect(() => {
@@ -1191,9 +1143,15 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
 
     function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== "printcost:open-pricing") return;
-      setLanguage(normalizePricingLanguage(event.data?.language));
-      setOpen(true);
+      if (event.data?.type === "printcost:open-account") {
+        setLanguage(normalizePricingLanguage(event.data?.language));
+        setCenterOpen(true);
+        return;
+      }
+      if (event.data?.type === "printcost:open-pricing") {
+        setLanguage(normalizePricingLanguage(event.data?.language));
+        setPricingOpen(true);
+      }
     }
 
     window.addEventListener("message", handleMessage);
@@ -1212,7 +1170,7 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
       {!hideTrigger && status === "trialing" && daysLeft === 1 && canUseApp ? (
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950">
           <span className="text-sm font-black">{copy.trialOneDayText}</span>
-          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-black text-white hover:bg-amber-700" onClick={() => setOpen(true)} type="button">
+          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-black text-white hover:bg-amber-700" onClick={() => setPricingOpen(true)} type="button">
             {copy.trialOneDayCta}
           </button>
         </div>
@@ -1221,14 +1179,15 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
       {!hideTrigger ? (
         <div className="mb-4 flex justify-end">
           {badgeText ? (
-            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50" onClick={() => setOpen(true)} type="button">
+            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50" onClick={() => setCenterOpen(true)} type="button">
               {badgeText}
             </button>
           ) : null}
         </div>
       ) : null}
 
-      <PricingDialog canCancel={canCancel} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} locked={expired} onClose={() => setOpen(false)} open={open} />
+      <SubscriptionCenter language={language} onChangePlan={() => { setCenterOpen(false); setPricingOpen(true); }} onClose={() => setCenterOpen(false)} open={centerOpen} />
+      <PricingDialog currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} locked={expired} onClose={() => setPricingOpen(false)} open={pricingOpen} />
     </>
   );
 }

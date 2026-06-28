@@ -9019,7 +9019,7 @@
     $("feedbackBtn").addEventListener("click", openFeedbackModal);
     $("packagesBtn")?.addEventListener("click", () => {
       document.getElementById("profileMenu")?.classList.remove("open");
-      try { window.parent?.postMessage({ type: "printcost:open-pricing", language: lang() }, window.location.origin); } catch (error) {}
+      try { window.parent?.postMessage({ type: "printcost:open-account", language: lang() }, window.location.origin); } catch (error) {}
     });
     $("feedbackClose").addEventListener("click", closeFeedbackModal);
     $("feedbackModal").addEventListener("click", (event) => {
@@ -9106,11 +9106,11 @@
       if (!badge) return;
 
       const trialLabels = {
-        th: { left: (days) => "ทดลองใช้ฟรี เหลืออีก " + days + " วัน", expired: "ทดลองใช้ฟรีครบ 7 วันแล้ว", plan: (name) => "แพ็กเกจ " + name },
-        en: { left: (days) => "Free trial: " + days + " days left", expired: "Free trial ended", plan: (name) => name + " plan" },
-        zh: { left: (days) => "免费试用，还剩 " + days + " 天", expired: "免费试用已结束", plan: (name) => name + " 套餐" },
-        ja: { left: (days) => "無料トライアル 残り" + days + "日", expired: "無料トライアルは終了しました", plan: (name) => name + " プラン" },
-        ko: { left: (days) => "무료 체험 " + days + "일 남음", expired: "무료 체험이 종료되었습니다", plan: (name) => name + " 요금제" }
+        th: { trial: "ทดลองใช้ฟรี", renew: "ต่ออายุแพ็กเกจ" },
+        en: { trial: "Free trial", renew: "Renew plan" },
+        zh: { trial: "免费试用", renew: "续订方案" },
+        ja: { trial: "無料トライアル", renew: "プランを更新" },
+        ko: { trial: "무료 체험", renew: "요금제 갱신" }
       };
       let latestTrialData = { canUseApp: true, daysLeft: 0, status: "trialing", plan: "" };
 
@@ -9123,13 +9123,16 @@
       function updateBadge(data = {}) {
         latestTrialData = { ...latestTrialData, ...data };
         const status = latestTrialData.status || "trialing";
-        const daysLeft = Number(latestTrialData.daysLeft || 0);
         const canUseApp = latestTrialData.canUseApp !== false;
         const copy = trialLabels[currentTrialLang()] || trialLabels.en;
         if (status === "active") {
           const planKey = String(latestTrialData.plan || "").toLowerCase();
-          const planName = planKey === "studio" ? "Studio" : "Maker";
-          badge.textContent = copy.plan(planName);
+          badge.textContent = planKey === "studio" ? "Studio" : "Maker";
+          badge.hidden = false;
+          return;
+        }
+        if (status === "past_due") {
+          badge.textContent = copy.renew;
           badge.hidden = false;
           return;
         }
@@ -9137,12 +9140,12 @@
           badge.hidden = true;
           return;
         }
-        badge.textContent = daysLeft > 0 ? copy.left(daysLeft) : copy.expired;
+        badge.textContent = copy.trial;
         badge.hidden = false;
       }
 
       badge.addEventListener("click", () => {
-        window.parent?.postMessage({ type: "printcost:open-pricing", language: currentTrialLang() }, window.location.origin);
+        window.parent?.postMessage({ type: "printcost:open-account", language: currentTrialLang() }, window.location.origin);
       });
       document.addEventListener("change", (event) => {
         if (event.target && event.target.id === "languageSelect") setTimeout(() => updateBadge(), 0);
