@@ -6468,7 +6468,7 @@
           <div class="chart-plot-shell">
             <div class="chart-scroll" id="dashboardChartScroll">
               <div class="chart-canvas" style="width:${canvasWidth}; min-width:100%">
-                <svg class="profit-chart" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escapeHtml(t("profitOverview"))}">
+                <svg class="profit-chart" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMinYMid meet" role="img" aria-label="${escapeHtml(t("profitOverview"))}">
                   <g stroke="var(--line)" stroke-width="1">
                     ${yTicks.map((tick) => `<path d="M${padL} ${yFor(tick).toFixed(1)}H${width - padR}"/>`).join("")}
                   </g>
