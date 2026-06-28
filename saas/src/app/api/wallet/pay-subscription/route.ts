@@ -98,5 +98,5 @@ export async function POST(request: Request) {
       .eq("id", promo.code.id);
   }
 
-  return NextResponse.redirect(new URL("/billing?checkout=success&paymentMode=wallet", request.url), 303);
+  return NextResponse.redirect(new URL("/dashboard?checkout=success&paymentMode=wallet", request.url), 303);
 }

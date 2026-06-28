@@ -169,7 +169,7 @@ export async function POST(request: Request) {
       userId: userData.user.id,
     });
 
-    return NextResponse.redirect(new URL("/billing?checkout=access-success", request.url), 303);
+    return NextResponse.redirect(new URL("/dashboard?checkout=access-success", request.url), 303);
   }
 
   const finalAmount = promo?.valid ? promo.finalAmount : amount;
@@ -238,7 +238,7 @@ export async function POST(request: Request) {
             user_id: userData.user.id,
           },
         },
-        success_url: `${appUrl()}/billing?checkout=success&paymentMode=promptpay_period&session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${appUrl()}/dashboard?checkout=success&paymentMode=promptpay_period&session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${appUrl()}/pricing?lang=${language}&checkout=cancelled`,
       });
 
@@ -267,7 +267,7 @@ export async function POST(request: Request) {
       promo_code_id: promo?.valid ? promo.code.id : "",
       user_id: userData.user.id,
     },
-    success_url: `${appUrl()}/billing?checkout=success&paymentMode=subscription&session_id={CHECKOUT_SESSION_ID}`,
+    success_url: `${appUrl()}/dashboard?checkout=success&paymentMode=subscription&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl()}/pricing?lang=${language}&checkout=cancelled`,
     subscription_data: {
       metadata: {

@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { CheckoutSuccessPopup } from "@/components/checkout-success-popup";
 import { LegacyDashboardShell } from "@/components/legacy-dashboard-shell";
 import { localDevAuthEnabled } from "@/lib/auth-config";
 import { getSessionAndProfile } from "@/lib/subscription";
@@ -20,5 +22,12 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         }
       : profile;
 
-  return <LegacyDashboardShell profile={previewProfile} />;
+  return (
+    <>
+      <Suspense fallback={null}>
+        <CheckoutSuccessPopup />
+      </Suspense>
+      <LegacyDashboardShell profile={previewProfile} />
+    </>
+  );
 }
