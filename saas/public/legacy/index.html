@@ -6430,8 +6430,10 @@
       const min = Math.min(...values);
       const max = Math.max(...values);
       const range = Math.max(1, max - min);
-      const width = Math.round(820 * zoom);
-      const canvasWidth = `${Math.round(zoom * 100)}%`;
+      const containerWidth = $("dashboardChart")?.clientWidth || 0;
+      const plotBase = containerWidth > 120 ? containerWidth - 92 : 820;
+      const width = Math.round(plotBase * zoom);
+      const canvasWidth = `${width}px`;
       const height = 260;
       const padL = 0;
       const padR = 10;
