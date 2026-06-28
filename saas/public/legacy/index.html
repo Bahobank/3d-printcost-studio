@@ -4306,14 +4306,75 @@
     }
     function persist(options = {}) {
       try {
+        state.updatedAt = new Date().toISOString();
         localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         if (!options.skipRender) render();
+        scheduleCloudUpload();
         return true;
       } catch (error) {
         showToast(t("saveFailedStorage"));
         return false;
       }
     }
+
+    // ===== Cloud sync: keep the whole app state in Supabase, keyed to the account =====
+    // Switching devices on the same login restores everything. Images stay local
+    // (IndexedDB) and are not part of this blob.
+    let cloudSyncReady = false;
+    let cloudSyncInit = false;
+    let cloudSyncTimer = null;
+    let cloudSyncInFlight = false;
+
+    function uploadCloudState() {
+      if (cloudSyncInFlight) { scheduleCloudUpload(); return; }
+      cloudSyncInFlight = true;
+      fetch("/api/app-state", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: state, deviceUpdatedAt: state.updatedAt || null })
+      }).catch(() => {}).finally(() => { cloudSyncInFlight = false; });
+    }
+
+    function scheduleCloudUpload() {
+      if (!cloudSyncReady) return;
+      if (cloudSyncTimer) clearTimeout(cloudSyncTimer);
+      cloudSyncTimer = setTimeout(uploadCloudState, 1500);
+    }
+
+    function stateHasData() {
+      return Boolean((state.jobs && state.jobs.length) || (state.materials && state.materials.length) || (state.orders && state.orders.length) || Date.parse(state.updatedAt || 0));
+    }
+
+    async function initCloudSync() {
+      if (cloudSyncInit) return;
+      cloudSyncInit = true;
+      try {
+        const response = await fetch("/api/app-state", { cache: "no-store" });
+        if (response.ok) {
+          const payload = await response.json();
+          const cloud = payload && payload.data;
+          if (cloud && typeof cloud === "object") {
+            const cloudTime = Date.parse(cloud.updatedAt || 0) || 0;
+            const localTime = Date.parse(state.updatedAt || 0) || 0;
+            if (cloudTime > localTime) {
+              // Cloud copy is newer (e.g. fresh device / another machine) — adopt it.
+              state = normalizeState(cloud);
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+              render();
+            } else if (localTime > cloudTime && stateHasData()) {
+              cloudSyncReady = true;
+              uploadCloudState();
+            }
+          } else if (stateHasData()) {
+            // No cloud copy yet — seed it from this device.
+            cloudSyncReady = true;
+            uploadCloudState();
+          }
+        }
+      } catch (error) {}
+      cloudSyncReady = true;
+    }
+    window.__pcInitCloudSync = initCloudSync;
 
     let anonymousInsightsTimer = null;
     function incrementBucket(map, key, amount = 1) {
@@ -9403,6 +9464,7 @@
         const switched = switchStorageIdentity(storageIdentityFromProfile(incomingProfile));
         mergeIncomingProfile(incomingProfile);
         if (switched && typeof showToast === "function") showToast(t("accountDataSwitched"));
+        if (typeof window.__pcInitCloudSync === "function") window.__pcInitCloudSync();
       });
 
       const editModal = document.getElementById("profileEditModal");
