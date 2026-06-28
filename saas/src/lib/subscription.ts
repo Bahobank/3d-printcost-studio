@@ -155,10 +155,29 @@ export async function getSessionAndProfile() {
     console.error("[profile] Unable to load user profile, using authenticated fallback profile", error);
   }
 
-  return {
-    user: userData.user,
-    profile: profile ? normalizeTrialStatus(profile as UserProfile) : fallbackProfileFromUser(userData.user),
+  if (!profile) {
+    return { user: userData.user, profile: fallbackProfileFromUser(userData.user) };
+  }
+
+  // Rows created by the Stripe webhook only carry subscription fields, so email /
+  // display_name can be null. The authenticated session is the source of truth for
+  // identity — backfill it so the app never falls back to the "dev@" placeholder.
+  const user = userData.user;
+  const merged = {
+    ...(profile as UserProfile),
+    email: stringMeta((profile as UserProfile).email) ?? user.email ?? null,
+    display_name:
+      stringMeta((profile as UserProfile).display_name) ??
+      stringMeta(user.user_metadata?.full_name) ??
+      stringMeta(user.user_metadata?.name) ??
+      user.email?.split("@")[0] ??
+      null,
+    avatar_url: stringMeta((profile as UserProfile).avatar_url) ?? stringMeta(user.user_metadata?.avatar_url),
+    auth_provider:
+      stringMeta((profile as UserProfile).auth_provider) ?? stringMeta(user.app_metadata?.provider) ?? "email",
   };
+
+  return { user, profile: normalizeTrialStatus(merged as UserProfile) };
 }
 
 export async function requireAppAccess() {
