@@ -529,8 +529,8 @@
     .status-ok { background: #e4f3eb; color: var(--green); }
     .status-internal { background: #e9eef8; color: #48618f; }
     .status-failed { background: #feecec; color: var(--red); }
-    .profit-positive { color: var(--green); font-weight: 900; }
-    .profit-negative { color: var(--red); font-weight: 900; }
+    .profit-positive { color: #16a34a; font-weight: 900; }
+    .profit-negative { color: #dc2626; font-weight: 900; }
     .history-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
     .history-controls .field { width: auto; min-width: 150px; }
     .history-options-btn { width: 38px; height: 38px; min-width: 38px; border-radius: 50%; border: 1px solid var(--line); background: var(--control); color: var(--ink); display: inline-grid; place-items: center; font-size: 22px; font-weight: 900; line-height: 1; cursor: pointer; }
@@ -681,8 +681,8 @@
       .onboarding-consent-actions { justify-content: stretch; }
       .onboarding-consent-actions button { flex: 1 1 100%; }
     }
-    .order-profit-positive { color: var(--green); }
-    .order-profit-negative { color: var(--red); }
+    .order-profit-positive { color: #16a34a; }
+    .order-profit-negative { color: #dc2626; }
     .order-table { min-width: 0; table-layout: fixed; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
     .order-table th { text-align: center; white-space: normal; word-break: normal; overflow-wrap: normal; line-height: 1.25; }
     .order-table th, .order-table td { border-right: 1px solid var(--line); vertical-align: middle; padding: 10px 12px; overflow: hidden; }
@@ -1589,13 +1589,6 @@
       color: color-mix(in srgb, var(--pastel-mint) 10%, var(--ink) 90%) !important;
       -webkit-text-fill-color: color-mix(in srgb, var(--pastel-mint) 10%, var(--ink) 90%) !important;
     }
-    :root[data-theme="pastel"] .profit-positive,
-    :root[data-theme="pastel"] .order-profit-positive {
-      color: #15803d !important;
-      -webkit-text-fill-color: #15803d !important;
-    }
-    :root[data-theme="pastel"] .profit-negative,
-    :root[data-theme="pastel"] .order-profit-negative,
     :root[data-theme="pastel"] .stock-remaining.danger,
     :root[data-theme="pastel"] .status-failed,
     :root[data-theme="pastel"] .low {
@@ -3496,6 +3489,11 @@
     Object.assign(i18n.zh, { copyJob: "复制", jobCopied: "已复制到新的工作表单" });
     Object.assign(i18n.ja, { copyJob: "コピー", jobCopied: "新規作業フォームにコピーしました" });
     Object.assign(i18n.ko, { copyJob: "복사", jobCopied: "새 작업 양식으로 복사됨" });
+    Object.assign(i18n.th, { stockCopied: "คัดลอกวัสดุแล้ว" });
+    Object.assign(i18n.en, { stockCopied: "Material copied" });
+    Object.assign(i18n.zh, { stockCopied: "已复制材料" });
+    Object.assign(i18n.ja, { stockCopied: "材料をコピーしました" });
+    Object.assign(i18n.ko, { stockCopied: "재료를 복사했습니다" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -6608,7 +6606,7 @@
             <td>${stockRemainingHtml(remaining)}<br><span class="hint">${pct}% ${dt("ofPackage")}</span></td>
             <td>${money.format(num(item.packagePrice) + num(item.shippingCost))}</td>
             <td>${money.format(materialCostPerUnit(item))}</td>
-            <td><details class="history-row-menu stock-row-menu"><summary aria-label="${escapeHtml(t("manage"))}" title="${escapeHtml(t("manage"))}">&#9776;</summary><div class="history-row-menu-panel"><button class="btn-ghost" data-edit="${item.id}">${dt("editMaterial")}</button><button class="btn-ghost" data-delete="${item.id}">${t("delete")}</button></div></details></td>
+            <td><details class="history-row-menu stock-row-menu"><summary aria-label="${escapeHtml(t("manage"))}" title="${escapeHtml(t("manage"))}">&#9776;</summary><div class="history-row-menu-panel"><button class="btn-ghost" data-copy="${item.id}">${t("copyJob")}</button><button class="btn-ghost" data-edit="${item.id}">${dt("editMaterial")}</button><button class="btn-ghost" data-delete="${item.id}">${t("delete")}</button></div></details></td>
           </tr>`;
         }).join("")}</tbody></table>`;
     }
@@ -7500,6 +7498,15 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
+    function copyMaterial(id) {
+      const index = state.materials.findIndex((item) => item.id === id);
+      if (index < 0) return;
+      const clone = { ...state.materials[index], id: crypto.randomUUID() };
+      state.materials.splice(index + 1, 0, clone);
+      persist();
+      queueAnonymousInsights("stock-create");
+      showToast(t("stockCopied"));
+    }
     function editMaterial(id) {
       const item = state.materials.find((m) => m.id === id);
       if (!item) return;
@@ -7852,8 +7859,10 @@
     });
 
     $("stockTable").addEventListener("click", (event) => {
+      const copyBtn = event.target.closest("[data-copy]");
       const editBtn = event.target.closest("[data-edit]");
       const deleteBtn = event.target.closest("[data-delete]");
+      if (copyBtn) copyMaterial(copyBtn.dataset.copy);
       if (editBtn) editMaterial(editBtn.dataset.edit);
       if (deleteBtn && confirm("ลบวัสดุรายการนี้?")) {
         state.materials = state.materials.filter((item) => item.id !== deleteBtn.dataset.delete);
