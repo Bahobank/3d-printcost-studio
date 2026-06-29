@@ -9254,6 +9254,29 @@
       queueAnonymousInsights(editingOrderId ? "order-update" : "order-create");
       showToast(editingOrderId ? orderText("orderUpdated") : orderText("orderSaved"));
     });
+    // The order row's manage menu sits inside overflow:hidden cards, so its dropdown
+    // panel gets clipped/invisible. Float it with fixed positioning while open.
+    $("ordersList").addEventListener("toggle", (event) => {
+      const det = event.target;
+      if (!det || !det.classList || !det.classList.contains("order-row-menu")) return;
+      const panel = det.querySelector(".history-row-menu-panel");
+      if (!panel) return;
+      if (det.open) {
+        document.querySelectorAll("#ordersList details.order-row-menu[open]").forEach((other) => { if (other !== det) other.open = false; });
+        const rect = det.querySelector("summary").getBoundingClientRect();
+        panel.style.position = "fixed";
+        panel.style.top = (rect.bottom + 6) + "px";
+        panel.style.left = "auto";
+        panel.style.right = Math.max(8, window.innerWidth - rect.right) + "px";
+        panel.style.zIndex = "9999";
+      } else {
+        panel.style.position = panel.style.top = panel.style.left = panel.style.right = panel.style.zIndex = "";
+      }
+    }, true);
+    document.addEventListener("click", (event) => {
+      if (event.target.closest("#ordersList details.order-row-menu")) return;
+      document.querySelectorAll("#ordersList details.order-row-menu[open]").forEach((det) => { det.open = false; });
+    });
     $("ordersList").addEventListener("click", (event) => {
       const detailToggle = event.target.closest("[data-toggle-order-detail]");
       if (detailToggle) {
