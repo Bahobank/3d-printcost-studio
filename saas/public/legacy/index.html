@@ -3643,11 +3643,11 @@
     Object.assign(i18n.zh, { renameTone: "重命名颜色分组" });
     Object.assign(i18n.ja, { renameTone: "色グループ名を変更" });
     Object.assign(i18n.ko, { renameTone: "색상 그룹 이름 변경" });
-    Object.assign(i18n.th, { feedback: "ติดต่อทีมงาน", export: "สำรองข้อมูล", import: "กู้คืนข้อมูล", packages: "แพ็กเกจและการชำระเงิน", currencyTitle: "สกุลเงิน" });
-    Object.assign(i18n.en, { feedback: "Contact us", export: "Back up data", import: "Restore data", packages: "Plan & billing", currencyTitle: "Currency" });
-    Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单", currencyTitle: "货币" });
-    Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求", currencyTitle: "通貨" });
-    Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제", currencyTitle: "통화" });
+    Object.assign(i18n.th, { feedback: "ติดต่อทีมงาน", export: "สำรองข้อมูล", import: "กู้คืนข้อมูล", packages: "แพ็กเกจและการชำระเงิน", currencyTitle: "สกุลเงิน", importWrongAccount: "ไฟล์สำรองนี้เป็นของบัญชีอื่น จึงกู้คืนไม่ได้ — กู้คืนได้เฉพาะไฟล์ของบัญชีนี้เท่านั้น" });
+    Object.assign(i18n.en, { feedback: "Contact us", export: "Back up data", import: "Restore data", packages: "Plan & billing", currencyTitle: "Currency", importWrongAccount: "This backup belongs to a different account, so it can't be restored — you can only restore backups from this account." });
+    Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单", currencyTitle: "货币", importWrongAccount: "此备份属于其他账号，无法恢复——只能恢复本账号的备份。" });
+    Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求", currencyTitle: "通貨", importWrongAccount: "このバックアップは別のアカウントのものです。復元できません — このアカウントのバックアップのみ復元できます。" });
+    Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제", currencyTitle: "통화", importWrongAccount: "이 백업은 다른 계정의 것이므로 복원할 수 없습니다 — 이 계정의 백업만 복원할 수 있습니다." });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -9247,6 +9247,13 @@
     $("feedbackSend").addEventListener("click", sendFeedbackRequest);
     $("activateLicenseBtn").addEventListener("click", activateLicense);
 
+    function backupAccountEmail() {
+      try {
+        const raw = localStorage.getItem("printCostUserProfile");
+        const profile = raw ? JSON.parse(raw) : null;
+        return profile && profile.email ? String(profile.email).trim().toLowerCase() : "";
+      } catch (error) { return ""; }
+    }
     $("exportBtn").addEventListener("click", async () => {
       const exportButton = $("exportBtn");
       exportButton.disabled = true;
@@ -9254,6 +9261,7 @@
         await migrateStoredJobImages();
         const backup = {
           ...state,
+          accountEmail: backupAccountEmail(),
           imageBackupVersion: 1,
           jobImages: await collectJobImagesForExport(),
           orderImages: await collectOrderImagesForExport()
@@ -9277,7 +9285,14 @@
       try {
         const imported = JSON.parse(await file.text());
         if (!imported.settings || !Array.isArray(imported.materials) || !Array.isArray(imported.jobs)) throw new Error("bad format");
-        const { jobImages, orderImages, imageBackupVersion, ...importedState } = imported;
+        // Restore is only allowed within the same account (the backup carries its email).
+        const fileEmail = String(imported.accountEmail || "").trim().toLowerCase();
+        const currentEmail = backupAccountEmail();
+        if (fileEmail && currentEmail && fileEmail !== currentEmail) {
+          showToast(t("importWrongAccount"));
+          return;
+        }
+        const { jobImages, orderImages, imageBackupVersion, accountEmail, ...importedState } = imported;
         const choice = hasExistingImportData() ? await openImportChoiceModal() : "replace";
         if (choice === "append") {
           const remappedImages = mergeImportedData(importedState, { jobImages, orderImages, imageBackupVersion });
@@ -9315,11 +9330,11 @@
       if (!badge) return;
 
       const trialLabels = {
-        th: { trial: "ทดลองใช้ฟรี", renew: "ต่ออายุแพ็กเกจ" },
-        en: { trial: "Free trial", renew: "Renew plan" },
-        zh: { trial: "免费试用", renew: "续订方案" },
-        ja: { trial: "無料トライアル", renew: "プランを更新" },
-        ko: { trial: "무료 체험", renew: "요금제 갱신" }
+        th: { trial: (days) => "ทดลองใช้ฟรี เหลืออีก " + days + " วัน", renew: "ต่ออายุแพ็กเกจ" },
+        en: { trial: (days) => "Free trial: " + days + " days left", renew: "Renew plan" },
+        zh: { trial: (days) => "免费试用 还剩 " + days + " 天", renew: "续订方案" },
+        ja: { trial: (days) => "無料トライアル 残り" + days + "日", renew: "プランを更新" },
+        ko: { trial: (days) => "무료 체험 " + days + "일 남음", renew: "요금제 갱신" }
       };
       let latestTrialData = { canUseApp: true, daysLeft: 0, status: "trialing", plan: "" };
 
@@ -9334,9 +9349,11 @@
         window.__pcPlan = String(latestTrialData.plan || "").toLowerCase();
         if (typeof window.__pcApplyResinLock === "function") window.__pcApplyResinLock();
         const status = latestTrialData.status || "trialing";
+        const daysLeft = Number(latestTrialData.daysLeft || 0);
         const canUseApp = latestTrialData.canUseApp !== false;
         const copy = trialLabels[currentTrialLang()] || trialLabels.en;
         if (status === "active") {
+          // Paid plans show only the plan name — no day count.
           const planKey = String(latestTrialData.plan || "").toLowerCase();
           badge.textContent = planKey === "studio" ? "Studio" : "Maker";
           badge.hidden = false;
@@ -9351,7 +9368,8 @@
           badge.hidden = true;
           return;
         }
-        badge.textContent = copy.trial;
+        // Free trial shows the remaining days.
+        badge.textContent = copy.trial(daysLeft);
         badge.hidden = false;
       }
 
