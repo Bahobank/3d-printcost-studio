@@ -1,6 +1,7 @@
 import { LockKeyhole, Mail, ShieldCheck, Sparkles, UserPlus } from "lucide-react";
 import { PendingSubmitButton } from "@/components/pending-submit";
 import { signInWithOAuth } from "@/app/login/actions";
+import { detectAcceptLanguage } from "@/lib/detect-language";
 import { createAccount, resendConfirmationEmail } from "./actions";
 
 function GoogleMark() {
@@ -166,7 +167,7 @@ export default async function SignupPage({
   searchParams?: Promise<{ email?: string; error?: string; lang?: string; message?: string; notice?: string }>;
 }) {
   const params = searchParams ? await searchParams : undefined;
-  const currentLanguage = getLanguage(params?.lang);
+  const currentLanguage = getLanguage(params?.lang ?? (await detectAcceptLanguage()) ?? undefined);
   const copy = signupCopy[currentLanguage];
   const showConfirmEmailNotice = params?.notice === "confirm-email";
   const maskedEmail = params?.email ? decodeURIComponent(params.email) : "";

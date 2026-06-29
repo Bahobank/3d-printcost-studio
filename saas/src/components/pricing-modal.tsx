@@ -1112,7 +1112,7 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
 
   useEffect(() => {
     try {
-      const storedLanguage = window.localStorage.getItem("printCostLanguage") ?? window.localStorage.getItem("language") ?? document.documentElement.lang;
+      const storedLanguage = window.localStorage.getItem("printCostLanguage") ?? window.localStorage.getItem("language") ?? (document.documentElement.lang || navigator.language);
       setLanguage(normalizePricingLanguage(storedLanguage));
     } catch {
       setLanguage(defaultLanguage);

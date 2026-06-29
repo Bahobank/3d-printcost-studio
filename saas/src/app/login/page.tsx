@@ -1,6 +1,7 @@
 import { BarChart3, Box, DollarSign, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
 import { LoginLanguageSelect } from "@/components/login-language-select";
 import { PendingSubmitButton } from "@/components/pending-submit";
+import { detectAcceptLanguage } from "@/lib/detect-language";
 import { signInWithOAuth, signInWithPassword } from "./actions";
 
 type LoginLanguage = "th" | "en" | "zh" | "ja" | "ko";
@@ -256,7 +257,7 @@ export default async function LoginPage({
   searchParams?: Promise<{ error?: string; lang?: string; message?: string }>;
 }) {
   const params = searchParams ? await searchParams : undefined;
-  const currentLanguage = getLanguage(params?.lang);
+  const currentLanguage = getLanguage(params?.lang ?? (await detectAcceptLanguage()) ?? undefined);
   const copy = loginCopy[currentLanguage];
 
   return (

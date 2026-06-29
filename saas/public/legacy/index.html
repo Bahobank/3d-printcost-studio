@@ -3362,6 +3362,18 @@
     function normalizeLanguage(value) {
       return SUPPORTED_LANGUAGES.includes(value) ? value : "en";
     }
+    // Auto-detect the visitor's browser language (used only as the default for a
+    // brand-new user with no saved preference). Returns "" if none is supported.
+    function browserLanguage() {
+      try {
+        const langs = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ""];
+        for (const entry of langs) {
+          const code = String(entry || "").toLowerCase().split("-")[0];
+          if (SUPPORTED_LANGUAGES.includes(code)) return code;
+        }
+      } catch (error) {}
+      return "";
+    }
     let state = loadState();
     const startupLanguage = startupLanguageOverride();
     state.settings.language = normalizeLanguage(startupLanguage || state.settings.language);
@@ -4288,7 +4300,10 @@
         const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
         if (saved && saved.settings) return normalizeState(saved);
       } catch (error) {}
-      return structuredClone(defaultState);
+      // Brand-new user (no saved data): default to the browser language, else Thai.
+      const fresh = structuredClone(defaultState);
+      fresh.settings.language = normalizeLanguage(browserLanguage() || fresh.settings.language);
+      return fresh;
     }
     function switchStorageIdentity(identity) {
       const nextIdentity = String(identity || "guest").trim() || "guest";

@@ -41,7 +41,7 @@ const MESSAGES: Record<string, Record<Lang, { title: string; body: string }>> = 
 
 function detectLang(): Lang {
   try {
-    const raw = (window.localStorage.getItem("printCostLanguage") || window.localStorage.getItem("language") || document.documentElement.lang || "th").toLowerCase().split("-")[0];
+    const raw = (window.localStorage.getItem("printCostLanguage") || window.localStorage.getItem("language") || document.documentElement.lang || navigator.language || "th").toLowerCase().split("-")[0];
     return (LANGS as string[]).includes(raw) ? (raw as Lang) : "th";
   } catch {
     return "th";
