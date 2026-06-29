@@ -8528,7 +8528,9 @@
       rememberMaterialBrand(data.brand);
       const wasEditingMaterial = Boolean(fields.materialId.value);
       const index = state.materials.findIndex((item) => item.id === data.id);
-      if (index >= 0) state.materials[index] = data;
+      // Merge so manual fields not in the form (e.g. toneOverride from moving the item
+      // to another colour group) are preserved when editing.
+      if (index >= 0) state.materials[index] = { ...state.materials[index], ...data };
       else state.materials.push(data);
       resetMaterialForm();
       persist();
@@ -8546,6 +8548,8 @@
       const copyBtn = event.target.closest("[data-copy]");
       const editBtn = event.target.closest("[data-edit]");
       const deleteBtn = event.target.closest("[data-delete]");
+      // Close the row's manage menu so it doesn't stay stuck open (edit doesn't re-render).
+      if (copyBtn || editBtn || deleteBtn) event.target.closest("details")?.removeAttribute("open");
       if (copyBtn) copyMaterial(copyBtn.dataset.copy);
       if (editBtn) editMaterial(editBtn.dataset.edit);
       if (deleteBtn && confirm("ลบวัสดุรายการนี้?")) {
