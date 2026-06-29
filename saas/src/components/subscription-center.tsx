@@ -71,6 +71,11 @@ type AccountCopy = {
   canceling: string;
   cancelSuccess: string;
   cancelError: string;
+  scheduledTitle: string;
+  resumePlan: string;
+  resuming: string;
+  resumed: string;
+  resumeError: string;
 };
 
 const accountCopy: Record<PricingLanguage, AccountCopy> = {
@@ -120,6 +125,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
     canceling: "กำลังยกเลิก...",
     cancelSuccess: "ยกเลิกแล้ว คุณจะใช้งานได้จนถึงสิ้นรอบการชำระเงินปัจจุบัน",
     cancelError: "ยกเลิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
+    scheduledTitle: "ยกเลิกการต่ออายุแล้ว",
+    resumePlan: "เปิดต่ออายุอีกครั้ง",
+    resuming: "กำลังดำเนินการ...",
+    resumed: "เปิดต่ออายุอัตโนมัติอีกครั้งแล้ว แพ็กเกจจะต่ออายุตามปกติ",
+    resumeError: "ไม่สำเร็จ กรุณาลองใหม่อีกครั้ง",
   },
   en: {
     title: "Plan & billing",
@@ -167,6 +177,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
     canceling: "Canceling...",
     cancelSuccess: "Canceled. You'll keep access until the end of the current billing period.",
     cancelError: "Couldn't cancel. Please try again.",
+    scheduledTitle: "Cancellation scheduled",
+    resumePlan: "Resume auto-renewal",
+    resuming: "Resuming...",
+    resumed: "Auto-renewal resumed. Your plan will keep renewing.",
+    resumeError: "Couldn't resume. Please try again.",
   },
   zh: {
     title: "套餐与账单",
@@ -214,6 +229,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
     canceling: "正在取消...",
     cancelSuccess: "已取消。在当前计费周期结束前你仍可使用。",
     cancelError: "取消失败，请重试。",
+    scheduledTitle: "已安排取消",
+    resumePlan: "恢复自动续订",
+    resuming: "处理中...",
+    resumed: "已恢复自动续订，套餐将正常续订。",
+    resumeError: "操作失败，请重试。",
   },
   ja: {
     title: "プランと請求",
@@ -261,6 +281,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
     canceling: "解約中...",
     cancelSuccess: "解約しました。現在の請求期間の終了までご利用いただけます。",
     cancelError: "解約できませんでした。もう一度お試しください。",
+    scheduledTitle: "解約予定です",
+    resumePlan: "自動更新を再開",
+    resuming: "処理中...",
+    resumed: "自動更新を再開しました。プランは継続更新されます。",
+    resumeError: "再開できませんでした。もう一度お試しください。",
   },
   ko: {
     title: "요금제 및 결제",
@@ -308,6 +333,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
     canceling: "해지 중...",
     cancelSuccess: "해지되었습니다. 현재 청구 기간이 끝날 때까지 사용할 수 있습니다.",
     cancelError: "해지하지 못했습니다. 다시 시도해 주세요.",
+    scheduledTitle: "해지 예약됨",
+    resumePlan: "자동 갱신 재개",
+    resuming: "처리 중...",
+    resumed: "자동 갱신이 재개되었습니다. 요금제가 계속 갱신됩니다.",
+    resumeError: "재개하지 못했습니다. 다시 시도해 주세요.",
   },
 };
 
@@ -356,6 +386,7 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
   const [loading, setLoading] = useState(false);
   const [showWalletHistory, setShowWalletHistory] = useState(false);
   const [cancelState, setCancelState] = useState<"idle" | "confirm" | "loading" | "done" | "error">("idle");
+  const [resumeState, setResumeState] = useState<"idle" | "loading" | "done" | "error">("idle");
 
   useEffect(() => {
     if (!open) return;
@@ -363,6 +394,7 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
     setLoading(true);
     setShowWalletHistory(false);
     setCancelState("idle");
+    setResumeState("idle");
     fetch("/api/account/overview")
       .then((response) => response.json())
       .then((payload) => {
@@ -424,6 +456,23 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
       setCancelState("done");
     } catch {
       setCancelState("error");
+    }
+  }
+
+  async function resumePlan() {
+    setResumeState("loading");
+    try {
+      const response = await fetch("/api/stripe/resume", { method: "POST" });
+      if (!response.ok) throw new Error();
+      try {
+        const refreshed = (await fetch("/api/account/overview").then((r) => r.json())) as Overview;
+        setData(refreshed);
+      } catch {
+        // keep existing data
+      }
+      setResumeState("done");
+    } catch {
+      setResumeState("error");
     }
   }
 
@@ -577,6 +626,19 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
                     <p className="text-sm font-black text-emerald-700">{copy.cancelSuccess}</p>
                     {periodValue ? <p className="mt-1 text-sm font-black text-emerald-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
+                  </div>
+                ) : resumeState === "done" ? (
+                  <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
+                    <p className="text-sm font-black text-emerald-700">{copy.resumed}</p>
+                  </div>
+                ) : plan?.cancelAtPeriodEnd ? (
+                  <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
+                    <p className="text-sm font-black text-amber-900">{copy.scheduledTitle}</p>
+                    {periodValue ? <p className="mt-1 text-sm font-bold text-amber-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
+                    <button className="mt-3 h-10 rounded-xl bg-[#2563EB] px-4 text-sm font-black text-white transition hover:bg-blue-700 disabled:opacity-60" disabled={resumeState === "loading"} onClick={resumePlan} type="button">
+                      {resumeState === "loading" ? copy.resuming : copy.resumePlan}
+                    </button>
+                    {resumeState === "error" ? <p className="mt-2 text-xs font-black text-rose-600">{copy.resumeError}</p> : null}
                   </div>
                 ) : cancelState === "confirm" || cancelState === "loading" || cancelState === "error" ? (
                   <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
