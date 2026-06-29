@@ -1901,6 +1901,7 @@
                 <option value="rose">Rose</option>
                 <option value="apple-glass">Galaxy</option>
                 <option value="midnight">Midnight</option>
+                <option value="custom">Custom</option>
               </select>
             </label>
             <label class="btn-secondary toolbar-picker" style="min-height:40px;border-radius:6px;display:inline-flex;align-items:center;gap:8px;padding:0 10px;font-weight:700">
@@ -3413,7 +3414,7 @@
 
     const defaultState = {
       mode: "filament",
-      settings: { language: "th", currency: "", theme: "light", dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
+      settings: { language: "th", currency: "", theme: "light", customTheme: { base: "light", accent: "", bgImage: "" }, dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
       modeSettings: structuredClone(defaultModeSettings),
       stockSort: "name",
       onboardingCompleted: false,
@@ -3648,6 +3649,11 @@
     Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单", currencyTitle: "货币", importWrongAccount: "此备份属于其他账号，无法恢复——只能恢复本账号的备份。" });
     Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求", currencyTitle: "通貨", importWrongAccount: "このバックアップは別のアカウントのものです。復元できません — このアカウントのバックアップのみ復元できます。" });
     Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제", currencyTitle: "통화", importWrongAccount: "이 백업은 다른 계정의 것이므로 복원할 수 없습니다 — 이 계정의 백업만 복원할 수 있습니다." });
+    Object.assign(i18n.th, { themeCustom: "ปรับแต่งเอง", customizerTitle: "ปรับแต่งธีม", customBase: "โทนพื้นฐาน", customLight: "สว่าง", customDark: "มืด", customAccent: "สีหลัก (ปุ่ม/ไฮไลต์)", customBg: "ภาพพื้นหลัง", customUpload: "อัปโหลดรูป", customRemoveBg: "ลบรูป", customReset: "รีเซ็ตค่าเริ่มต้น", customDone: "เสร็จสิ้น", customImageTooLarge: "รูปใหญ่เกินไป กรุณาเลือกรูปที่เล็กลง" });
+    Object.assign(i18n.en, { themeCustom: "Custom", customizerTitle: "Customize theme", customBase: "Base tone", customLight: "Light", customDark: "Dark", customAccent: "Accent color (buttons/highlights)", customBg: "Background image", customUpload: "Upload image", customRemoveBg: "Remove image", customReset: "Reset to default", customDone: "Done", customImageTooLarge: "Image too large, please choose a smaller one" });
+    Object.assign(i18n.zh, { themeCustom: "自定义", customizerTitle: "自定义主题", customBase: "基础色调", customLight: "明亮", customDark: "暗色", customAccent: "主色（按钮/高亮）", customBg: "背景图片", customUpload: "上传图片", customRemoveBg: "移除图片", customReset: "恢复默认", customDone: "完成", customImageTooLarge: "图片太大，请选择更小的图片" });
+    Object.assign(i18n.ja, { themeCustom: "カスタム", customizerTitle: "テーマをカスタマイズ", customBase: "ベーストーン", customLight: "ライト", customDark: "ダーク", customAccent: "アクセントカラー（ボタン/ハイライト）", customBg: "背景画像", customUpload: "画像をアップロード", customRemoveBg: "画像を削除", customReset: "初期値に戻す", customDone: "完了", customImageTooLarge: "画像が大きすぎます。小さい画像を選んでください" });
+    Object.assign(i18n.ko, { themeCustom: "사용자 지정", customizerTitle: "테마 맞춤설정", customBase: "기본 톤", customLight: "라이트", customDark: "다크", customAccent: "강조 색상 (버튼/하이라이트)", customBg: "배경 이미지", customUpload: "이미지 업로드", customRemoveBg: "이미지 제거", customReset: "기본값으로 초기화", customDone: "완료", customImageTooLarge: "이미지가 너무 큽니다. 더 작은 이미지를 선택하세요" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -4316,6 +4322,11 @@
         analyticsLastSentAt: savedSettings.analyticsLastSentAt || "",
         stockView: savedSettings.stockView === "grid" ? "grid" : "list",
         currency: (savedSettings.currency && CURRENCIES[savedSettings.currency]) ? savedSettings.currency : "",
+        customTheme: {
+          base: savedSettings.customTheme?.base === "dark" ? "dark" : "light",
+          accent: /^#[0-9a-fA-F]{6}$/.test(savedSettings.customTheme?.accent || "") ? savedSettings.customTheme.accent : "",
+          bgImage: typeof savedSettings.customTheme?.bgImage === "string" ? savedSettings.customTheme.bgImage : ""
+        },
         toneLabels: (savedSettings.toneLabels && typeof savedSettings.toneLabels === "object") ? savedSettings.toneLabels : {}
       };
       const oldModeFields = ["electricityRate", "printerWatts", "wearRate", "markup", "printerId", "printerLabel", "customPrinterName", "customPrinterBrand"];
@@ -5272,7 +5283,7 @@
       setText("#onboardingLanguageLabel", t("language"));
       setText("#themeLabel", t("theme"));
       if (fields.themeSelect) {
-        const themeKeys = ["themeLight", "themeDark", "themeForest", "themeOcean", "themeSunset", "themeEarth", "themePastel", "themeMint", "themeRose", "themeAppleGlass", "themeMidnight"];
+        const themeKeys = ["themeLight", "themeDark", "themeForest", "themeOcean", "themeSunset", "themeEarth", "themePastel", "themeMint", "themeRose", "themeAppleGlass", "themeMidnight", "themeCustom"];
         Array.from(fields.themeSelect.options).forEach((option, index) => {
           if (themeKeys[index]) option.textContent = t(themeKeys[index]);
         });
@@ -5538,9 +5549,40 @@
       setText('label[for="onboardingBrand"]', t("printerBrand"));
       setText('label[for="onboardingModel"]', t("printerModel"));
     }
+    function applyCustomBgImage(url, base) {
+      const body = document.body;
+      if (url) {
+        const overlay = base === "dark" ? "rgba(14,16,32,.82)" : "rgba(246,249,255,.80)";
+        body.style.backgroundImage = `linear-gradient(${overlay}, ${overlay}), url("${url}")`;
+        body.style.backgroundSize = "cover";
+        body.style.backgroundPosition = "center";
+        body.style.backgroundAttachment = "fixed";
+      } else {
+        body.style.backgroundImage = "";
+        body.style.backgroundSize = "";
+        body.style.backgroundPosition = "";
+        body.style.backgroundAttachment = "";
+      }
+    }
     function applyTheme() {
-      document.documentElement.dataset.theme = theme();
-      if (fields.themeSelect) fields.themeSelect.value = theme();
+      const current = theme();
+      const root = document.documentElement;
+      root.style.removeProperty("--teal");
+      root.style.removeProperty("--accent");
+      if (current === "custom") {
+        const ct = state.settings.customTheme || {};
+        const base = ct.base === "dark" ? "dark" : "light";
+        root.dataset.theme = base; // inherit a readable light/dark base
+        if (/^#[0-9a-fA-F]{6}$/.test(ct.accent || "")) {
+          root.style.setProperty("--teal", ct.accent);
+          root.style.setProperty("--accent", ct.accent);
+        }
+        applyCustomBgImage(ct.bgImage || "", base);
+      } else {
+        root.dataset.theme = current;
+        applyCustomBgImage("", "light");
+      }
+      if (fields.themeSelect) fields.themeSelect.value = current;
     }
     async function openImageModal(jobId) {
       const job = state.jobs.find((item) => item.id === jobId);
@@ -8221,7 +8263,132 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       applyTheme();
       showToast(`${t("theme")}: ${fields.themeSelect.options[fields.themeSelect.selectedIndex].textContent}`);
+      if (fields.themeSelect.value === "custom" && typeof window.__pcOpenThemeCustomizer === "function") window.__pcOpenThemeCustomizer();
     });
+
+    (function setupThemeCustomizer() {
+      const PRESETS = ["#436ff6", "#2563eb", "#0ea5e9", "#16799a", "#2f7567", "#059669", "#7c3aed", "#6d28d9", "#e11d48", "#db2777", "#b66a57", "#d97706", "#7d6a45", "#334155"];
+      const style = document.createElement("style");
+      style.textContent = `
+        .tc-overlay{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;background:rgba(2,6,23,.55);backdrop-filter:blur(3px);padding:16px}
+        .tc-overlay[hidden]{display:none}
+        .tc-modal{width:100%;max-width:420px;background:var(--panel,#fff);color:var(--ink,#151c2e);border:1px solid var(--line,#e2e8f0);border-radius:18px;padding:18px 18px 16px;box-shadow:0 30px 80px rgba(2,6,23,.4);max-height:90vh;overflow:auto}
+        .tc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+        .tc-head h3{margin:0;font-size:18px;font-weight:900}
+        .tc-x{border:0;background:var(--control,#eef3fb);color:inherit;width:34px;height:34px;border-radius:10px;cursor:pointer;font-size:15px}
+        .tc-row{margin-top:14px}
+        .tc-row>span{display:block;font-size:13px;font-weight:800;margin-bottom:8px;opacity:.85}
+        .tc-base{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+        .tc-base button{height:40px;border-radius:10px;border:2px solid var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;font-weight:800;cursor:pointer}
+        .tc-base button.active{border-color:var(--accent,#436ff6);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#436ff6) 22%,transparent)}
+        .tc-accent-row{display:flex;align-items:center;gap:10px}
+        #tcAccent{width:48px;height:40px;border:1px solid var(--line,#e2e8f0);border-radius:10px;background:none;cursor:pointer;padding:2px}
+        .tc-swatches{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+        .tc-swatches button{width:26px;height:26px;border-radius:50%;border:2px solid var(--line,#e2e8f0);cursor:pointer;padding:0}
+        .tc-bg-row{display:flex;gap:8px;flex-wrap:wrap}
+        .tc-upload{flex:1;min-width:120px;display:inline-flex;align-items:center;justify-content:center;height:40px;border-radius:10px;border:2px dashed var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;font-weight:800;cursor:pointer}
+        .tc-remove{height:40px;padding:0 14px;border-radius:10px;border:1px solid var(--line,#e2e8f0);background:none;color:inherit;font-weight:800;cursor:pointer}
+        .tc-foot{display:flex;justify-content:space-between;gap:8px;margin-top:18px}
+        .tc-reset{height:42px;padding:0 16px;border-radius:11px;border:1px solid var(--line,#e2e8f0);background:none;color:inherit;font-weight:800;cursor:pointer}
+        .tc-done{height:42px;padding:0 22px;border-radius:11px;border:0;background:var(--accent,#436ff6);color:#fff;font-weight:900;cursor:pointer}
+      `;
+      document.head.appendChild(style);
+      const wrap = document.createElement("div");
+      wrap.className = "tc-overlay";
+      wrap.id = "themeCustomizerModal";
+      wrap.hidden = true;
+      wrap.innerHTML = `
+        <div class="tc-modal" role="dialog" aria-modal="true">
+          <div class="tc-head"><h3 id="tcTitle"></h3><button class="tc-x" id="tcClose" type="button">✕</button></div>
+          <div class="tc-row"><span id="tcBaseLabel"></span><div class="tc-base"><button type="button" id="tcLight" data-base="light"></button><button type="button" id="tcDark" data-base="dark"></button></div></div>
+          <div class="tc-row"><span id="tcAccentLabel"></span><div class="tc-accent-row"><input type="color" id="tcAccent"><div class="tc-swatches" id="tcSwatches"></div></div></div>
+          <div class="tc-row"><span id="tcBgLabel"></span><div class="tc-bg-row"><label class="tc-upload" id="tcUploadLabel"><input type="file" id="tcBgInput" accept="image/*" hidden><span id="tcUploadText"></span></label><button type="button" class="tc-remove" id="tcRemoveBg"></button></div></div>
+          <div class="tc-foot"><button type="button" class="tc-reset" id="tcReset"></button><button type="button" class="tc-done" id="tcDone"></button></div>
+        </div>`;
+      document.body.appendChild(wrap);
+
+      const $$ = (id) => wrap.querySelector("#" + id);
+      const accentInput = $$("tcAccent");
+      const swatches = $$("tcSwatches");
+      PRESETS.forEach((color) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.style.background = color; b.title = color;
+        b.addEventListener("click", () => { setAccent(color); });
+        swatches.appendChild(b);
+      });
+
+      function ct() {
+        if (!state.settings.customTheme) state.settings.customTheme = { base: "light", accent: "", bgImage: "" };
+        return state.settings.customTheme;
+      }
+      function saveCustomTheme() {
+        state.updatedAt = new Date().toISOString();
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {}
+        if (typeof scheduleCloudUpload === "function") scheduleCloudUpload();
+      }
+      function refreshBaseButtons() {
+        const base = ct().base === "dark" ? "dark" : "light";
+        $$("tcLight").classList.toggle("active", base === "light");
+        $$("tcDark").classList.toggle("active", base === "dark");
+      }
+      function setBase(base) { ct().base = base === "dark" ? "dark" : "light"; refreshBaseButtons(); applyTheme(); accentInput.value = currentAccent(); saveCustomTheme(); }
+      function setAccent(color) { if (!/^#[0-9a-fA-F]{6}$/.test(color)) return; ct().accent = color; accentInput.value = color; applyTheme(); saveCustomTheme(); }
+      function currentAccent() { const c = ct().accent; if (/^#[0-9a-fA-F]{6}$/.test(c || "")) return c; return ct().base === "dark" ? "#20a66c" : "#436ff6"; }
+
+      $$("tcLight").addEventListener("click", () => setBase("light"));
+      $$("tcDark").addEventListener("click", () => setBase("dark"));
+      accentInput.addEventListener("input", () => { ct().accent = accentInput.value; applyTheme(); });
+      accentInput.addEventListener("change", () => { ct().accent = accentInput.value; applyTheme(); saveCustomTheme(); });
+      $$("tcRemoveBg").addEventListener("click", () => { ct().bgImage = ""; applyTheme(); saveCustomTheme(); });
+      $$("tcReset").addEventListener("click", () => { state.settings.customTheme = { base: "light", accent: "", bgImage: "" }; applyTheme(); accentInput.value = currentAccent(); refreshBaseButtons(); saveCustomTheme(); });
+      $$("tcDone").addEventListener("click", () => { saveCustomTheme(); wrap.hidden = true; });
+      $$("tcClose").addEventListener("click", () => { saveCustomTheme(); wrap.hidden = true; });
+      wrap.addEventListener("click", (event) => { if (event.target === wrap) { saveCustomTheme(); wrap.hidden = true; } });
+
+      $$("tcBgInput").addEventListener("change", (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          const img = new Image();
+          img.onload = () => {
+            const maxW = 1600;
+            const scale = Math.min(1, maxW / img.width);
+            const w = Math.max(1, Math.round(img.width * scale)), h = Math.max(1, Math.round(img.height * scale));
+            const canvas = document.createElement("canvas");
+            canvas.width = w; canvas.height = h;
+            canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.82);
+            if (dataUrl.length > 1700000) { showToast(t("customImageTooLarge")); return; }
+            ct().bgImage = dataUrl; applyTheme(); saveCustomTheme();
+          };
+          img.onerror = () => showToast(t("customImageTooLarge"));
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+        event.target.value = "";
+      });
+
+      function applyLabels() {
+        $$("tcTitle").textContent = t("customizerTitle");
+        $$("tcBaseLabel").textContent = t("customBase");
+        $$("tcLight").textContent = t("customLight");
+        $$("tcDark").textContent = t("customDark");
+        $$("tcAccentLabel").textContent = t("customAccent");
+        $$("tcBgLabel").textContent = t("customBg");
+        $$("tcUploadText").textContent = t("customUpload");
+        $$("tcRemoveBg").textContent = t("customRemoveBg");
+        $$("tcReset").textContent = t("customReset");
+        $$("tcDone").textContent = t("customDone");
+      }
+
+      window.__pcOpenThemeCustomizer = function () {
+        applyLabels();
+        refreshBaseButtons();
+        accentInput.value = currentAccent();
+        wrap.hidden = false;
+      };
+    })();
 
     fields.currencySelect?.addEventListener("change", () => {
       const oldEff = effectiveCurrencyCode();
