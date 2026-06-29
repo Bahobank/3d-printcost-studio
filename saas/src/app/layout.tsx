@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     shortcut: "/assets/official-3d-printcost-logo.png",
     apple: "/assets/official-3d-printcost-logo.png",
   },
+  verification: {
+    google: "ZBmfbHcA_iLo0CVW_KLpBz_5fmOJ_O4A4CyYl_JbZrM",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
