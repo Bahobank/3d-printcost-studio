@@ -3414,7 +3414,7 @@
 
     const defaultState = {
       mode: "filament",
-      settings: { language: "th", currency: "", theme: "light", customTheme: { base: "light", accent: "", bgImage: "" }, dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
+      settings: { language: "th", currency: "", theme: "light", customTheme: { bg: "", accent: "", bgImage: "" }, dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
       modeSettings: structuredClone(defaultModeSettings),
       stockSort: "name",
       onboardingCompleted: false,
@@ -3649,11 +3649,11 @@
     Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单", currencyTitle: "货币", importWrongAccount: "此备份属于其他账号，无法恢复——只能恢复本账号的备份。" });
     Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求", currencyTitle: "通貨", importWrongAccount: "このバックアップは別のアカウントのものです。復元できません — このアカウントのバックアップのみ復元できます。" });
     Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제", currencyTitle: "통화", importWrongAccount: "이 백업은 다른 계정의 것이므로 복원할 수 없습니다 — 이 계정의 백업만 복원할 수 있습니다." });
-    Object.assign(i18n.th, { themeCustom: "ปรับแต่งเอง", customizerTitle: "ปรับแต่งธีม", customBase: "โทนพื้นฐาน", customLight: "สว่าง", customDark: "มืด", customAccent: "สีหลัก (ปุ่ม/ไฮไลต์)", customBg: "ภาพพื้นหลัง", customUpload: "อัปโหลดรูป", customRemoveBg: "ลบรูป", customReset: "รีเซ็ตค่าเริ่มต้น", customDone: "เสร็จสิ้น", customImageTooLarge: "รูปใหญ่เกินไป กรุณาเลือกรูปที่เล็กลง" });
-    Object.assign(i18n.en, { themeCustom: "Custom", customizerTitle: "Customize theme", customBase: "Base tone", customLight: "Light", customDark: "Dark", customAccent: "Accent color (buttons/highlights)", customBg: "Background image", customUpload: "Upload image", customRemoveBg: "Remove image", customReset: "Reset to default", customDone: "Done", customImageTooLarge: "Image too large, please choose a smaller one" });
-    Object.assign(i18n.zh, { themeCustom: "自定义", customizerTitle: "自定义主题", customBase: "基础色调", customLight: "明亮", customDark: "暗色", customAccent: "主色（按钮/高亮）", customBg: "背景图片", customUpload: "上传图片", customRemoveBg: "移除图片", customReset: "恢复默认", customDone: "完成", customImageTooLarge: "图片太大，请选择更小的图片" });
-    Object.assign(i18n.ja, { themeCustom: "カスタム", customizerTitle: "テーマをカスタマイズ", customBase: "ベーストーン", customLight: "ライト", customDark: "ダーク", customAccent: "アクセントカラー（ボタン/ハイライト）", customBg: "背景画像", customUpload: "画像をアップロード", customRemoveBg: "画像を削除", customReset: "初期値に戻す", customDone: "完了", customImageTooLarge: "画像が大きすぎます。小さい画像を選んでください" });
-    Object.assign(i18n.ko, { themeCustom: "사용자 지정", customizerTitle: "테마 맞춤설정", customBase: "기본 톤", customLight: "라이트", customDark: "다크", customAccent: "강조 색상 (버튼/하이라이트)", customBg: "배경 이미지", customUpload: "이미지 업로드", customRemoveBg: "이미지 제거", customReset: "기본값으로 초기화", customDone: "완료", customImageTooLarge: "이미지가 너무 큽니다. 더 작은 이미지를 선택하세요" });
+    Object.assign(i18n.th, { themeCustom: "ปรับแต่งเอง", customizerTitle: "ปรับแต่งธีม", customBase: "โทนพื้นฐาน", customBgColor: "สีพื้นหลัง (เลือกได้อิสระ)", customLight: "สว่าง", customDark: "มืด", customAccent: "สีหลัก (ปุ่ม/ไฮไลต์)", customBg: "ภาพพื้นหลัง", customUpload: "อัปโหลดรูป", customRemoveBg: "ลบรูป", customReset: "รีเซ็ตค่าเริ่มต้น", customDone: "เสร็จสิ้น", customImageTooLarge: "รูปใหญ่เกินไป กรุณาเลือกรูปที่เล็กลง" });
+    Object.assign(i18n.en, { themeCustom: "Custom", customizerTitle: "Customize theme", customBase: "Base tone", customBgColor: "Background color", customLight: "Light", customDark: "Dark", customAccent: "Accent color (buttons/highlights)", customBg: "Background image", customUpload: "Upload image", customRemoveBg: "Remove image", customReset: "Reset to default", customDone: "Done", customImageTooLarge: "Image too large, please choose a smaller one" });
+    Object.assign(i18n.zh, { themeCustom: "自定义", customizerTitle: "自定义主题", customBase: "基础色调", customBgColor: "背景色", customLight: "明亮", customDark: "暗色", customAccent: "主色（按钮/高亮）", customBg: "背景图片", customUpload: "上传图片", customRemoveBg: "移除图片", customReset: "恢复默认", customDone: "完成", customImageTooLarge: "图片太大，请选择更小的图片" });
+    Object.assign(i18n.ja, { themeCustom: "カスタム", customizerTitle: "テーマをカスタマイズ", customBase: "ベーストーン", customBgColor: "背景色", customLight: "ライト", customDark: "ダーク", customAccent: "アクセントカラー（ボタン/ハイライト）", customBg: "背景画像", customUpload: "画像をアップロード", customRemoveBg: "画像を削除", customReset: "初期値に戻す", customDone: "完了", customImageTooLarge: "画像が大きすぎます。小さい画像を選んでください" });
+    Object.assign(i18n.ko, { themeCustom: "사용자 지정", customizerTitle: "테마 맞춤설정", customBase: "기본 톤", customBgColor: "배경 색상", customLight: "라이트", customDark: "다크", customAccent: "강조 색상 (버튼/하이라이트)", customBg: "배경 이미지", customUpload: "이미지 업로드", customRemoveBg: "이미지 제거", customReset: "기본값으로 초기화", customDone: "완료", customImageTooLarge: "이미지가 너무 큽니다. 더 작은 이미지를 선택하세요" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -4323,7 +4323,7 @@
         stockView: savedSettings.stockView === "grid" ? "grid" : "list",
         currency: (savedSettings.currency && CURRENCIES[savedSettings.currency]) ? savedSettings.currency : "",
         customTheme: {
-          base: savedSettings.customTheme?.base === "dark" ? "dark" : "light",
+          bg: /^#[0-9a-fA-F]{6}$/.test(savedSettings.customTheme?.bg || "") ? savedSettings.customTheme.bg : (savedSettings.customTheme?.base === "dark" ? "#111715" : ""),
           accent: /^#[0-9a-fA-F]{6}$/.test(savedSettings.customTheme?.accent || "") ? savedSettings.customTheme.accent : "",
           bgImage: typeof savedSettings.customTheme?.bgImage === "string" ? savedSettings.customTheme.bgImage : ""
         },
@@ -5566,20 +5566,57 @@
         body.style.backgroundAttachment = "";
       }
     }
+    function pcHexToRgb(hex) {
+      const m = /^#?([0-9a-fA-F]{6})$/.exec(String(hex || ""));
+      if (!m) return null;
+      const n = parseInt(m[1], 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+    function pcToHex(rgb) { return "#" + rgb.map((v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join(""); }
+    function pcMix(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+    function pcLum(rgb) { return (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255; }
+    // Build a full, readable palette from any chosen background colour: text and
+    // surfaces are derived from the background's lightness so it never goes unreadable.
+    function customPalette(bgHex) {
+      const bg = pcHexToRgb(bgHex) || [246, 249, 255];
+      const dark = pcLum(bg) < 0.5;
+      const W = [255, 255, 255], B = [0, 0, 0];
+      return {
+        dark,
+        bg: pcToHex(bg),
+        ink: pcToHex(dark ? pcMix(bg, W, 0.92) : pcMix(bg, B, 0.85)),
+        muted: pcToHex(dark ? pcMix(bg, W, 0.55) : pcMix(bg, B, 0.48)),
+        line: pcToHex(dark ? pcMix(bg, W, 0.16) : pcMix(bg, B, 0.12)),
+        panel: pcToHex(dark ? pcMix(bg, W, 0.09) : pcMix(bg, W, 0.6)),
+        soft: pcToHex(dark ? pcMix(bg, W, 0.05) : pcMix(bg, B, 0.03)),
+        control: pcToHex(dark ? pcMix(bg, W, 0.13) : pcMix(bg, B, 0.05)),
+        inputBg: pcToHex(dark ? pcMix(bg, B, 0.25) : pcMix(bg, W, 0.7))
+      };
+    }
+    const CUSTOM_VARS = ["--teal", "--accent", "--bg", "--ink", "--muted", "--line", "--panel", "--panel-head", "--soft", "--control", "--control-ink", "--input-bg"];
     function applyTheme() {
       const current = theme();
       const root = document.documentElement;
-      root.style.removeProperty("--teal");
-      root.style.removeProperty("--accent");
+      CUSTOM_VARS.forEach((v) => root.style.removeProperty(v));
       if (current === "custom") {
         const ct = state.settings.customTheme || {};
-        const base = ct.base === "dark" ? "dark" : "light";
-        root.dataset.theme = base; // inherit a readable light/dark base
+        const pal = customPalette(ct.bg || "");
+        root.dataset.theme = pal.dark ? "dark" : "light"; // base for secondary vars
+        root.style.setProperty("--bg", pal.bg);
+        root.style.setProperty("--ink", pal.ink);
+        root.style.setProperty("--muted", pal.muted);
+        root.style.setProperty("--line", pal.line);
+        root.style.setProperty("--panel", pal.panel);
+        root.style.setProperty("--panel-head", pal.panel);
+        root.style.setProperty("--soft", pal.soft);
+        root.style.setProperty("--control", pal.control);
+        root.style.setProperty("--control-ink", pal.ink);
+        root.style.setProperty("--input-bg", pal.inputBg);
         if (/^#[0-9a-fA-F]{6}$/.test(ct.accent || "")) {
           root.style.setProperty("--teal", ct.accent);
           root.style.setProperty("--accent", ct.accent);
         }
-        applyCustomBgImage(ct.bgImage || "", base);
+        applyCustomBgImage(ct.bgImage || "", pal.dark ? "dark" : "light");
       } else {
         root.dataset.theme = current;
         applyCustomBgImage("", "light");
@@ -8286,7 +8323,7 @@
         .tc-base button{height:40px;border-radius:10px;border:2px solid var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;font-weight:800;cursor:pointer}
         .tc-base button.active{border-color:var(--accent,#436ff6);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#436ff6) 22%,transparent)}
         .tc-accent-row{display:flex;align-items:center;gap:10px}
-        #tcAccent{width:48px;height:40px;border:1px solid var(--line,#e2e8f0);border-radius:10px;background:none;cursor:pointer;padding:2px}
+        #tcAccent,#tcBgColor{width:100%;height:46px;border:1px solid var(--line,#e2e8f0);border-radius:10px;background:none;cursor:pointer;padding:3px}
         .tc-swatches{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
         .tc-swatches button{width:26px;height:26px;border-radius:50%;border:2px solid var(--line,#e2e8f0);cursor:pointer;padding:0}
         .tc-bg-row{display:flex;gap:8px;flex-wrap:wrap}
@@ -8304,8 +8341,8 @@
       wrap.innerHTML = `
         <div class="tc-modal" role="dialog" aria-modal="true">
           <div class="tc-head"><h3 id="tcTitle"></h3><button class="tc-x" id="tcClose" type="button">✕</button></div>
-          <div class="tc-row"><span id="tcBaseLabel"></span><div class="tc-base"><button type="button" id="tcLight" data-base="light"></button><button type="button" id="tcDark" data-base="dark"></button></div></div>
-          <div class="tc-row"><span id="tcAccentLabel"></span><div class="tc-accent-row"><input type="color" id="tcAccent"><div class="tc-swatches" id="tcSwatches"></div></div></div>
+          <div class="tc-row"><span id="tcBgColorLabel"></span><div class="tc-accent-row"><input type="color" id="tcBgColor"></div></div>
+          <div class="tc-row"><span id="tcAccentLabel"></span><div class="tc-accent-row"><input type="color" id="tcAccent"></div></div>
           <div class="tc-row"><span id="tcBgLabel"></span><div class="tc-bg-row"><label class="tc-upload" id="tcUploadLabel"><input type="file" id="tcBgInput" accept="image/*" hidden><span id="tcUploadText"></span></label><button type="button" class="tc-remove" id="tcRemoveBg"></button></div></div>
           <div class="tc-foot"><button type="button" class="tc-reset" id="tcReset"></button><button type="button" class="tc-done" id="tcDone"></button></div>
         </div>`;
@@ -8325,16 +8362,10 @@
 
       const $$ = (id) => wrap.querySelector("#" + id);
       const accentInput = $$("tcAccent");
-      const swatches = $$("tcSwatches");
-      PRESETS.forEach((color) => {
-        const b = document.createElement("button");
-        b.type = "button"; b.style.background = color; b.title = color;
-        b.addEventListener("click", () => { setAccent(color); });
-        swatches.appendChild(b);
-      });
+      const bgColorInput = $$("tcBgColor");
 
       function ct() {
-        if (!state.settings.customTheme) state.settings.customTheme = { base: "light", accent: "", bgImage: "" };
+        if (!state.settings.customTheme) state.settings.customTheme = { bg: "", accent: "", bgImage: "" };
         return state.settings.customTheme;
       }
       function saveCustomTheme() {
@@ -8342,21 +8373,15 @@
         try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {}
         if (typeof scheduleCloudUpload === "function") scheduleCloudUpload();
       }
-      function refreshBaseButtons() {
-        const base = ct().base === "dark" ? "dark" : "light";
-        $$("tcLight").classList.toggle("active", base === "light");
-        $$("tcDark").classList.toggle("active", base === "dark");
-      }
-      function setBase(base) { ct().base = base === "dark" ? "dark" : "light"; refreshBaseButtons(); applyTheme(); accentInput.value = currentAccent(); saveCustomTheme(); }
-      function setAccent(color) { if (!/^#[0-9a-fA-F]{6}$/.test(color)) return; ct().accent = color; accentInput.value = color; applyTheme(); saveCustomTheme(); }
-      function currentAccent() { const c = ct().accent; if (/^#[0-9a-fA-F]{6}$/.test(c || "")) return c; return ct().base === "dark" ? "#20a66c" : "#436ff6"; }
+      function currentBg() { const c = ct().bg; return /^#[0-9a-fA-F]{6}$/.test(c || "") ? c : "#f6f9ff"; }
+      function currentAccent() { const c = ct().accent; return /^#[0-9a-fA-F]{6}$/.test(c || "") ? c : "#436ff6"; }
 
-      $$("tcLight").addEventListener("click", () => setBase("light"));
-      $$("tcDark").addEventListener("click", () => setBase("dark"));
+      bgColorInput.addEventListener("input", () => { ct().bg = bgColorInput.value; applyTheme(); });
+      bgColorInput.addEventListener("change", () => { ct().bg = bgColorInput.value; applyTheme(); saveCustomTheme(); });
       accentInput.addEventListener("input", () => { ct().accent = accentInput.value; applyTheme(); });
       accentInput.addEventListener("change", () => { ct().accent = accentInput.value; applyTheme(); saveCustomTheme(); });
       $$("tcRemoveBg").addEventListener("click", () => { ct().bgImage = ""; applyTheme(); saveCustomTheme(); });
-      $$("tcReset").addEventListener("click", () => { state.settings.customTheme = { base: "light", accent: "", bgImage: "" }; applyTheme(); accentInput.value = currentAccent(); refreshBaseButtons(); saveCustomTheme(); });
+      $$("tcReset").addEventListener("click", () => { state.settings.customTheme = { bg: "", accent: "", bgImage: "" }; applyTheme(); bgColorInput.value = currentBg(); accentInput.value = currentAccent(); saveCustomTheme(); });
       $$("tcDone").addEventListener("click", () => { saveCustomTheme(); wrap.hidden = true; });
       $$("tcClose").addEventListener("click", () => { saveCustomTheme(); wrap.hidden = true; });
       wrap.addEventListener("click", (event) => { if (event.target === wrap) { saveCustomTheme(); wrap.hidden = true; } });
@@ -8387,9 +8412,7 @@
 
       function applyLabels() {
         $$("tcTitle").textContent = t("customizerTitle");
-        $$("tcBaseLabel").textContent = t("customBase");
-        $$("tcLight").textContent = t("customLight");
-        $$("tcDark").textContent = t("customDark");
+        $$("tcBgColorLabel").textContent = t("customBgColor");
         $$("tcAccentLabel").textContent = t("customAccent");
         $$("tcBgLabel").textContent = t("customBg");
         $$("tcUploadText").textContent = t("customUpload");
@@ -8400,7 +8423,7 @@
 
       window.__pcOpenThemeCustomizer = function () {
         applyLabels();
-        refreshBaseButtons();
+        bgColorInput.value = currentBg();
         accentInput.value = currentAccent();
         wrap.hidden = false;
       };
