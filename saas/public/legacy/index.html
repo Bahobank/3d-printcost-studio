@@ -1903,6 +1903,10 @@
                 <option value="midnight">Midnight</option>
               </select>
             </label>
+            <label class="btn-secondary toolbar-picker" style="min-height:40px;border-radius:6px;display:inline-flex;align-items:center;gap:8px;padding:0 10px;font-weight:700">
+              <span id="currencyLabel">สกุลเงิน</span>
+              <select id="currencySelect" style="border:0;background:transparent;color:inherit;font-weight:700;outline:0"></select>
+            </label>
             <div class="profile-menu-divider"></div>
             <button class="btn-secondary toolbar-action" id="exportBtn" title="สำรองข้อมูลทั้งหมดเป็นไฟล์ JSON">
               <svg class="icon" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg>สำรองข้อมูล
@@ -2931,13 +2935,45 @@
       ja: { locale: "ja-JP", currency: "JPY", label: "JPY" },
       ko: { locale: "ko-KR", currency: "KRW", label: "KRW" }
     };
+    // Full currency catalog for the manual currency picker (decoupled from language).
+    const CURRENCIES = {
+      USD: { locale: "en-US", label: "USD ($)", decimals: 2 },
+      EUR: { locale: "de-DE", label: "EUR (€)", decimals: 2 },
+      GBP: { locale: "en-GB", label: "GBP (£)", decimals: 2 },
+      THB: { locale: "th-TH", label: "THB (฿)", decimals: 2 },
+      JPY: { locale: "ja-JP", label: "JPY (¥)", decimals: 0 },
+      CNY: { locale: "zh-CN", label: "CNY (¥)", decimals: 2 },
+      KRW: { locale: "ko-KR", label: "KRW (₩)", decimals: 0 },
+      AUD: { locale: "en-AU", label: "AUD ($)", decimals: 2 },
+      CAD: { locale: "en-CA", label: "CAD ($)", decimals: 2 },
+      SGD: { locale: "en-SG", label: "SGD ($)", decimals: 2 },
+      HKD: { locale: "en-HK", label: "HKD ($)", decimals: 2 },
+      TWD: { locale: "zh-TW", label: "TWD (NT$)", decimals: 2 },
+      INR: { locale: "en-IN", label: "INR (₹)", decimals: 2 },
+      MYR: { locale: "ms-MY", label: "MYR (RM)", decimals: 2 },
+      IDR: { locale: "id-ID", label: "IDR (Rp)", decimals: 0 },
+      PHP: { locale: "en-PH", label: "PHP (₱)", decimals: 2 },
+      VND: { locale: "vi-VN", label: "VND (₫)", decimals: 0 },
+      AED: { locale: "en-AE", label: "AED (د.إ)", decimals: 2 },
+      BRL: { locale: "pt-BR", label: "BRL (R$)", decimals: 2 },
+      MXN: { locale: "es-MX", label: "MXN ($)", decimals: 2 },
+      ZAR: { locale: "en-ZA", label: "ZAR (R)", decimals: 2 }
+    };
+    function effectiveCurrencyCode() {
+      try {
+        const chosen = state && state.settings && state.settings.currency;
+        if (chosen && CURRENCIES[chosen]) return chosen;
+      } catch (error) {}
+      return (currencyByLanguage[lang?.() || "th"] || currencyByLanguage.th).currency;
+    }
     const money = {
       format(value) {
-        const config = currencyByLanguage[lang?.() || "th"] || currencyByLanguage.th;
+        const code = effectiveCurrencyCode();
+        const config = CURRENCIES[code] || CURRENCIES.THB;
         return new Intl.NumberFormat(config.locale, {
           style: "currency",
-          currency: config.currency,
-          maximumFractionDigits: ["JPY", "KRW"].includes(config.currency) ? 0 : 2
+          currency: code,
+          maximumFractionDigits: config.decimals
         }).format(num(value));
       }
     };
@@ -3349,7 +3385,7 @@
 
     const defaultState = {
       mode: "filament",
-      settings: { language: "th", theme: "light", dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
+      settings: { language: "th", currency: "", theme: "light", dashboardRange: "month", dashboardZoom: 1, dashboardChartSource: "history", dashboardLineStyle: "curved", dashboardRangeOffset: 0, dashboardStartDate: "", dashboardEndDate: "", orderSortDate: "desc", recentMaterialIds: { filament: [], resin: [] }, dashboardSeries: { cost: true, loss: true, revenue: true, profit: true }, analyticsConsent: false, analyticsCountry: "", analyticsConsentVersion: "2026-06-16", analyticsLastSentAt: "", stockView: "list", toneLabels: {} },
       modeSettings: structuredClone(defaultModeSettings),
       stockSort: "name",
       onboardingCompleted: false,
@@ -3401,6 +3437,7 @@
       languageSelect: $("languageSelect"),
       onboardingLanguageSelect: $("onboardingLanguageSelect"),
       themeSelect: $("themeSelect"),
+      currencySelect: $("currencySelect"),
       printerBrandSelect: $("printerBrandSelect"), printerModelSelect: $("printerModelSelect"), customPrinterName: $("customPrinterName"), customPrinterBrand: $("customPrinterBrand"),
       electricityRate: $("electricityRate"), printerWatts: $("printerWatts"), wearRate: $("wearRate"), markup: $("markup"),
       materialId: $("materialId"), brandSelect: $("brandSelect"), customBrand: $("customBrand"), materialName: $("materialName"), materialType: $("materialType"), customType: $("customType"),
@@ -3577,11 +3614,11 @@
     Object.assign(i18n.zh, { renameTone: "重命名颜色分组" });
     Object.assign(i18n.ja, { renameTone: "色グループ名を変更" });
     Object.assign(i18n.ko, { renameTone: "색상 그룹 이름 변경" });
-    Object.assign(i18n.th, { feedback: "ติดต่อทีมงาน", export: "สำรองข้อมูล", import: "กู้คืนข้อมูล", packages: "แพ็กเกจและการชำระเงิน" });
-    Object.assign(i18n.en, { feedback: "Contact us", export: "Back up data", import: "Restore data", packages: "Plan & billing" });
-    Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单" });
-    Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求" });
-    Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제" });
+    Object.assign(i18n.th, { feedback: "ติดต่อทีมงาน", export: "สำรองข้อมูล", import: "กู้คืนข้อมูล", packages: "แพ็กเกจและการชำระเงิน", currencyTitle: "สกุลเงิน" });
+    Object.assign(i18n.en, { feedback: "Contact us", export: "Back up data", import: "Restore data", packages: "Plan & billing", currencyTitle: "Currency" });
+    Object.assign(i18n.zh, { feedback: "联系我们", export: "备份数据", import: "恢复数据", packages: "套餐与账单", currencyTitle: "货币" });
+    Object.assign(i18n.ja, { feedback: "お問い合わせ", export: "データをバックアップ", import: "データを復元", packages: "プランと請求", currencyTitle: "通貨" });
+    Object.assign(i18n.ko, { feedback: "문의하기", export: "데이터 백업", import: "데이터 복원", packages: "요금제 및 결제", currencyTitle: "통화" });
     Object.assign(i18n.th, { stockCriticalAlert: "ใกล้จะหมดแล้ว" });
     Object.assign(i18n.en, { stockCriticalAlert: "Almost out" });
     Object.assign(i18n.zh, { stockCriticalAlert: "即将用完" });
@@ -4204,7 +4241,7 @@
       if (!state.modeSettings[state.mode]) state.modeSettings[state.mode] = structuredClone(defaultModeSettings[state.mode]);
       return state.modeSettings[state.mode];
     }
-    function currencyLabel() { return (currencyByLanguage[lang()] || currencyByLanguage.th).label; }
+    function currencyLabel() { return effectiveCurrencyCode(); }
     function packagePriceLabelText() {
       const isResin = state.mode === "resin";
       const labels = {
@@ -4249,6 +4286,7 @@
         analyticsConsentVersion: savedSettings.analyticsConsentVersion || defaultState.settings.analyticsConsentVersion,
         analyticsLastSentAt: savedSettings.analyticsLastSentAt || "",
         stockView: savedSettings.stockView === "grid" ? "grid" : "list",
+        currency: (savedSettings.currency && CURRENCIES[savedSettings.currency]) ? savedSettings.currency : "",
         toneLabels: (savedSettings.toneLabels && typeof savedSettings.toneLabels === "object") ? savedSettings.toneLabels : {}
       };
       const oldModeFields = ["electricityRate", "printerWatts", "wearRate", "markup", "printerId", "printerLabel", "customPrinterName", "customPrinterBrand"];
@@ -5206,6 +5244,13 @@
         Array.from(fields.themeSelect.options).forEach((option, index) => {
           if (themeKeys[index]) option.textContent = t(themeKeys[index]);
         });
+      }
+      setText("#currencyLabel", t("currencyTitle"));
+      if (fields.currencySelect) {
+        if (!fields.currencySelect.options.length) {
+          fields.currencySelect.innerHTML = Object.keys(CURRENCIES).map((code) => `<option value="${code}">${CURRENCIES[code].label}</option>`).join("");
+        }
+        fields.currencySelect.value = effectiveCurrencyCode();
       }
       setText(".brand p", t("appSubtitle"));
       setButtonLabel("#feedbackBtn", t("feedback"));
@@ -8144,6 +8189,13 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       applyTheme();
       showToast(`${t("theme")}: ${fields.themeSelect.options[fields.themeSelect.selectedIndex].textContent}`);
+    });
+
+    fields.currencySelect?.addEventListener("change", () => {
+      const code = fields.currencySelect.value;
+      state.settings.currency = CURRENCIES[code] ? code : "";
+      persist();
+      showToast(`${t("currencyTitle")}: ${code}`);
     });
 
     $("saveSettings").addEventListener("click", () => {
