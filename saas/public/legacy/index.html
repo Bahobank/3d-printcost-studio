@@ -5283,7 +5283,7 @@
       setText("#onboardingLanguageLabel", t("language"));
       setText("#themeLabel", t("theme"));
       const tcEdit = document.getElementById("tcEditBtn");
-      if (tcEdit) tcEdit.textContent = "✏️ " + t("customizerTitle");
+      if (tcEdit) tcEdit.title = t("customizerTitle");
       if (fields.themeSelect) {
         const themeKeys = ["themeLight", "themeDark", "themeForest", "themeOcean", "themeSunset", "themeEarth", "themePastel", "themeMint", "themeRose", "themeAppleGlass", "themeMidnight", "themeCustom"];
         Array.from(fields.themeSelect.options).forEach((option, index) => {
@@ -5623,7 +5623,7 @@
       }
       if (fields.themeSelect) fields.themeSelect.value = current;
       const editBtn = document.getElementById("tcEditBtn");
-      if (editBtn) { editBtn.hidden = current !== "custom"; editBtn.textContent = "✏️ " + t("customizerTitle"); }
+      if (editBtn) { editBtn.hidden = current !== "custom"; editBtn.title = t("customizerTitle"); }
     }
     async function openImageModal(jobId) {
       const job = state.jobs.find((item) => item.id === jobId);
@@ -8353,12 +8353,18 @@
       const editBtn = document.createElement("button");
       editBtn.id = "tcEditBtn";
       editBtn.type = "button";
-      editBtn.className = "btn-secondary toolbar-action";
-      editBtn.style.cssText = "min-height:38px;border-radius:6px;align-items:center;justify-content:center;gap:8px;padding:0 12px;font-weight:700;width:100%";
+      editBtn.textContent = "✏️";
+      editBtn.style.cssText = "flex:0 0 auto;width:30px;height:30px;border-radius:8px;padding:0;font-size:14px;line-height:1;border:1px solid var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;cursor:pointer";
       editBtn.hidden = true;
-      editBtn.addEventListener("click", () => window.__pcOpenThemeCustomizer());
-      const themeLabelEl = document.getElementById("themeSelect")?.closest("label");
-      if (themeLabelEl && themeLabelEl.parentElement) themeLabelEl.parentElement.insertBefore(editBtn, themeLabelEl.nextSibling);
+      editBtn.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); window.__pcOpenThemeCustomizer(); });
+      const themeSelectEl = document.getElementById("themeSelect");
+      const themeLabelEl = themeSelectEl?.closest("label");
+      if (themeLabelEl && themeSelectEl) {
+        themeSelectEl.style.flex = "1";
+        themeSelectEl.style.width = "auto";
+        themeSelectEl.style.minWidth = "0";
+        themeLabelEl.appendChild(editBtn);
+      }
 
       const $$ = (id) => wrap.querySelector("#" + id);
       const accentInput = $$("tcAccent");
@@ -8430,7 +8436,7 @@
 
       // Initial state (covers loading straight into a saved custom theme).
       editBtn.hidden = theme() !== "custom";
-      editBtn.textContent = "✏️ " + t("customizerTitle");
+      editBtn.title = t("customizerTitle");
     })();
 
     fields.currencySelect?.addEventListener("change", () => {
