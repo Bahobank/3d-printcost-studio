@@ -343,6 +343,11 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
 
 const localeTags: Record<PricingLanguage, string> = { th: "th-TH", en: "en-US", zh: "zh-CN", ja: "ja-JP", ko: "ko-KR" };
 
+// Wallet/credit is stored in THB internally. For non-Thai locales we display it in
+// USD (matching the USD pricing shown elsewhere). Rate mirrors the plan price
+// mapping where ฿199 ≈ $5.99.
+const THB_PER_USD = 33.2;
+
 function planTitle(plan: PlanInfo["plan"]) {
   if (plan === "studio") return "Studio";
   if (plan === "maker") return "Maker";
@@ -421,6 +426,9 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
   }
 
   function formatThb(amount: number) {
+    if (language !== "th") {
+      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(amount / THB_PER_USD);
+    }
     return new Intl.NumberFormat(localeTags[language], { style: "currency", currency: "THB", maximumFractionDigits: 0 }).format(amount);
   }
 
