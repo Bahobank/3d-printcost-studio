@@ -5623,7 +5623,7 @@
       }
       if (fields.themeSelect) fields.themeSelect.value = current;
       const editBtn = document.getElementById("tcEditBtn");
-      if (editBtn) { editBtn.hidden = current !== "custom"; editBtn.title = t("customizerTitle"); }
+      if (editBtn) { editBtn.style.display = current === "custom" ? "inline-flex" : "none"; editBtn.title = t("customizerTitle"); }
     }
     async function openImageModal(jobId) {
       const job = state.jobs.find((item) => item.id === jobId);
@@ -8354,8 +8354,7 @@
       editBtn.id = "tcEditBtn";
       editBtn.type = "button";
       editBtn.textContent = "✏️";
-      editBtn.style.cssText = "flex:0 0 auto;width:30px;height:30px;border-radius:8px;padding:0;font-size:14px;line-height:1;border:1px solid var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;cursor:pointer";
-      editBtn.hidden = true;
+      editBtn.style.cssText = "display:none;flex:0 0 auto;width:30px;height:30px;border-radius:8px;padding:0;font-size:14px;line-height:1;align-items:center;justify-content:center;border:1px solid var(--line,#e2e8f0);background:var(--control,#eef3fb);color:inherit;cursor:pointer";
       editBtn.addEventListener("click", (event) => { event.preventDefault(); event.stopPropagation(); window.__pcOpenThemeCustomizer(); });
       const themeSelectEl = document.getElementById("themeSelect");
       const themeLabelEl = themeSelectEl?.closest("label");
@@ -8435,7 +8434,7 @@
       };
 
       // Initial state (covers loading straight into a saved custom theme).
-      editBtn.hidden = theme() !== "custom";
+      editBtn.style.display = theme() === "custom" ? "inline-flex" : "none";
       editBtn.title = t("customizerTitle");
     })();
 
