@@ -2977,6 +2977,34 @@
         }).format(num(value));
       }
     };
+    // Realistic default electricity rate (per kWh) and machine wear (per hour) for each
+    // currency, so foreign users don't start with Thai-baht numbers (4.7/8). These are
+    // only starting points — users should set their real local costs.
+    const COST_DEFAULTS_BY_CURRENCY = {
+      THB: { electricity: 4.7, wear: 8 }, USD: { electricity: 0.15, wear: 0.25 }, EUR: { electricity: 0.30, wear: 0.25 },
+      GBP: { electricity: 0.27, wear: 0.20 }, JPY: { electricity: 30, wear: 30 }, CNY: { electricity: 0.6, wear: 1.5 },
+      KRW: { electricity: 120, wear: 300 }, AUD: { electricity: 0.30, wear: 0.35 }, CAD: { electricity: 0.15, wear: 0.30 },
+      SGD: { electricity: 0.30, wear: 0.30 }, HKD: { electricity: 1.2, wear: 1.8 }, TWD: { electricity: 3, wear: 7 },
+      INR: { electricity: 8, wear: 18 }, MYR: { electricity: 0.5, wear: 1 }, IDR: { electricity: 1500, wear: 3500 },
+      PHP: { electricity: 11, wear: 12 }, VND: { electricity: 2800, wear: 6000 }, AED: { electricity: 0.4, wear: 0.8 },
+      BRL: { electricity: 0.8, wear: 1.2 }, MXN: { electricity: 2.8, wear: 4 }, ZAR: { electricity: 2.5, wear: 4 }
+    };
+    function costDefaultsFor(code) { return COST_DEFAULTS_BY_CURRENCY[code] || COST_DEFAULTS_BY_CURRENCY.THB; }
+    // Migrate untouched default cost values when the currency changes (only values still
+    // at the old currency's default are updated; customised values are left alone).
+    function migrateCostDefaults(fromCode, toCode) {
+      if (!fromCode || fromCode === toCode) return false;
+      const from = costDefaultsFor(fromCode), to = costDefaultsFor(toCode);
+      let changed = false;
+      ["filament", "resin"].forEach((mode) => {
+        const ms = state && state.modeSettings && state.modeSettings[mode];
+        if (!ms) return;
+        if (Number(ms.electricityRate) === from.electricity) { ms.electricityRate = to.electricity; changed = true; }
+        if (Number(ms.wearRate) === from.wear) { ms.wearRate = to.wear; changed = true; }
+      });
+      return changed;
+    }
+    function localizeCostDefaults() { return migrateCostDefaults("THB", effectiveCurrencyCode()); }
     const qtyFmt = new Intl.NumberFormat("th-TH", { maximumFractionDigits: 1 });
     const fallbackImage = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#edf3ef"/><rect x="120" y="96" width="400" height="188" rx="16" fill="#fff" stroke="#1f2b25" stroke-width="14"/><path d="M170 257h300M190 257V135h260v122M230 172h180" stroke="#16737a" stroke-width="16" stroke-linecap="round" fill="none"/><rect x="280" y="150" width="80" height="58" rx="8" fill="#153b32"/><path d="M320 208v42" stroke="#153b32" stroke-width="14" stroke-linecap="round"/></svg>`);
     const brandLogos = {
@@ -3413,6 +3441,7 @@
     let state = loadState();
     const startupLanguage = startupLanguageOverride();
     state.settings.language = normalizeLanguage(startupLanguage || state.settings.language);
+    localizeCostDefaults();
     let jobLines = [{ id: crypto.randomUUID(), materialId: "", amount: "" }];
     let jobImageData = "";
     let orderImageData = "";
@@ -4406,6 +4435,7 @@
 
     function adoptCloudState(cloud) {
       state = normalizeState(cloud);
+      localizeCostDefaults();
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       render();
     }
@@ -5235,6 +5265,8 @@
       document.documentElement.lang = lang();
       try { localStorage.setItem("printCostLanguage", lang()); } catch (error) {}
       window.parent?.postMessage({ type: "printcost:language", language: lang() }, window.location.origin);
+      try { localStorage.setItem("printCostCurrency", effectiveCurrencyCode()); } catch (error) {}
+      window.parent?.postMessage({ type: "printcost:currency", currency: effectiveCurrencyCode() }, window.location.origin);
       renderSidebarLabels();
       setText("#languageLabel", t("language"));
       setText("#onboardingLanguageLabel", t("language"));
@@ -8192,10 +8224,13 @@
     });
 
     fields.currencySelect?.addEventListener("change", () => {
-      const code = fields.currencySelect.value;
-      state.settings.currency = CURRENCIES[code] ? code : "";
+      const oldEff = effectiveCurrencyCode();
+      const code = CURRENCIES[fields.currencySelect.value] ? fields.currencySelect.value : "";
+      state.settings.currency = code;
+      const newEff = effectiveCurrencyCode();
+      migrateCostDefaults(oldEff, newEff);
       persist();
-      showToast(`${t("currencyTitle")}: ${code}`);
+      showToast(`${t("currencyTitle")}: ${newEff}`);
     });
 
     $("saveSettings").addEventListener("click", () => {

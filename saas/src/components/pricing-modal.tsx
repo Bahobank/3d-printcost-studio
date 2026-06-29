@@ -1108,26 +1108,31 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
   const [pricingOpen, setPricingOpen] = useState(false);
   const [centerOpen, setCenterOpen] = useState(false);
   const [language, setLanguage] = useState<PricingLanguage>(defaultLanguage);
+  const [currency, setCurrency] = useState<string>("");
   const copy = pricingCopy[language];
 
   useEffect(() => {
     try {
       const storedLanguage = window.localStorage.getItem("printCostLanguage") ?? window.localStorage.getItem("language") ?? (document.documentElement.lang || navigator.language);
       setLanguage(normalizePricingLanguage(storedLanguage));
+      setCurrency(window.localStorage.getItem("printCostCurrency") ?? "");
     } catch {
       setLanguage(defaultLanguage);
     }
   }, []);
 
   useEffect(() => {
-    function handleLanguage(event: MessageEvent) {
+    function handleMessage(event: MessageEvent) {
       if (event.origin !== window.location.origin) return;
-      if (event.data?.type !== "printcost:language") return;
-      setLanguage(normalizePricingLanguage(event.data?.language));
+      if (event.data?.type === "printcost:language") {
+        setLanguage(normalizePricingLanguage(event.data?.language));
+      } else if (event.data?.type === "printcost:currency") {
+        setCurrency(String(event.data?.currency ?? ""));
+      }
     }
 
-    window.addEventListener("message", handleLanguage);
-    return () => window.removeEventListener("message", handleLanguage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, []);
 
   useEffect(() => {
@@ -1186,7 +1191,7 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
         </div>
       ) : null}
 
-      <SubscriptionCenter language={language} onChangePlan={() => { setCenterOpen(false); setPricingOpen(true); }} onClose={() => setCenterOpen(false)} open={centerOpen} />
+      <SubscriptionCenter currency={currency} language={language} onChangePlan={() => { setCenterOpen(false); setPricingOpen(true); }} onClose={() => setCenterOpen(false)} open={centerOpen} />
       <PricingDialog currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} locked={expired} onClose={() => setPricingOpen(false)} open={pricingOpen} />
     </>
   );

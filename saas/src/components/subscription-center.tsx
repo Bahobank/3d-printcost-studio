@@ -343,10 +343,24 @@ const accountCopy: Record<PricingLanguage, AccountCopy> = {
 
 const localeTags: Record<PricingLanguage, string> = { th: "th-TH", en: "en-US", zh: "zh-CN", ja: "ja-JP", ko: "ko-KR" };
 
-// Wallet/credit is stored in THB internally. For non-Thai locales we display it in
-// USD (matching the USD pricing shown elsewhere). Rate mirrors the plan price
-// mapping where ฿199 ≈ $5.99.
-const THB_PER_USD = 33.2;
+// Wallet/credit is stored in THB internally. It is displayed in the user's chosen
+// currency (from the calculator's currency picker), converted at these display rates
+// (THB per 1 unit). USD mirrors the plan price mapping where ฿199 ≈ $5.99.
+const CURRENCY_THB_RATE: Record<string, number> = {
+  THB: 1, USD: 33.2, EUR: 36, GBP: 42, JPY: 0.22, CNY: 4.6, KRW: 0.025,
+  AUD: 22, CAD: 24, SGD: 25, HKD: 4.3, TWD: 1.05, INR: 0.4, MYR: 7.4,
+  IDR: 0.0021, PHP: 0.59, VND: 0.0013, AED: 9, BRL: 6, MXN: 1.9, ZAR: 1.8,
+};
+const CURRENCY_FMT: Record<string, { locale: string; decimals: number }> = {
+  THB: { locale: "th-TH", decimals: 0 }, USD: { locale: "en-US", decimals: 2 }, EUR: { locale: "de-DE", decimals: 2 },
+  GBP: { locale: "en-GB", decimals: 2 }, JPY: { locale: "ja-JP", decimals: 0 }, CNY: { locale: "zh-CN", decimals: 2 },
+  KRW: { locale: "ko-KR", decimals: 0 }, AUD: { locale: "en-AU", decimals: 2 }, CAD: { locale: "en-CA", decimals: 2 },
+  SGD: { locale: "en-SG", decimals: 2 }, HKD: { locale: "en-HK", decimals: 2 }, TWD: { locale: "zh-TW", decimals: 2 },
+  INR: { locale: "en-IN", decimals: 2 }, MYR: { locale: "ms-MY", decimals: 2 }, IDR: { locale: "id-ID", decimals: 0 },
+  PHP: { locale: "en-PH", decimals: 2 }, VND: { locale: "vi-VN", decimals: 0 }, AED: { locale: "en-AE", decimals: 2 },
+  BRL: { locale: "pt-BR", decimals: 2 }, MXN: { locale: "es-MX", decimals: 2 }, ZAR: { locale: "en-ZA", decimals: 2 },
+};
+const CURRENCY_BY_LANG: Record<PricingLanguage, string> = { th: "THB", en: "USD", zh: "CNY", ja: "JPY", ko: "KRW" };
 
 function planTitle(plan: PlanInfo["plan"]) {
   if (plan === "studio") return "Studio";
@@ -385,8 +399,9 @@ function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: 
   );
 }
 
-export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { open: boolean; language: PricingLanguage; onClose: () => void; onChangePlan: () => void }) {
+export function SubscriptionCenter({ open, language, currency, onClose, onChangePlan }: { open: boolean; language: PricingLanguage; currency?: string; onClose: () => void; onChangePlan: () => void }) {
   const copy = accountCopy[language];
+  const walletCurrency = currency && CURRENCY_THB_RATE[currency] ? currency : CURRENCY_BY_LANG[language];
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(false);
   const [showWalletHistory, setShowWalletHistory] = useState(false);
@@ -425,11 +440,11 @@ export function SubscriptionCenter({ open, language, onClose, onChangePlan }: { 
     return new Intl.DateTimeFormat(localeTags[language], { day: "numeric", month: "short", year: "numeric" }).format(date);
   }
 
-  function formatThb(amount: number) {
-    if (language !== "th") {
-      return new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 2 }).format(amount / THB_PER_USD);
-    }
-    return new Intl.NumberFormat(localeTags[language], { style: "currency", currency: "THB", maximumFractionDigits: 0 }).format(amount);
+  function formatThb(amountThb: number) {
+    const code = walletCurrency;
+    const rate = CURRENCY_THB_RATE[code] ?? 1;
+    const fmt = CURRENCY_FMT[code] ?? CURRENCY_FMT.THB;
+    return new Intl.NumberFormat(fmt.locale, { style: "currency", currency: code, maximumFractionDigits: fmt.decimals }).format(amountThb / rate);
   }
 
   function formatInvoice(amount: number, currency: string) {
