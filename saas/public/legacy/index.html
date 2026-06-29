@@ -9264,10 +9264,14 @@
       if (det.open) {
         document.querySelectorAll("#ordersList details.order-row-menu[open]").forEach((other) => { if (other !== det) other.open = false; });
         const rect = det.querySelector("summary").getBoundingClientRect();
+        // .panel has backdrop-filter, which makes it the containing block for position:fixed,
+        // so anchor the panel relative to it (not the viewport).
+        const cb = det.closest(".panel");
+        const cbRect = cb ? cb.getBoundingClientRect() : { top: 0, right: window.innerWidth };
         panel.style.position = "fixed";
-        panel.style.top = (rect.bottom + 6) + "px";
+        panel.style.top = (rect.bottom - cbRect.top + 6) + "px";
         panel.style.left = "auto";
-        panel.style.right = Math.max(8, window.innerWidth - rect.right) + "px";
+        panel.style.right = Math.max(6, cbRect.right - rect.right) + "px";
         panel.style.zIndex = "9999";
       } else {
         panel.style.position = panel.style.top = panel.style.left = panel.style.right = panel.style.zIndex = "";
