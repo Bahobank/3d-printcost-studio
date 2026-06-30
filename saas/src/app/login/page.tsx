@@ -213,6 +213,14 @@ const featureVisuals = [
   },
 ];
 
+const legalCopy: Record<LoginLanguage, { privacy: string; terms: string }> = {
+  th: { privacy: "นโยบายความเป็นส่วนตัว", terms: "ข้อกำหนดการใช้งาน" },
+  en: { privacy: "Privacy Policy", terms: "Terms of Service" },
+  zh: { privacy: "隐私政策", terms: "服务条款" },
+  ja: { privacy: "プライバシーポリシー", terms: "利用規約" },
+  ko: { privacy: "개인정보처리방침", terms: "이용약관" },
+};
+
 function getLanguage(value: string | undefined): LoginLanguage {
   return value === "en" || value === "zh" || value === "ja" || value === "ko" ? value : "th";
 }
@@ -435,6 +443,16 @@ export default async function LoginPage({
                 {copy.noAccount}{" "}
                 <a className="font-black text-blue-600 hover:text-blue-700" href={`/signup?lang=${currentLanguage}`}>
                   {copy.createAccount}
+                </a>
+              </p>
+
+              <p className="mt-4 text-center text-xs font-semibold text-slate-400">
+                <a className="underline-offset-2 hover:text-slate-600 hover:underline" href="/privacy">
+                  {legalCopy[currentLanguage].privacy}
+                </a>
+                <span className="mx-2">·</span>
+                <a className="underline-offset-2 hover:text-slate-600 hover:underline" href="/terms">
+                  {legalCopy[currentLanguage].terms}
                 </a>
               </p>
             </div>
