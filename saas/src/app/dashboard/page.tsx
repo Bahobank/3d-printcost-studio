@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { AnnouncementPopup } from "@/components/announcement-popup";
 import { CheckoutSuccessPopup } from "@/components/checkout-success-popup";
 import { LegacyDashboardShell } from "@/components/legacy-dashboard-shell";
 import { ReferralCapture } from "@/components/referral-capture";
@@ -29,6 +30,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
         <CheckoutSuccessPopup />
       </Suspense>
       <ReferralCapture />
+      <AnnouncementPopup />
       <LegacyDashboardShell profile={previewProfile} />
     </>
   );
