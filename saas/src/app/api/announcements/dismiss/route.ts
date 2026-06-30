@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getSessionAndProfile } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
 
 // Marks an announcement as dismissed for the current user so it never shows again
 // (on any device). Idempotent — re-dismissing is a no-op.
 export async function POST(request: Request) {
   let userId: string;
   try {
-    const { user } = await getSessionAndProfile();
-    userId = user.id;
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return NextResponse.json({ ok: false }, { status: 401 });
+    userId = data.user.id;
   } catch {
     return NextResponse.json({ ok: false }, { status: 401 });
   }

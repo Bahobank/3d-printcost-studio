@@ -67,6 +67,13 @@ export function AnnouncementPopup() {
 
   if (!announcement) return null;
 
+  // Pick the copy for the user's selected language; fall back en → th → base columns.
+  const tr = announcement.translations ?? null;
+  const picked = tr?.[lang] ?? tr?.en ?? tr?.th ?? null;
+  const title = (picked?.title ?? announcement.title ?? "").trim();
+  const body = (picked?.body ?? announcement.body ?? "").trim();
+  const ctaLabel = (picked?.ctaLabel ?? announcement.ctaLabel ?? "").trim();
+
   const dismiss = (then?: () => void) => {
     setShown(false);
     const id = announcement.id;
@@ -94,7 +101,7 @@ export function AnnouncementPopup() {
     }
   };
 
-  const hasCta = Boolean(announcement.ctaLabel && announcement.ctaLabel.trim());
+  const hasCta = Boolean(ctaLabel);
 
   return (
     <div
@@ -126,8 +133,8 @@ export function AnnouncementPopup() {
             <Megaphone size={13} strokeWidth={2.75} />
             {NEW_BADGE[lang]}
           </span>
-          <h2 className="mt-3 text-2xl font-black leading-tight text-slate-950">{announcement.title}</h2>
-          <p className="mt-2 whitespace-pre-line text-sm font-semibold leading-7 text-slate-600">{announcement.body}</p>
+          <h2 className="mt-3 text-2xl font-black leading-tight text-slate-950">{title}</h2>
+          <p className="mt-2 whitespace-pre-line text-sm font-semibold leading-7 text-slate-600">{body}</p>
 
           <div className="mt-6 flex items-center justify-end gap-3">
             {hasCta ? (
@@ -144,7 +151,7 @@ export function AnnouncementPopup() {
                   onClick={onCta}
                   type="button"
                 >
-                  {announcement.ctaLabel}
+                  {ctaLabel}
                 </button>
               </>
             ) : (

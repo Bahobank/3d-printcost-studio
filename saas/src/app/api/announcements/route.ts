@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getSessionAndProfile } from "@/lib/subscription";
+import { createClient } from "@/lib/supabase/server";
+
+export type AnnouncementText = { title?: string; body?: string; ctaLabel?: string };
 
 export type AnnouncementPayload = {
   id: string;
@@ -9,6 +11,7 @@ export type AnnouncementPayload = {
   imageUrl: string | null;
   ctaLabel: string | null;
   ctaUrl: string | null;
+  translations: Record<string, AnnouncementText> | null;
 };
 
 // Returns the most recent active announcement addressed to this user (by email)
@@ -18,9 +21,11 @@ export async function GET() {
   let email: string | null = null;
   let userId: string | null = null;
   try {
-    const { user, profile } = await getSessionAndProfile();
-    userId = user.id;
-    email = (profile.email ?? user.email ?? null)?.toLowerCase() ?? null;
+    const supabase = await createClient();
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return NextResponse.json({ announcement: null });
+    userId = data.user.id;
+    email = data.user.email?.toLowerCase() ?? null;
   } catch {
     return NextResponse.json({ announcement: null });
   }
@@ -30,7 +35,7 @@ export async function GET() {
 
     const { data: rows } = await admin
       .from("announcements")
-      .select("id, title, body, image_url, cta_label, cta_url, target_email")
+      .select("id, title, body, image_url, cta_label, cta_url, target_email, translations")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
@@ -57,6 +62,7 @@ export async function GET() {
       imageUrl: (next.image_url as string | null) ?? null,
       ctaLabel: (next.cta_label as string | null) ?? null,
       ctaUrl: (next.cta_url as string | null) ?? null,
+      translations: (next.translations as Record<string, AnnouncementText> | null) ?? null,
     };
     return NextResponse.json({ announcement: payload });
   } catch (error) {

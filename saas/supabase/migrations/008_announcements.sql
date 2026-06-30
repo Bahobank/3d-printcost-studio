@@ -5,14 +5,19 @@
 create table if not exists public.announcements (
   id uuid primary key default gen_random_uuid(),
   target_email text,                       -- null = ทุกคน, มีค่า = เฉพาะอีเมลนี้
-  title text not null,
-  body text not null,
+  title text,                              -- ข้อความ default (ใช้เป็น fallback)
+  body text,
+  translations jsonb,                      -- { "th": {title,body,ctaLabel}, "en": {...}, ... }
   image_url text,
   cta_label text,
   cta_url text,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
+-- ถ้าตารางถูกสร้างไว้ก่อนหน้า ให้เพิ่มคอลัมน์ใหม่ + ผ่อนเงื่อนไข not null
+alter table public.announcements add column if not exists translations jsonb;
+alter table public.announcements alter column title drop not null;
+alter table public.announcements alter column body drop not null;
 
 create index if not exists idx_announcements_active
   on public.announcements (is_active, created_at desc);
