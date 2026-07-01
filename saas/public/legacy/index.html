@@ -224,6 +224,14 @@
     .easy-tile-img { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 9px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.06); }
     .easy-tile-dot { position: absolute; right: 5px; bottom: 5px; width: 19px; height: 19px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
     .easy-tile-name { font-size: 12px; font-weight: 700; text-align: center; color: var(--ink, #33415a); line-height: 1.25; }
+    .easy-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; max-height: 366px; overflow-y: auto; padding: 2px; }
+    .easy-product-card { display: flex; flex-direction: column; gap: 6px; padding: 7px; border: 2px solid var(--line, #e3e8ef); border-radius: 12px; background: var(--panel, #fff); cursor: pointer; text-align: center; transition: border-color .15s, transform .1s; }
+    .easy-product-card:hover { transform: translateY(-1px); }
+    .easy-product-card.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
+    .easy-product-card .pimg { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.05); }
+    .easy-product-card .pname { font-size: 11px; font-weight: 700; line-height: 1.3; color: var(--ink, #33415a); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 28px; }
+    .easy-product-card .pprice { font-size: 12px; font-weight: 800; color: var(--teal, #1f6feb); }
+    .easy-empty-note { grid-column: 1 / -1; padding: 16px; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted, #8a94a6); }
     .easy-add-hint { margin-top: 11px; font-size: 12px; color: var(--muted, #8a94a6); line-height: 1.5; }
     #materialForm.easy-mode #materialFinishField,
     #materialForm.easy-mode #rainbowShiftField,
@@ -2233,18 +2241,16 @@
                       <select id="easyBrandSelect"></select>
                     </div>
                     <div class="field">
-                      <label for="easyProductSelect" id="easyProductLabel">รุ่น / ชนิด</label>
-                      <select id="easyProductSelect"></select>
+                      <label for="easySearchInput" id="easySearchLabel">ค้นหา</label>
+                      <input id="easySearchInput" type="text" placeholder="เช่น PLA, Panchroma, PETG" autocomplete="off">
                     </div>
                   </div>
-                  <div class="easy-product-image" id="easyProductImageWrap" hidden>
-                    <img id="easyProductImage" alt="">
-                  </div>
-                  <div class="easy-color-block">
+                  <div class="easy-product-grid" id="easyProductGrid"></div>
+                  <div class="easy-color-block" id="easyColorBlock" hidden>
                     <div class="easy-color-label" id="easyColorLabel">เลือกสี</div>
                     <div class="easy-color-chips" id="easyColorChips"></div>
                   </div>
-                  <div class="easy-add-hint" id="easyAddHint">เลือกแบรนด์ รุ่น และสี แล้วสเปกจะถูกเติมให้อัตโนมัติ — เหลือแค่กรอกราคาและจำนวนคงเหลือ</div>
+                  <div class="easy-add-hint" id="easyAddHint">เลือกสินค้าจากร้าน SiamReprap แล้วระบบเติมชื่อ/ชนิด/ราคาให้ — เหลือแค่เลือกสีและจำนวนคงเหลือ</div>
                 </div>
                 <div class="grid-2">
                   <div class="field">
@@ -6450,6 +6456,23 @@
       { hex: "#DDEEF0", name: { th: "ใส", en: "Transparent" } },
     ];
 
+    const EASY_TYPE_SPECS = {
+      "PLA": { d: "1.75", nozzle: "200-220", bed: "55-60" },
+      "PLA+": { d: "1.75", nozzle: "205-225", bed: "55-65" },
+      "PLA Matte": { d: "1.75", nozzle: "200-220", bed: "55-60" },
+      "PLA Silk": { d: "1.75", nozzle: "210-230", bed: "55-60" },
+      "PETG": { d: "1.75", nozzle: "230-250", bed: "70-80" },
+      "PETG-CF": { d: "1.75", nozzle: "240-260", bed: "70-85" },
+      "ABS": { d: "1.75", nozzle: "230-250", bed: "90-110" },
+      "ASA": { d: "1.75", nozzle: "240-260", bed: "90-110" },
+      "TPU": { d: "1.75", nozzle: "210-230", bed: "30-50" },
+      "Nylon / PA": { d: "1.75", nozzle: "250-270", bed: "70-90" },
+      "PC": { d: "1.75", nozzle: "260-280", bed: "90-110" },
+      "PVA": { d: "1.75", nozzle: "200-220", bed: "50-60" },
+    };
+
+    const SIAMREPRAP_FILAMENTS = [{"n":"Polysupport เส้นพลาสติก แบบ Breakaway สำหรับสร้าง Support","b":"Polymaker","t":"PLA","p":1590,"img":"https://f.btwcdn.com/store-34999/product/caa487f9-6d49-6697-fbab-666685886c34.jpg"},{"n":"Polylite CosPLA เส้นพลาสติก สูตรพิเศษ สำหรับงาน Cosplay","b":"Polymaker","t":"PLA","p":790,"img":"https://f.btwcdn.com/store-34999/product/c8767870-f087-e517-c658-6666854b263d.jpg"},{"n":"Panchroma Starlight เส้นพลาสติกเปลี่ยนสีตามแสงและมุม ขนาด 1.75 มิล น","b":"Polymaker","t":"","p":690,"img":"https://f.btwcdn.com/store-34999/product/ee118473-6453-b98b-d33b-6986be2c5a2a.jpg"},{"n":"เส้น Polylite PC สีใส ขนาด 1.75 มิล หนัก 1 Kg","b":"Polymaker","t":"PC","p":990,"img":"https://f.btwcdn.com/store-34999/product/cb4546f7-9099-f3eb-1448-6666844e7641.jpg"},{"n":"PolyMax™ เส้นพลาสติก PLA เกรดอุตสาหกรรม แข็งแรงพิเศษ","b":"Polymaker","t":"PLA","p":990,"img":"https://f.btwcdn.com/store-34999/product/92e9dad3-35f5-4072-d403-666684be797b.jpg"},{"n":"เส้น PETG-CF ผสมคาร์บอนไฟเบอร์ ยี่ห้อ Bambulab ขนาด 1.75 มิล หนัก 1K","b":"Bambu Lab","t":"PETG-CF","p":990,"img":"https://f.btwcdn.com/store-34999/product/3cc8bf67-eed7-6ea2-6f78-66682916c181.jpg"},{"n":"เส้นยาง Polyflex TPU 90A สัมผัสผิวหนังได้ ขนาด 1.75 มิล น้ำหนัก 750 ","b":"Polymaker","t":"TPU","p":1290,"img":"https://f.btwcdn.com/store-34999/product/360d7957-1d45-2c76-13c9-667e35e0ce41.jpg"},{"n":"Fiberon™ PETG-rCF08 เส้น ผสมคาร์บอนไฟเบอร์ 8% เหมาะกับงานวิศวกรรมทั่","b":"Polymaker","t":"PETG-CF","p":790,"img":"https://f.btwcdn.com/store-34999/product/5a66ec92-4b17-5393-0090-672eee9443ec.jpg"},{"n":"Fiberon™ PETG-ESD เส้นสำหรับงานอิเลคทรอนิคส์ สามารถป้องกันไฟฟ้าสถิตย","b":"Polymaker","t":"PETG","p":1290,"img":"https://f.btwcdn.com/store-34999/product/eb4ed782-e0c0-48b0-5dff-672eee4cda29.jpg"},{"n":"Panchroma Neon เส้น PLA เปล่งแสงในที่มืด หรือไฟ Black Light ขนาด 1.7","b":"Polymaker","t":"PLA","p":690,"img":"https://f.btwcdn.com/store-34999/product/86c6e1a1-17b8-d5e2-7cd9-69b3dfe307ce.jpg"},{"n":"Panchroma Translucent เส้น PLA โปร่งแสง เหมาะทำโคมไฟ หรือภาพ Lithoph","b":"Polymaker","t":"PLA","p":590,"img":"https://f.btwcdn.com/store-34999/product/33f21d3f-c0bb-d96d-34f8-694b8f5b2421.jpg"},{"n":"Panchroma Satin เส้น PLA+ สี Matte ด้านคล้ายผิวคาร์บอนไฟเบอร์ ขัดกระ","b":"Polymaker","t":"PLA+","p":490,"img":"https://f.btwcdn.com/store-34999/product/289b3c46-4210-6b87-2adc-672ef115508b.jpg"},{"n":"Panchroma™ Celestial เส้น PLA โปร่งแสง ผสมกากเพชร งานปริ้นออกมาวิบวั","b":"Polymaker","t":"PLA","p":640,"img":"https://f.btwcdn.com/store-34999/product/44f3afca-aa09-2ed6-815f-69abc6f17df1.jpg"},{"n":"เส้น PLA Panchroma™ Glow เปล่งแสง ในที่มืด เหมาะทำของเล่น ของตกแต่ง","b":"Polymaker","t":"PLA","p":670,"img":"https://f.btwcdn.com/store-34999/product/46eb0b4a-a87d-9507-f044-672f08e9d2d6.jpg"},{"n":"Panchroma™ Dual Regular เส้น PLA สีขาว-ดำ","b":"Polymaker","t":"PLA","p":670,"img":"https://f.btwcdn.com/store-34999/product/ea6bb6b6-ce7b-4740-470c-672f1251c5d9.jpg"},{"n":"เส้น PLA Panchroma™ Dual Silk 2 สี แบบเงา ขนาด 1.75 มิล หนัก 1 KG","b":"Polymaker","t":"PLA Silk","p":670,"img":"https://f.btwcdn.com/store-34999/product/42b80653-5430-5f8f-9100-685120faaebe.jpg"},{"n":"Panchroma™ Metallic เส้น PLA สีเมทัลลิค มีความเงา และมีกากเพชร ขนาด ","b":"Polymaker","t":"PLA","p":670,"img":"https://f.btwcdn.com/store-34999/product/37ff5c43-03d5-d231-1c9a-672f0ce07afe.jpg"},{"n":"เส้น PLA-CF ผสมคาร์บอนไฟเบอร์ ปริ้นสวยสุดๆ ไม่เห็นรอยเลเยอร์ งานแข็ง","b":"Polymaker","t":"PLA","p":990,"img":"https://f.btwcdn.com/store-34999/product/3a8b51cb-7309-ca9c-49cc-67628ebf5c99.jpg"},{"n":"เส้น Bambu PLA Basic - Refill แบบเติม ขนาด 1.75 มิล หนัก 1000 กรัม","b":"Bambu Lab","t":"PLA","p":450,"img":"https://f.btwcdn.com/store-34999/product/f2fedddd-ce2c-c83b-3e30-68073e13d7d5.jpg"},{"n":"เส้น Bambu PETG HF ขนาด 1.75 มิล หนัก 1000 กรัม","b":"Bambu Lab","t":"PETG","p":550,"img":"https://f.btwcdn.com/store-34999/product/15dbd2ca-7c29-3873-4579-686f8fbf2918.jpg"},{"n":"เส้น Bambu PLA Basic พร้อม Spool ขนาด 1.75 มิล หนัก 1000 กรัม","b":"Bambu Lab","t":"PLA","p":550,"img":"https://f.btwcdn.com/store-34999/product/a7b075ff-1e8a-581b-6d37-68073d9baf61.jpg"},{"n":"เส้น Bambu PLA Basic ไล่เฉด สี Gradient","b":"Bambu Lab","t":"PLA","p":790,"img":"https://f.btwcdn.com/store-34999/product/23a183ce-fd24-2dcf-7fe4-68073eae2a74.jpg"},{"n":"Fiberon™ PA6-CF20 เส้นไนลอนผสมคาร์บอนไฟเบอร์ ขนาด 1.75 หนัก 500 กรัม","b":"Polymaker","t":"Nylon / PA","p":1790,"img":"https://f.btwcdn.com/store-34999/product/24cd2c24-662c-afa2-9c32-6842b9e4ca18.jpg"},{"n":"เส้น PLA Panchroma™ Luminous เปล่งแสง ในที่มืด เหมาะทำของเล่น ของตกแ","b":"Polymaker","t":"PLA","p":640,"img":"https://f.btwcdn.com/store-34999/product/e16cd158-db1f-8b2d-5999-6843d1373368.jpg"},{"n":"เส้น Panchroma Pla Dual Matte 2 สีผิวด้านในเส้นเดียว สร้างมิติให้ชิ้","b":"Polymaker","t":"PLA Matte","p":490,"img":"https://f.btwcdn.com/store-34999/product/e49911e0-951a-76dc-c40a-684baaaeb2da.jpg"},{"n":"เส้น Bambu PETG โปร่งแสง สำหรับงานที่เน้นรูป แสง และความสวยงาม","b":"Bambu Lab","t":"PETG","p":590,"img":"https://f.btwcdn.com/store-34999/product/40f5e599-2703-a8f0-2a0f-685a1d3ec684.jpg"},{"n":"เส้นพลาสติก Polylite HT-PLA","b":"Polymaker","t":"PLA","p":670,"img":"https://f.btwcdn.com/store-34999/product/7e56aaba-ed51-d0db-c44b-685bc8a95152.jpg"},{"n":"เส้นพลาสติก Polylite HT-PLA-GF","b":"Polymaker","t":"PLA","p":770,"img":"https://f.btwcdn.com/store-34999/product/6fc2adeb-86df-15cf-b8dd-685ccbdf0f5b.jpg"},{"n":"เส้นพลาสติก Panchroma PLA สี Matte โทนด้าน ขัดง่าย ไม่เห็นรอยเลเยอร์","b":"Polymaker","t":"PLA Matte","p":470,"img":"https://f.btwcdn.com/store-34999/product/eaebe7da-93c8-8278-c5bd-694b869b4562.jpg"},{"n":"เส้นพลาสติก Panchroma PLA โทนหวานสี Pastel ออกด้าน","b":"Polymaker","t":"PLA","p":470,"img":"https://f.btwcdn.com/store-34999/product/d8a1e50a-d23c-8420-bbae-694b86fa5f15.jpg"},{"n":"เส้นพลาสติก Panchroma PLA โทนสี Army โทนสีเข้มแบบทหาร ออกด้าน","b":"Polymaker","t":"PLA","p":470,"img":"https://f.btwcdn.com/store-34999/product/ce77632c-670f-8834-bbec-694b86e51472.jpg"},{"n":"เส้นพลาสติก Panchroma PLA โทนสี Muted ออกด้าน แนวเรียบหรู ดูแพง","b":"Polymaker","t":"PLA","p":470,"img":"https://f.btwcdn.com/store-34999/product/ef03fbff-c54a-42a2-fbd0-694b867624ca.jpg"},{"n":"เส้นพลาสติก Panchroma PLA โทนสี Marble มีเกล็ดผสมในเส้น ไม่เห็นรอยเล","b":"Polymaker","t":"PLA","p":470,"img":"https://f.btwcdn.com/store-34999/product/1ba199fd-6eb9-be6f-09a1-694b86ccc2a0.jpg"},{"n":"เส้น PLA Panchroma Gradient Matte ไล่เฉดสี หลายสีในม้วนเดียว เป็นสีโ","b":"Polymaker","t":"PLA Matte","p":560,"img":"https://f.btwcdn.com/store-34999/product/5db96074-21dc-47a6-4efb-698abeb6fe1b.jpg"},{"n":"เส้น Panchroma™ PLA Silk ผิวเงางามเหมือนผ้าไหม","b":"Polymaker","t":"PLA Silk","p":621,"img":"https://f.btwcdn.com/store-34999/product/e312edc6-3b6d-52e3-0ac1-694cd8aa6632.jpg"},{"n":"เส้นยาง Bambu Lab TPU 85A / 90A นิ่มกว่า 95A ปริ้นง่าย มีให้เลือกหลา","b":"Bambu Lab","t":"TPU","p":1590,"img":"https://f.btwcdn.com/store-34999/product/6ff1c5e5-9d72-06ff-973c-68f203cf97b1.jpg"},{"n":"เส้น Bambu lab ABS-GF ผสมใยแก้ว ปริ้นง่าย หดตัวน้อยมาก ทนร้อนได้มากก","b":"Bambu Lab","t":"ABS","p":1090,"img":"https://f.btwcdn.com/store-34999/product/7fae0ac4-fb0c-3418-d764-68f2111feb18.jpg"},{"n":"Fiberon™ ASA-CF08 เส้น ASA ผสมคาร์บอนไฟเบอร์ 8% ไม่หด ปริ้นง่ายกว่าเ","b":"Bambu Lab","t":"ASA","p":790,"img":"https://f.btwcdn.com/store-34999/product/7706100c-4f95-4ec6-a454-694d06661b9a.jpg"},{"n":"Fiberon™ PET-GF15 เส้นพลาสติก PET เสริมใยแก้ว 15% เพื่อวิศวกรรมที่แท","b":"Polymaker","t":"PETG","p":1390,"img":"https://f.btwcdn.com/store-34999/product/77b79a91-ceaa-f526-8aef-694cf4cf13e1.jpg"},{"n":"เส้นพลาสติก Panchroma PLA สี Matte ด้าน ราคาประหยัด แบบ Refill","b":"Polymaker","t":"PLA Matte","p":320,"img":"https://f.btwcdn.com/store-34999/product/a137a35b-7e10-592b-4bd8-695c955db6eb.jpg"},{"n":"เส้น Polymaker Panchroma™ Gradient Crystal โปร่งแสง ไล่สีดุจอัญมณี","b":"Polymaker","t":"","p":690,"img":"https://f.btwcdn.com/store-34999/product/5100093e-7d58-e56c-5438-695c9a700cbb.jpg"},{"n":"เส้น Panchroma™ Gradient Starlight มีเกล็ดเพชรเม็ดเล็ก ไล่โทนสีในม้ว","b":"Polymaker","t":"","p":790,"img":"https://f.btwcdn.com/store-34999/product/18d004f7-7188-8e01-35b1-695c9aafb8fd.jpg"},{"n":"เส้น Polymaker™ PETG สูตรใหม่ ปริ้นเร็วขึ้น เนียนขึ้น","b":"Polymaker","t":"PETG","p":370,"img":"https://f.btwcdn.com/store-34999/product/ac06e4e3-770d-253b-707c-695cabc23bd1.jpg"},{"n":"เส้น Polymaker Panchroma™ Gradient Silk ไล่สีเนียนสวย เงางามดุจผ้าไห","b":"Polymaker","t":"PLA Silk","p":660,"img":"https://f.btwcdn.com/store-34999/product/34ded18a-d1d0-0281-08be-698acd1513b9.jpg"},{"n":"เส้นพลาสติก Panchroma PLA Basic แบบ Refill สีพื้น ยอดนิยม","b":"Polymaker","t":"PLA","p":340,"img":"https://f.btwcdn.com/store-34999/product/5030046d-e6bb-b3a5-aaa2-69870ff381bd.jpg"},{"n":"เส้น Bambu ABS ของแท้ ขนาด 1.75 มิล หนัก 1000 กรัม","b":"Bambu Lab","t":"ABS","p":550,"img":"https://f.btwcdn.com/store-34999/product/f374a6eb-fc81-845e-a62e-69896f19eca3.jpg"},{"n":"เส้น PLA Panchroma Basic สูตรใหม่ พิมพ์ง่ายขึ้น ปริ้นเร็วขึ้น","b":"Polymaker","t":"PLA","p":440,"img":"https://f.btwcdn.com/store-34999/product/91756e17-3334-a557-d2ae-69af9c2ebb08.jpg"},{"n":"เส้น PLA Panchroma™ Gradient Celestial ไล่เฉด 2 สี โปร่งแสง ผสมกากเพ","b":"Polymaker","t":"PLA","p":740,"img":"https://f.btwcdn.com/store-34999/product/90cb0a00-1184-e8b4-4c04-69afae2970dd.jpg"},{"n":"เส้น PLA Panchroma™ Luminous สีรุ้ง ไล่เฉด","b":"Polymaker","t":"PLA","p":740,"img":"https://f.btwcdn.com/store-34999/product/c17f158f-b3fc-7e67-1872-69afc69977b9.jpg"},{"n":"เส้น Polymaker™ PETG ผสมกากเพชร","b":"Polymaker","t":"PETG","p":470,"img":"https://f.btwcdn.com/store-34999/product/5c694f35-ab0f-6c97-f369-6a0d57f7b05c.jpg"},{"n":"เส้น Polymaker™ PLA Pro สูตรใหม่ ปริ้นเร็วกว่าเดิม","b":"Polymaker","t":"PLA","p":570,"img":"https://f.btwcdn.com/store-34999/product/4734ca4e-4755-bd25-de34-69e9c1144792.jpg"},{"n":"เส้น Polylite PETG สีใส ปริ้นง่าย ใยน้อย","b":"Polymaker","t":"PETG","p":390,"img":"https://f.btwcdn.com/store-34999/product/78b68b43-d5b1-f6c9-e644-6a19073eae17.jpg"},{"n":"เส้น Bambu PETG Basic ของแท้ มาพร้อม RFID","b":"Bambu Lab","t":"PETG","p":390,"img":"https://f.btwcdn.com/store-34999/product/af5029a0-4582-ec75-9844-6a23aa019f1f.jpg"},{"n":"เส้นพลาสติกไนลอน Polymide CoPA ขนาด 1.75 มิล น้ำหนัก 750 กรัม","b":"Polymaker","t":"Nylon / PA","p":1890,"img":"https://f.btwcdn.com/store-34999/product/be41c8ee-c6d4-2acd-ff72-666960e32257.jpg"},{"n":"เส้นพลาสติก ABSpro กันไฟ ยี่ห้อ Formfutura ขนาด 1.75 มิล น้ำหนัก 500","b":"FormFutura","t":"ABS","p":1590,"img":"https://f.btwcdn.com/store-34999/product/12357cb0-6cd8-c18a-9b7f-63294279c3f0.jpg"},{"n":"เส้นพลาสติก Polymax PC ทนร้อน เหนียวพิเศษ เหมาะกับงานวิศวกรรม","b":"Polymaker","t":"PC","p":990,"img":"https://f.btwcdn.com/store-34999/product/c0a17778-da13-fa7f-7397-66668892f08a.jpg"},{"n":"เส้นพลาสติก Polymaker PC-ABS ทนร้อน พิมพ์ง่าย เหมาะกับงานวิศวกรรม","b":"Polymaker","t":"ABS","p":1790,"img":"https://f.btwcdn.com/store-34999/product/b71e7131-2151-5bd4-ab80-6666870b28ab.jpg"},{"n":"เส้นพลาสติก Polymaker PC-FR เสริมสารหน่วงไฟ ระดับ UL94 V0","b":"Polymaker","t":"PC","p":1990,"img":"https://f.btwcdn.com/store-34999/product/2bef9b42-dd9c-c5da-e0c3-66668650fa96.jpg"},{"n":"เส้นพลาสติก PolyCast™ สำหรับงานหล่อโลหะโดยตรง","b":"Polymaker","t":"PLA","p":1790,"img":"https://f.btwcdn.com/store-34999/product/8245fa93-ea86-c1d6-cb5d-6669603288e4.jpg"},{"n":"เส้นพลาสติก PVA Polydissolve ละลายน้ำได้ สำหรับสร้าง Support","b":"Polymaker","t":"PVA","p":1990,"img":"https://f.btwcdn.com/store-34999/product/74f7001a-5d9d-ae15-4cd3-666686d8f100.jpg"},{"n":"เส้น Polymaker LW-PLA ผสมโฟม น้ำหนักเบา","b":"Polymaker","t":"PLA","p":890,"img":"https://f.btwcdn.com/store-34999/product/9e9daa56-74bf-1071-f422-6666859ee226.jpg"}];
+
     const EASY_FILAMENT_TYPE_SPECS = {
       "PLA": { d: "1.75", nozzle: "200-220", bed: "55-60" },
       "PLA+": { d: "1.75", nozzle: "205-225", bed: "55-65" },
@@ -6570,8 +6593,11 @@
         brand: { th: "แบรนด์", en: "Brand", zh: "品牌", ja: "ブランド", ko: "브랜드" },
         product: { th: "รุ่น / ชนิด", en: "Product / Type", zh: "型号 / 类型", ja: "製品 / 種類", ko: "제품 / 종류" },
         color: { th: "เลือกสี", en: "Choose color", zh: "选择颜色", ja: "色を選択", ko: "색상 선택" },
-        byType: { th: "เลือกตามชนิดวัสดุ (ทุกแบรนด์)", en: "By material type (any brand)", zh: "按材料类型（任意品牌）", ja: "素材タイプで選ぶ（全ブランド）", ko: "소재 종류로 선택 (모든 브랜드)" },
-        hint: { th: "เลือกแบรนด์ รุ่น และสี แล้วสเปกจะถูกเติมให้อัตโนมัติ — เหลือแค่กรอกราคาและจำนวนคงเหลือ", en: "Pick brand, product and color — specs auto-fill. Just enter price and remaining amount.", zh: "选择品牌、型号和颜色，规格会自动填写，只需填写价格和剩余量。", ja: "ブランド・製品・色を選ぶと仕様が自動入力されます。価格と残量だけ入力してください。", ko: "브랜드·제품·색상을 선택하면 사양이 자동 입력됩니다. 가격과 남은 양만 입력하세요." },
+        search: { th: "ค้นหา", en: "Search", zh: "搜索", ja: "検索", ko: "검색" },
+        allBrands: { th: "ทุกแบรนด์", en: "All brands", zh: "所有品牌", ja: "すべてのブランド", ko: "모든 브랜드" },
+        hint: { th: "เลือกสินค้าจากร้าน SiamReprap แล้วระบบเติมชื่อ/ชนิด/ราคาให้ — เหลือแค่เลือกสีและจำนวนคงเหลือ", en: "Pick a product from SiamReprap — name, type and price auto-fill. Just choose a color and the remaining amount.", zh: "从 SiamReprap 选择产品，名称/类型/价格会自动填写，只需选颜色和剩余量。", ja: "SiamReprap の製品を選ぶと名前・種類・価格が自動入力されます。色と残量だけ選んでください。", ko: "SiamReprap 제품을 선택하면 이름·종류·가격이 자동 입력됩니다. 색상과 남은 양만 선택하세요." },
+        resinNote: { th: "โหมดง่ายรองรับเฉพาะฟิลาเมนต์ — สำหรับเรซินใช้ 'แบบละเอียด'", en: "Quick add supports filament only — use Detailed for resin.", zh: "快速添加仅支持耗材，树脂请用详细模式。", ja: "かんたん追加はフィラメントのみ対応。レジンは詳細モードで。", ko: "간편 추가는 필라멘트만 지원합니다. 레진은 상세 모드를 사용하세요." },
+        empty: { th: "ไม่พบสินค้า", en: "No products found", zh: "未找到产品", ja: "製品が見つかりません", ko: "제품 없음" },
       };
       return easyText(M[key]);
     }
@@ -6588,19 +6614,22 @@
 
     function bindEasyAdd() {
       if (easyAddBound) return;
-      const brandSel = $("easyBrandSelect");
-      if (!brandSel) return;
+      if (!$("easyBrandSelect")) return;
       easyAddBound = true;
       $("addModeEasyBtn").addEventListener("click", () => setAddMode("easy"));
       $("addModeDetailedBtn").addEventListener("click", () => setAddMode("detailed"));
-      brandSel.addEventListener("change", renderEasyProducts);
-      $("easyProductSelect").addEventListener("change", renderEasyColors);
+      $("easyBrandSelect").addEventListener("change", renderEasyGrid);
+      $("easySearchInput").addEventListener("input", renderEasyGrid);
+      $("easyProductGrid").addEventListener("click", (event) => {
+        const btn = event.target.closest(".easy-product-card");
+        if (!btn) return;
+        selectEasyProduct(Number(btn.dataset.easyIdx));
+      });
       $("easyColorChips").addEventListener("click", (event) => {
         const btn = event.target.closest(".easy-color-tile");
         if (!btn) return;
         applyEasyColor(Number(btn.dataset.easyColor));
       });
-      $("easyProductImage").onerror = () => { $("easyProductImageWrap").hidden = true; };
     }
 
     function renderEasyAdd() {
@@ -6609,71 +6638,79 @@
       $("addModeEasyBtn").textContent = easyLabel("easy");
       $("addModeDetailedBtn").textContent = easyLabel("detailed");
       $("easyBrandLabel").textContent = easyLabel("brand");
-      $("easyProductLabel").textContent = easyLabel("product");
+      $("easySearchLabel").textContent = easyLabel("search");
       $("easyColorLabel").textContent = easyLabel("color");
       $("easyAddHint").textContent = easyLabel("hint");
       const brandSel = $("easyBrandSelect");
       const prev = brandSel.value;
-      const brandNames = Object.keys(easyCatalog());
+      const brandNames = [...new Set(SIAMREPRAP_FILAMENTS.map((p) => p.b))];
       brandSel.innerHTML =
-        `<option value="${EASY_BY_TYPE_KEY}">${escapeHtml(easyLabel("byType"))}</option>` +
+        `<option value="__all__">${escapeHtml(easyLabel("allBrands"))}</option>` +
         brandNames.map((b) => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join("");
-      if ([EASY_BY_TYPE_KEY, ...brandNames].includes(prev)) brandSel.value = prev;
-      renderEasyProducts();
+      brandSel.value = ["__all__", ...brandNames].includes(prev) ? prev : "__all__";
+      $("easyColorBlock").hidden = true;
+      renderEasyGrid();
       bindEasyAdd();
       setAddMode(easyAddMode);
     }
 
-    function renderEasyProducts() {
-      const brandSel = $("easyBrandSelect");
-      const prodSel = $("easyProductSelect");
-      if (!brandSel || !prodSel) return;
-      const brand = brandSel.value;
-      const prev = prodSel.value;
-      const products = brand === EASY_BY_TYPE_KEY ? easyTypeList() : Object.keys(easyCatalog()[brand] || {});
-      prodSel.innerHTML = products.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
-      if (products.includes(prev)) prodSel.value = prev;
-      renderEasyColors();
-      updateEasyProductImage();
+    function easyFiltered() {
+      if (state.mode === "resin") return [];
+      const brand = $("easyBrandSelect").value || "__all__";
+      const q = ($("easySearchInput").value || "").trim().toLowerCase();
+      return SIAMREPRAP_FILAMENTS.filter((p) => {
+        if (brand !== "__all__" && p.b !== brand) return false;
+        if (q && !((p.n || "").toLowerCase().includes(q) || (p.t || "").toLowerCase().includes(q) || (p.b || "").toLowerCase().includes(q))) return false;
+        return true;
+      });
     }
 
-    function easyProductMeta() {
-      const brand = $("easyBrandSelect").value;
-      const product = $("easyProductSelect").value;
-      if (brand === EASY_BY_TYPE_KEY) return null;
-      return (easyCatalog()[brand] || {})[product] || null;
+    function renderEasyGrid() {
+      const grid = $("easyProductGrid");
+      if (!grid) return;
+      if (state.mode === "resin") { grid._items = []; grid.innerHTML = `<div class="easy-empty-note">${escapeHtml(easyLabel("resinNote"))}</div>`; return; }
+      const items = easyFiltered();
+      grid._items = items;
+      if (!items.length) { grid.innerHTML = `<div class="easy-empty-note">${escapeHtml(easyLabel("empty"))}</div>`; return; }
+      grid.innerHTML = items
+        .map((p, i) => `<button type="button" class="easy-product-card" data-easy-idx="${i}"><span class="pimg" style="background-image:url('${escapeHtml(p.img)}')"></span><span class="pname">${escapeHtml(p.n)}</span><span class="pprice">฿${Number(p.p).toLocaleString()}</span></button>`)
+        .join("");
     }
-    function updateEasyProductImage() {
-      const wrap = $("easyProductImageWrap");
-      const img = $("easyProductImage");
-      if (!wrap || !img) return;
-      const meta = easyProductMeta();
-      const src = meta && meta.image ? meta.image : "";
-      if (src) { img.src = src; wrap.hidden = false; }
-      else { img.removeAttribute("src"); wrap.hidden = true; }
+
+    function selectEasyProduct(idx) {
+      const grid = $("easyProductGrid");
+      const items = (grid && grid._items) || [];
+      const p = items[idx];
+      if (!p) return;
+      const brandOptions = [...fields.brandSelect.options].map((o) => o.value);
+      if (brandOptions.includes(p.b)) { fields.brandSelect.value = p.b; fields.customBrand.value = ""; }
+      else { const custom = brandOptions.find(isCustomOption); if (custom) { fields.brandSelect.value = custom; fields.customBrand.value = p.b; } }
+      if (p.t) {
+        const typeOptions = [...fields.materialType.options].map((o) => o.value);
+        if (typeOptions.includes(p.t)) { fields.materialType.value = p.t; fields.customType.value = ""; }
+      }
+      updateCustomMaterialFields();
+      fields.materialName.value = p.n;
+      fields.packagePrice.value = p.p;
+      fields.packageAmount.value = 1000;
+      fields.remainingAmount.value = 1000;
+      const specs = EASY_TYPE_SPECS[p.t] || {};
+      if (specs.d) fields.materialDiameter.value = specs.d;
+      if (specs.nozzle) fields.materialNozzle.value = specs.nozzle;
+      if (specs.bed) fields.materialBed.value = specs.bed;
+      grid.querySelectorAll(".easy-product-card").forEach((el, i) => el.classList.toggle("selected", i === idx));
+      $("easyColorBlock").hidden = false;
+      renderEasyColors();
+      renderLiveMaterialPreview();
     }
 
     function renderEasyColors() {
       const wrap = $("easyColorChips");
       if (!wrap) return;
-      const brand = $("easyBrandSelect").value;
-      const product = $("easyProductSelect").value;
-      const meta = brand === EASY_BY_TYPE_KEY ? null : (easyCatalog()[brand] || {})[product];
-      const img = meta && meta.image ? meta.image : "";
-      let colors;
-      if (brand === EASY_BY_TYPE_KEY) {
-        colors = EASY_STANDARD_COLORS.map((c) => ({ name: easyText(c.name), hex: c.hex }));
-      } else {
-        colors = (meta && meta.colors ? meta.colors : []).map((c) => ({ name: c.name, hex: c.hex }));
-      }
+      const colors = EASY_STANDARD_COLORS.map((c) => ({ name: easyText(c.name), hex: c.hex }));
       wrap._colors = colors;
       wrap.innerHTML = colors
-        .map((c, i) => {
-          const face = img
-            ? `<span class="easy-tile-img" style="background-image:url('${escapeHtml(img)}')"><span class="easy-tile-dot" style="background:${escapeHtml(c.hex)}"></span></span>`
-            : `<span class="easy-tile-img" style="background:${escapeHtml(c.hex)}"></span>`;
-          return `<button type="button" class="easy-color-tile" data-easy-color="${i}">${face}<span class="easy-tile-name">${escapeHtml(c.name)}</span></button>`;
-        })
+        .map((c, i) => `<button type="button" class="easy-color-tile" data-easy-color="${i}"><span class="easy-tile-img" style="background:${escapeHtml(c.hex)}"></span><span class="easy-tile-name">${escapeHtml(c.name)}</span></button>`)
         .join("");
     }
 
@@ -6682,44 +6719,8 @@
       const colors = (wrap && wrap._colors) || [];
       const c = colors[index];
       if (!c) return;
-      const brand = $("easyBrandSelect").value;
-      const product = $("easyProductSelect").value;
-      const byType = brand === EASY_BY_TYPE_KEY;
-
-      let type = product;
-      let weight = 1000;
-      let specs = {};
-      if (byType) {
-        if (state.mode !== "resin") specs = EASY_FILAMENT_TYPE_SPECS[product] || {};
-      } else {
-        const meta = (easyCatalog()[brand] || {})[product] || {};
-        type = meta.type || product;
-        weight = meta.weight || 1000;
-        if (state.mode !== "resin") specs = { d: meta.d, nozzle: meta.nozzle, bed: meta.bed };
-        const brandOptions = [...fields.brandSelect.options].map((o) => o.value);
-        if (brandOptions.includes(brand)) {
-          fields.brandSelect.value = brand;
-          fields.customBrand.value = "";
-        }
-      }
-
-      const typeOptions = [...fields.materialType.options].map((o) => o.value);
-      if (typeOptions.includes(type)) {
-        fields.materialType.value = type;
-        fields.customType.value = "";
-      }
-      updateCustomMaterialFields();
-
-      fields.materialName.value = [byType ? type : product, c.name].join(" ").trim();
       fields.colorName.value = c.name;
       setColorValue(c.hex, true);
-      fields.packageAmount.value = weight;
-      fields.remainingAmount.value = weight;
-      if (state.mode !== "resin") {
-        if (specs.d) fields.materialDiameter.value = specs.d;
-        if (specs.nozzle) fields.materialNozzle.value = specs.nozzle;
-        if (specs.bed) fields.materialBed.value = specs.bed;
-      }
       wrap.querySelectorAll(".easy-color-tile").forEach((el, i) => el.classList.toggle("selected", i === index));
       renderLiveMaterialPreview();
     }
