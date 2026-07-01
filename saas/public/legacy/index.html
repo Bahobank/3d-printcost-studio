@@ -207,6 +207,27 @@
     .layout > aside.panel .switch-row { white-space: normal; min-width: 0; }
     .panel { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; backdrop-filter: blur(14px); }
     #materialForm { overflow: visible; }
+    .add-mode-toggle { display: flex; gap: 6px; padding: 5px; background: var(--panel-head, #eef2f7); border-radius: 12px; margin-bottom: 14px; }
+    .add-mode-btn { flex: 1; padding: 9px 12px; border: 0; border-radius: 9px; background: transparent; font-weight: 800; color: var(--ink, #33415a); cursor: pointer; font-size: 14px; transition: background .15s, color .15s; }
+    .add-mode-btn.active { background: var(--panel, #fff); color: var(--teal, #1f6feb); box-shadow: 0 2px 8px rgba(20,40,80,.10); }
+    .easy-add-card { border: 1px solid var(--line, #e3e8ef); border-radius: 14px; padding: 14px; margin-bottom: 14px; background: var(--soft, #f7f9fc); }
+    .easy-add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 560px) { .easy-add-row { grid-template-columns: 1fr; } }
+    .easy-color-block { margin-top: 12px; }
+    .easy-color-label { font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--ink, #33415a); }
+    .easy-color-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .easy-color-chip { display: flex; align-items: center; gap: 7px; padding: 5px 12px 5px 6px; border: 2px solid var(--line, #e3e8ef); border-radius: 999px; background: var(--panel, #fff); cursor: pointer; font-weight: 700; font-size: 12.5px; color: var(--ink, #33415a); transition: border-color .15s, transform .1s; }
+    .easy-color-chip:hover { transform: translateY(-1px); }
+    .easy-color-chip.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
+    .easy-color-swatch { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
+    .easy-add-hint { margin-top: 11px; font-size: 12px; color: var(--muted, #8a94a6); line-height: 1.5; }
+    #materialForm.easy-mode #materialFinishField,
+    #materialForm.easy-mode #rainbowShiftField,
+    #materialForm.easy-mode #secondaryColorField,
+    #materialForm.easy-mode #customTypeWrap,
+    #materialForm.easy-mode .material-print-settings-card,
+    #materialForm.easy-mode .finish-preview { display: none !important; }
+    #materialForm:not(.easy-mode) #easyAddCard { display: none; }
     .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--panel-head); }
     .panel-head h2 { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
     .head-tools { display: flex; align-items: center; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
@@ -2197,6 +2218,27 @@
               </div>
               <div class="panel-body stack">
                 <input id="materialId" type="hidden">
+                <div class="add-mode-toggle" id="addModeToggle">
+                  <button type="button" class="add-mode-btn active" data-add-mode="easy" id="addModeEasyBtn">เพิ่มแบบง่าย</button>
+                  <button type="button" class="add-mode-btn" data-add-mode="detailed" id="addModeDetailedBtn">แบบละเอียด</button>
+                </div>
+                <div class="easy-add-card" id="easyAddCard">
+                  <div class="easy-add-row">
+                    <div class="field">
+                      <label for="easyBrandSelect" id="easyBrandLabel">แบรนด์</label>
+                      <select id="easyBrandSelect"></select>
+                    </div>
+                    <div class="field">
+                      <label for="easyProductSelect" id="easyProductLabel">รุ่น / ชนิด</label>
+                      <select id="easyProductSelect"></select>
+                    </div>
+                  </div>
+                  <div class="easy-color-block">
+                    <div class="easy-color-label" id="easyColorLabel">เลือกสี</div>
+                    <div class="easy-color-chips" id="easyColorChips"></div>
+                  </div>
+                  <div class="easy-add-hint" id="easyAddHint">เลือกแบรนด์ รุ่น และสี แล้วสเปกจะถูกเติมให้อัตโนมัติ — เหลือแค่กรอกราคาและจำนวนคงเหลือ</div>
+                </div>
                 <div class="grid-2">
                   <div class="field">
                     <label for="brandSelect">ยี่ห้อวัสดุ</label>
@@ -2226,7 +2268,7 @@
                     <label for="colorName">สี</label>
                     <input id="colorName" required placeholder="ดำด้าน / Grey">
                   </div>
-                  <div class="field">
+                  <div class="field" id="materialFinishField">
                     <label for="materialFinish">ลักษณะสี/ผิว</label>
                     <select id="materialFinish"></select>
                   </div>
@@ -6371,10 +6413,260 @@
       if (brands.includes(currentBrand)) fields.brandSelect.value = currentBrand;
       if (types.includes(currentType)) fields.materialType.value = currentType;
       updateCustomMaterialFields();
+      renderEasyAdd();
     }
     function updateCustomMaterialFields() {
       $("customBrandWrap").classList.toggle("show", isCustomOption(fields.brandSelect.value));
       $("customTypeWrap").classList.toggle("show", isCustomOption(fields.materialType.value));
+    }
+
+    // ===== Easy add (preset) mode =====
+    const EASY_BY_TYPE_KEY = "__bytype__";
+    let easyAddMode = "easy";
+    let easyAddBound = false;
+
+    const EASY_STANDARD_COLORS = [
+      { hex: "#F7F7F5", name: { th: "ขาว", en: "White" } },
+      { hex: "#1A1A1A", name: { th: "ดำ", en: "Black" } },
+      { hex: "#808080", name: { th: "เทา", en: "Grey" } },
+      { hex: "#D32F2F", name: { th: "แดง", en: "Red" } },
+      { hex: "#F57C00", name: { th: "ส้ม", en: "Orange" } },
+      { hex: "#FBC02D", name: { th: "เหลือง", en: "Yellow" } },
+      { hex: "#388E3C", name: { th: "เขียว", en: "Green" } },
+      { hex: "#1976D2", name: { th: "น้ำเงิน", en: "Blue" } },
+      { hex: "#4FC3F7", name: { th: "ฟ้า", en: "Sky Blue" } },
+      { hex: "#7B1FA2", name: { th: "ม่วง", en: "Purple" } },
+      { hex: "#EC407A", name: { th: "ชมพู", en: "Pink" } },
+      { hex: "#5D4037", name: { th: "น้ำตาล", en: "Brown" } },
+      { hex: "#C9A227", name: { th: "ทอง", en: "Gold" } },
+      { hex: "#BFC1C2", name: { th: "เงิน", en: "Silver" } },
+      { hex: "#DDEEF0", name: { th: "ใส", en: "Transparent" } },
+    ];
+
+    const EASY_FILAMENT_TYPE_SPECS = {
+      "PLA": { d: "1.75", nozzle: "200-220", bed: "55-60" },
+      "PLA+": { d: "1.75", nozzle: "205-225", bed: "55-65" },
+      "PLA Matte": { d: "1.75", nozzle: "200-220", bed: "55-60" },
+      "PLA Silk": { d: "1.75", nozzle: "210-230", bed: "55-60" },
+      "PLA High Speed": { d: "1.75", nozzle: "190-240", bed: "45-60" },
+      "PETG": { d: "1.75", nozzle: "230-250", bed: "70-80" },
+      "PETG Matte": { d: "1.75", nozzle: "230-250", bed: "70-80" },
+      "ABS": { d: "1.75", nozzle: "230-250", bed: "90-110" },
+      "ASA": { d: "1.75", nozzle: "240-260", bed: "90-110" },
+      "TPU": { d: "1.75", nozzle: "210-230", bed: "30-50" },
+      "Nylon / PA": { d: "1.75", nozzle: "250-270", bed: "70-90" },
+      "PC": { d: "1.75", nozzle: "260-280", bed: "90-110" },
+    };
+    const EASY_RESIN_TYPE_LIST = ["Standard Resin", "ABS-like", "Water Washable", "Tough", "Clear"];
+
+    const EASY_FILAMENT_BRANDS = {
+      "Bambu Lab": {
+        "PLA Basic": { type: "PLA", d: "1.75", nozzle: "190-230", bed: "35-45", weight: 1000, colors: [
+          { name: "Jade White", hex: "#F5F5F0" }, { name: "Black", hex: "#000000" }, { name: "Bambu Green", hex: "#00AE42" },
+          { name: "Red", hex: "#C12E1F" }, { name: "Blue", hex: "#0A2989" }, { name: "Yellow", hex: "#F4EE2A" },
+          { name: "Orange", hex: "#FF6A13" }, { name: "Gray", hex: "#8E9089" }, { name: "Cyan", hex: "#0086D6" },
+          { name: "Magenta", hex: "#EC008C" }, { name: "Brown", hex: "#7C4B00" }, { name: "Pink", hex: "#F55A74" } ] },
+        "PLA Matte": { type: "PLA Matte", d: "1.75", nozzle: "190-230", bed: "35-45", weight: 1000, colors: [
+          { name: "Ivory White", hex: "#FFFFFF" }, { name: "Charcoal", hex: "#333333" }, { name: "Bone White", hex: "#CBC6B8" },
+          { name: "Latte Brown", hex: "#8E5A3B" }, { name: "Sakura Pink", hex: "#F7C0C6" }, { name: "Lemon Yellow", hex: "#F6D64F" },
+          { name: "Grass Green", hex: "#61C680" }, { name: "Ice Blue", hex: "#A3D8E1" }, { name: "Mandarin Orange", hex: "#F9A825" } ] },
+        "PETG HF": { type: "PETG", d: "1.75", nozzle: "220-260", bed: "60-80", weight: 1000, colors: [
+          { name: "White", hex: "#FFFFFF" }, { name: "Black", hex: "#000000" }, { name: "Gray", hex: "#8E9089" },
+          { name: "Red", hex: "#C12E1F" }, { name: "Green", hex: "#00AE42" }, { name: "Blue", hex: "#0A2989" } ] },
+      },
+      "eSUN": {
+        "PLA+": { type: "PLA+", d: "1.75", nozzle: "205-225", bed: "60-80", weight: 1000, colors: [
+          { name: "Cold White", hex: "#F2F3F5" }, { name: "Black", hex: "#1A1A1A" }, { name: "Grey", hex: "#8A8D8F" },
+          { name: "Fire Engine Red", hex: "#C0392B" }, { name: "Yellow", hex: "#F4C20D" }, { name: "Green", hex: "#27AE60" },
+          { name: "Blue", hex: "#2A5CAA" }, { name: "Orange", hex: "#E67E22" }, { name: "Purple", hex: "#7D3C98" },
+          { name: "Pink", hex: "#E75480" }, { name: "Skin", hex: "#F1C27D" }, { name: "Brown", hex: "#5B3A29" } ] },
+        "PETG": { type: "PETG", d: "1.75", nozzle: "230-250", bed: "70-80", weight: 1000, colors: [
+          { name: "Solid White", hex: "#FFFFFF" }, { name: "Solid Black", hex: "#1A1A1A" }, { name: "Red", hex: "#C0392B" },
+          { name: "Blue", hex: "#2A5CAA" }, { name: "Green", hex: "#27AE60" }, { name: "Transparent", hex: "#DDEEF0" } ] },
+      },
+      "Polymaker": {
+        "PolyTerra PLA": { type: "PLA Matte", d: "1.75", nozzle: "190-230", bed: "25-60", weight: 1000, colors: [
+          { name: "Cotton White", hex: "#F3F3EF" }, { name: "Charcoal Black", hex: "#2B2B2B" }, { name: "Muted Grey", hex: "#9A9A9A" },
+          { name: "Lava Red", hex: "#B33A3A" }, { name: "Sunflower Yellow", hex: "#F2B705" }, { name: "Forest Green", hex: "#2E7D4F" },
+          { name: "Sapphire Blue", hex: "#26428B" }, { name: "Army Purple", hex: "#6E5C8E" }, { name: "Peach", hex: "#F4B9A0" } ] },
+        "PolyLite PLA": { type: "PLA", d: "1.75", nozzle: "190-230", bed: "25-60", weight: 1000, colors: [
+          { name: "White", hex: "#FFFFFF" }, { name: "Black", hex: "#1A1A1A" }, { name: "Red", hex: "#C0392B" },
+          { name: "Yellow", hex: "#F4C20D" }, { name: "Green", hex: "#27AE60" }, { name: "Blue", hex: "#2A5CAA" } ] },
+      },
+      "SUNLU": {
+        "PLA+": { type: "PLA+", d: "1.75", nozzle: "205-225", bed: "50-60", weight: 1000, colors: [
+          { name: "White", hex: "#F5F5F5" }, { name: "Black", hex: "#1A1A1A" }, { name: "Grey", hex: "#8A8D8F" },
+          { name: "Red", hex: "#C0392B" }, { name: "Yellow", hex: "#F4C20D" }, { name: "Green", hex: "#27AE60" },
+          { name: "Blue", hex: "#2A5CAA" }, { name: "Orange", hex: "#E67E22" }, { name: "Transparent", hex: "#DDEEF0" } ] },
+      },
+      "Creality": {
+        "Hyper PLA": { type: "PLA High Speed", d: "1.75", nozzle: "190-240", bed: "45-60", weight: 1000, colors: [
+          { name: "White", hex: "#FFFFFF" }, { name: "Black", hex: "#1A1A1A" }, { name: "Red", hex: "#C0392B" },
+          { name: "Blue", hex: "#2A5CAA" }, { name: "Green", hex: "#27AE60" }, { name: "Yellow", hex: "#F4C20D" } ] },
+      },
+    };
+    const EASY_RESIN_BRANDS = {
+      "Anycubic": {
+        "Standard Resin+": { type: "Standard Resin", weight: 1000, colors: [
+          { name: "Grey", hex: "#8A8D8F" }, { name: "Black", hex: "#1A1A1A" }, { name: "White", hex: "#EDEDED" },
+          { name: "Clear Green", hex: "#9FBFA6" }, { name: "Skin", hex: "#F1C27D" } ] },
+        "ABS-Like Resin+": { type: "ABS-like", weight: 1000, colors: [
+          { name: "Grey", hex: "#8A8D8F" }, { name: "Black", hex: "#1A1A1A" }, { name: "White", hex: "#EDEDED" } ] },
+      },
+      "Elegoo": {
+        "Standard Resin": { type: "Standard Resin", weight: 1000, colors: [
+          { name: "Grey", hex: "#8A8D8F" }, { name: "Black", hex: "#1A1A1A" }, { name: "White", hex: "#EDEDED" },
+          { name: "Clear Red", hex: "#C0392B" }, { name: "Beige", hex: "#E4D5B7" } ] },
+        "ABS-Like Resin V3": { type: "ABS-like", weight: 1000, colors: [
+          { name: "Grey", hex: "#8A8D8F" }, { name: "Black", hex: "#1A1A1A" }, { name: "White", hex: "#EDEDED" } ] },
+      },
+    };
+
+    function easyText(map) {
+      const l = lang();
+      return (map && (map[l] || map.en || map.th)) || "";
+    }
+    function easyCatalog() {
+      return state.mode === "resin" ? EASY_RESIN_BRANDS : EASY_FILAMENT_BRANDS;
+    }
+    function easyTypeList() {
+      return state.mode === "resin" ? EASY_RESIN_TYPE_LIST : Object.keys(EASY_FILAMENT_TYPE_SPECS);
+    }
+    function easyLabel(key) {
+      const M = {
+        easy: { th: "เพิ่มแบบง่าย", en: "Quick add", zh: "快速添加", ja: "かんたん追加", ko: "간편 추가" },
+        detailed: { th: "แบบละเอียด", en: "Detailed", zh: "详细", ja: "詳細", ko: "상세" },
+        brand: { th: "แบรนด์", en: "Brand", zh: "品牌", ja: "ブランド", ko: "브랜드" },
+        product: { th: "รุ่น / ชนิด", en: "Product / Type", zh: "型号 / 类型", ja: "製品 / 種類", ko: "제품 / 종류" },
+        color: { th: "เลือกสี", en: "Choose color", zh: "选择颜色", ja: "色を選択", ko: "색상 선택" },
+        byType: { th: "เลือกตามชนิดวัสดุ (ทุกแบรนด์)", en: "By material type (any brand)", zh: "按材料类型（任意品牌）", ja: "素材タイプで選ぶ（全ブランド）", ko: "소재 종류로 선택 (모든 브랜드)" },
+        hint: { th: "เลือกแบรนด์ รุ่น และสี แล้วสเปกจะถูกเติมให้อัตโนมัติ — เหลือแค่กรอกราคาและจำนวนคงเหลือ", en: "Pick brand, product and color — specs auto-fill. Just enter price and remaining amount.", zh: "选择品牌、型号和颜色，规格会自动填写，只需填写价格和剩余量。", ja: "ブランド・製品・色を選ぶと仕様が自動入力されます。価格と残量だけ入力してください。", ko: "브랜드·제품·색상을 선택하면 사양이 자동 입력됩니다. 가격과 남은 양만 입력하세요." },
+      };
+      return easyText(M[key]);
+    }
+
+    function setAddMode(mode) {
+      easyAddMode = mode === "detailed" ? "detailed" : "easy";
+      const form = $("materialForm");
+      if (form) form.classList.toggle("easy-mode", easyAddMode === "easy");
+      const eb = $("addModeEasyBtn");
+      const db = $("addModeDetailedBtn");
+      if (eb) eb.classList.toggle("active", easyAddMode === "easy");
+      if (db) db.classList.toggle("active", easyAddMode === "detailed");
+    }
+
+    function bindEasyAdd() {
+      if (easyAddBound) return;
+      const brandSel = $("easyBrandSelect");
+      if (!brandSel) return;
+      easyAddBound = true;
+      $("addModeEasyBtn").addEventListener("click", () => setAddMode("easy"));
+      $("addModeDetailedBtn").addEventListener("click", () => setAddMode("detailed"));
+      brandSel.addEventListener("change", renderEasyProducts);
+      $("easyProductSelect").addEventListener("change", renderEasyColors);
+      $("easyColorChips").addEventListener("click", (event) => {
+        const btn = event.target.closest(".easy-color-chip");
+        if (!btn) return;
+        applyEasyColor(Number(btn.dataset.easyColor));
+      });
+    }
+
+    function renderEasyAdd() {
+      const card = $("easyAddCard");
+      if (!card) return;
+      $("addModeEasyBtn").textContent = easyLabel("easy");
+      $("addModeDetailedBtn").textContent = easyLabel("detailed");
+      $("easyBrandLabel").textContent = easyLabel("brand");
+      $("easyProductLabel").textContent = easyLabel("product");
+      $("easyColorLabel").textContent = easyLabel("color");
+      $("easyAddHint").textContent = easyLabel("hint");
+      const brandSel = $("easyBrandSelect");
+      const prev = brandSel.value;
+      const brandNames = Object.keys(easyCatalog());
+      brandSel.innerHTML =
+        `<option value="${EASY_BY_TYPE_KEY}">${escapeHtml(easyLabel("byType"))}</option>` +
+        brandNames.map((b) => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join("");
+      if ([EASY_BY_TYPE_KEY, ...brandNames].includes(prev)) brandSel.value = prev;
+      renderEasyProducts();
+      bindEasyAdd();
+      setAddMode(easyAddMode);
+    }
+
+    function renderEasyProducts() {
+      const brandSel = $("easyBrandSelect");
+      const prodSel = $("easyProductSelect");
+      if (!brandSel || !prodSel) return;
+      const brand = brandSel.value;
+      const prev = prodSel.value;
+      const products = brand === EASY_BY_TYPE_KEY ? easyTypeList() : Object.keys(easyCatalog()[brand] || {});
+      prodSel.innerHTML = products.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+      if (products.includes(prev)) prodSel.value = prev;
+      renderEasyColors();
+    }
+
+    function renderEasyColors() {
+      const wrap = $("easyColorChips");
+      if (!wrap) return;
+      const brand = $("easyBrandSelect").value;
+      const product = $("easyProductSelect").value;
+      let colors;
+      if (brand === EASY_BY_TYPE_KEY) {
+        colors = EASY_STANDARD_COLORS.map((c) => ({ name: easyText(c.name), hex: c.hex }));
+      } else {
+        const meta = (easyCatalog()[brand] || {})[product];
+        colors = (meta && meta.colors ? meta.colors : []).map((c) => ({ name: c.name, hex: c.hex }));
+      }
+      wrap._colors = colors;
+      wrap.innerHTML = colors
+        .map((c, i) => `<button type="button" class="easy-color-chip" data-easy-color="${i}"><span class="easy-color-swatch" style="background:${escapeHtml(c.hex)}"></span>${escapeHtml(c.name)}</button>`)
+        .join("");
+    }
+
+    function applyEasyColor(index) {
+      const wrap = $("easyColorChips");
+      const colors = (wrap && wrap._colors) || [];
+      const c = colors[index];
+      if (!c) return;
+      const brand = $("easyBrandSelect").value;
+      const product = $("easyProductSelect").value;
+      const byType = brand === EASY_BY_TYPE_KEY;
+
+      let type = product;
+      let weight = 1000;
+      let specs = {};
+      if (byType) {
+        if (state.mode !== "resin") specs = EASY_FILAMENT_TYPE_SPECS[product] || {};
+      } else {
+        const meta = (easyCatalog()[brand] || {})[product] || {};
+        type = meta.type || product;
+        weight = meta.weight || 1000;
+        if (state.mode !== "resin") specs = { d: meta.d, nozzle: meta.nozzle, bed: meta.bed };
+        const brandOptions = [...fields.brandSelect.options].map((o) => o.value);
+        if (brandOptions.includes(brand)) {
+          fields.brandSelect.value = brand;
+          fields.customBrand.value = "";
+        }
+      }
+
+      const typeOptions = [...fields.materialType.options].map((o) => o.value);
+      if (typeOptions.includes(type)) {
+        fields.materialType.value = type;
+        fields.customType.value = "";
+      }
+      updateCustomMaterialFields();
+
+      fields.materialName.value = [byType ? type : product, c.name].join(" ").trim();
+      fields.colorName.value = c.name;
+      setColorValue(c.hex, true);
+      fields.packageAmount.value = weight;
+      fields.remainingAmount.value = weight;
+      if (state.mode !== "resin") {
+        if (specs.d) fields.materialDiameter.value = specs.d;
+        if (specs.nozzle) fields.materialNozzle.value = specs.nozzle;
+        if (specs.bed) fields.materialBed.value = specs.bed;
+      }
+      wrap.querySelectorAll(".easy-color-chip").forEach((el, i) => el.classList.toggle("selected", i === index));
+      renderLiveMaterialPreview();
     }
 
     function renderCountryOptions() {
@@ -7990,6 +8282,7 @@
       $("materialSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>${t("addStock")}`;
       $("cancelEdit").hidden = true;
       renderMaterialCatalogOptions();
+      setAddMode("easy");
     }
 
     function clearJobForm() {
@@ -8069,6 +8362,7 @@
       $("materialFormTitle").textContent = `${dt("editMaterial")} ${modeName()}`;
       $("materialSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/></svg>${dt("saveStock")}`;
       $("cancelEdit").hidden = false;
+      setAddMode("detailed");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
