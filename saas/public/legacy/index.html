@@ -224,6 +224,12 @@
     .easy-tile-img { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 9px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.06); }
     .easy-tile-dot { position: absolute; right: 5px; bottom: 5px; width: 19px; height: 19px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
     .easy-tile-name { font-size: 12px; font-weight: 700; text-align: center; color: var(--ink, #33415a); line-height: 1.25; }
+    .easy-brand-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .easy-brand-chip { padding: 7px 15px; border: 2px solid var(--line, #e3e8ef); border-radius: 999px; background: var(--panel, #fff); font-weight: 800; font-size: 13px; color: var(--ink, #33415a); cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
+    .easy-brand-chip:hover { border-color: var(--teal, #1f6feb); }
+    .easy-brand-chip.active { border-color: var(--teal, #1f6feb); color: var(--teal, #1f6feb); background: color-mix(in srgb, var(--teal, #1f6feb) 9%, var(--panel, #fff)); }
+    .easy-search { width: 100%; height: 42px; margin-bottom: 10px; padding: 0 14px; border: 1px solid var(--line, #e3e8ef); border-radius: 10px; background: var(--panel, #fff); color: var(--ink, #33415a); font-size: 14px; font-weight: 600; }
+    .easy-search:focus { outline: none; border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 15%, transparent); }
     .easy-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; max-height: 366px; overflow-y: auto; padding: 2px; }
     .easy-product-card { display: flex; flex-direction: column; gap: 6px; padding: 7px; border: 2px solid var(--line, #e3e8ef); border-radius: 12px; background: var(--panel, #fff); cursor: pointer; text-align: center; transition: border-color .15s, transform .1s; }
     .easy-product-card:hover { transform: translateY(-1px); }
@@ -2235,16 +2241,8 @@
                   <button type="button" class="add-mode-btn" data-add-mode="detailed" id="addModeDetailedBtn">แบบละเอียด</button>
                 </div>
                 <div class="easy-add-card" id="easyAddCard">
-                  <div class="easy-add-row">
-                    <div class="field">
-                      <label for="easyBrandSelect" id="easyBrandLabel">แบรนด์</label>
-                      <select id="easyBrandSelect"></select>
-                    </div>
-                    <div class="field">
-                      <label for="easySearchInput" id="easySearchLabel">ค้นหา</label>
-                      <input id="easySearchInput" type="text" placeholder="เช่น PLA, Panchroma, PETG" autocomplete="off">
-                    </div>
-                  </div>
+                  <div class="easy-brand-chips" id="easyBrandChips"></div>
+                  <input id="easySearchInput" class="easy-search" type="text" placeholder="ค้นหา เช่น PLA, Panchroma, PETG" autocomplete="off">
                   <div class="easy-product-grid" id="easyProductGrid"></div>
                   <div class="easy-color-block" id="easyColorBlock" hidden>
                     <div class="easy-color-label" id="easyColorLabel">เลือกสี</div>
@@ -6433,10 +6431,10 @@
       $("customTypeWrap").classList.toggle("show", isCustomOption(fields.materialType.value));
     }
 
-    // ===== Easy add (preset) mode =====
-    const EASY_BY_TYPE_KEY = "__bytype__";
+    // ===== Easy add (SiamReprap product grid) =====
     let easyAddMode = "easy";
     let easyAddBound = false;
+    let easyBrand = "__all__";
 
     const EASY_STANDARD_COLORS = [
       { hex: "#F7F7F5", name: { th: "ขาว", en: "White" } },
@@ -6614,11 +6612,17 @@
 
     function bindEasyAdd() {
       if (easyAddBound) return;
-      if (!$("easyBrandSelect")) return;
+      if (!$("easyBrandChips")) return;
       easyAddBound = true;
       $("addModeEasyBtn").addEventListener("click", () => setAddMode("easy"));
       $("addModeDetailedBtn").addEventListener("click", () => setAddMode("detailed"));
-      $("easyBrandSelect").addEventListener("change", renderEasyGrid);
+      $("easyBrandChips").addEventListener("click", (event) => {
+        const btn = event.target.closest(".easy-brand-chip");
+        if (!btn) return;
+        easyBrand = btn.dataset.easyBrand;
+        renderEasyBrandChips();
+        renderEasyGrid();
+      });
       $("easySearchInput").addEventListener("input", renderEasyGrid);
       $("easyProductGrid").addEventListener("click", (event) => {
         const btn = event.target.closest(".easy-product-card");
@@ -6632,22 +6636,25 @@
       });
     }
 
+    function renderEasyBrandChips() {
+      const wrap = $("easyBrandChips");
+      if (!wrap) return;
+      const brandNames = [...new Set(SIAMREPRAP_FILAMENTS.map((p) => p.b))];
+      if (!["__all__", ...brandNames].includes(easyBrand)) easyBrand = "__all__";
+      const chips = [["__all__", easyLabel("allBrands")], ...brandNames.map((b) => [b, b])];
+      wrap.innerHTML = chips
+        .map(([val, label]) => `<button type="button" class="easy-brand-chip${val === easyBrand ? " active" : ""}" data-easy-brand="${escapeHtml(val)}">${escapeHtml(label)}</button>`)
+        .join("");
+    }
+
     function renderEasyAdd() {
       const card = $("easyAddCard");
       if (!card) return;
       $("addModeEasyBtn").textContent = easyLabel("easy");
       $("addModeDetailedBtn").textContent = easyLabel("detailed");
-      $("easyBrandLabel").textContent = easyLabel("brand");
-      $("easySearchLabel").textContent = easyLabel("search");
       $("easyColorLabel").textContent = easyLabel("color");
       $("easyAddHint").textContent = easyLabel("hint");
-      const brandSel = $("easyBrandSelect");
-      const prev = brandSel.value;
-      const brandNames = [...new Set(SIAMREPRAP_FILAMENTS.map((p) => p.b))];
-      brandSel.innerHTML =
-        `<option value="__all__">${escapeHtml(easyLabel("allBrands"))}</option>` +
-        brandNames.map((b) => `<option value="${escapeHtml(b)}">${escapeHtml(b)}</option>`).join("");
-      brandSel.value = ["__all__", ...brandNames].includes(prev) ? prev : "__all__";
+      renderEasyBrandChips();
       $("easyColorBlock").hidden = true;
       renderEasyGrid();
       bindEasyAdd();
@@ -6656,7 +6663,7 @@
 
     function easyFiltered() {
       if (state.mode === "resin") return [];
-      const brand = $("easyBrandSelect").value || "__all__";
+      const brand = easyBrand || "__all__";
       const q = ($("easySearchInput").value || "").trim().toLowerCase();
       return SIAMREPRAP_FILAMENTS.filter((p) => {
         if (brand !== "__all__" && p.b !== brand) return false;
@@ -6673,7 +6680,7 @@
       grid._items = items;
       if (!items.length) { grid.innerHTML = `<div class="easy-empty-note">${escapeHtml(easyLabel("empty"))}</div>`; return; }
       grid.innerHTML = items
-        .map((p, i) => `<button type="button" class="easy-product-card" data-easy-idx="${i}"><span class="pimg" style="background-image:url('${escapeHtml(p.img)}')"></span><span class="pname">${escapeHtml(p.n)}</span><span class="pprice">฿${Number(p.p).toLocaleString()}</span></button>`)
+        .map((p, i) => `<button type="button" class="easy-product-card" data-easy-idx="${i}"><span class="pimg" style="background-image:url('${escapeHtml(p.img)}')"></span><span class="pname">${escapeHtml(p.n)}</span></button>`)
         .join("");
     }
 
@@ -6691,7 +6698,6 @@
       }
       updateCustomMaterialFields();
       fields.materialName.value = p.n;
-      fields.packagePrice.value = p.p;
       fields.packageAmount.value = 1000;
       fields.remainingAmount.value = 1000;
       const specs = EASY_TYPE_SPECS[p.t] || {};
