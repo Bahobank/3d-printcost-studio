@@ -213,6 +213,8 @@
     .easy-add-card { border: 1px solid var(--line, #e3e8ef); border-radius: 14px; padding: 14px; margin-bottom: 14px; background: var(--soft, #f7f9fc); }
     .easy-add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 560px) { .easy-add-row { grid-template-columns: 1fr; } }
+    .easy-product-image { margin-top: 12px; display: flex; justify-content: center; }
+    .easy-product-image img { max-height: 156px; max-width: 100%; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px; border: 1px solid var(--line, #e3e8ef); }
     .easy-color-block { margin-top: 12px; }
     .easy-color-label { font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--ink, #33415a); }
     .easy-color-chips { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -2232,6 +2234,9 @@
                       <label for="easyProductSelect" id="easyProductLabel">รุ่น / ชนิด</label>
                       <select id="easyProductSelect"></select>
                     </div>
+                  </div>
+                  <div class="easy-product-image" id="easyProductImageWrap" hidden>
+                    <img id="easyProductImage" alt="">
                   </div>
                   <div class="easy-color-block">
                     <div class="easy-color-label" id="easyColorLabel">เลือกสี</div>
@@ -6475,7 +6480,7 @@
           { name: "Red", hex: "#C12E1F" }, { name: "Green", hex: "#00AE42" }, { name: "Blue", hex: "#0A2989" } ] },
       },
       "eSUN": {
-        "PLA+": { type: "PLA+", d: "1.75", nozzle: "205-225", bed: "60-80", weight: 1000, colors: [
+        "PLA+": { type: "PLA+", d: "1.75", nozzle: "205-225", bed: "60-80", weight: 1000, image: "https://cdnus.globalso.com/esun3d/PLA+-MILKY-WHITE1.jpg", colors: [
           { name: "Cold White", hex: "#F2F3F5" }, { name: "Black", hex: "#1A1A1A" }, { name: "Grey", hex: "#8A8D8F" },
           { name: "Fire Engine Red", hex: "#C0392B" }, { name: "Yellow", hex: "#F4C20D" }, { name: "Green", hex: "#27AE60" },
           { name: "Blue", hex: "#2A5CAA" }, { name: "Orange", hex: "#E67E22" }, { name: "Purple", hex: "#7D3C98" },
@@ -6493,6 +6498,30 @@
           { name: "White", hex: "#FFFFFF" }, { name: "Black", hex: "#1A1A1A" }, { name: "Red", hex: "#C0392B" },
           { name: "Yellow", hex: "#F4C20D" }, { name: "Green", hex: "#27AE60" }, { name: "Blue", hex: "#2A5CAA" } ] },
       },
+      "Panchroma": {
+        "Basic PLA": { type: "PLA", d: "1.75", nozzle: "190-230", bed: "25-60", weight: 1000, image: "https://shop.polymaker.com/cdn/shop/files/CA19010_Isometric_Top.png", colors: [
+          { name: "Black", hex: "#1A1A1A" }, { name: "White", hex: "#F5F5F5" }, { name: "Cold White", hex: "#EDF0F2" },
+          { name: "Red", hex: "#D32F2F" }, { name: "Orange", hex: "#F57C00" }, { name: "Magenta", hex: "#C2185B" },
+          { name: "Pink", hex: "#EC407A" }, { name: "Wine Red", hex: "#7B1E3A" }, { name: "Yellow", hex: "#FBC02D" },
+          { name: "Lemon Yellow", hex: "#F6E05E" }, { name: "Cream", hex: "#F3E9D2" }, { name: "Beige", hex: "#E4D5B7" },
+          { name: "Tan", hex: "#C9A66B" }, { name: "Brown", hex: "#6D4C34" }, { name: "Green", hex: "#388E3C" },
+          { name: "Lime Green", hex: "#9CCC65" }, { name: "Jungle Green", hex: "#1B5E3A" }, { name: "Olive Green", hex: "#7A7B33" },
+          { name: "Dark Olive Drab", hex: "#5A5A2E" }, { name: "Azure Blue", hex: "#2979FF" }, { name: "Aqua Blue", hex: "#26C6DA" },
+          { name: "Stone Blue", hex: "#5E7A99" }, { name: "Polymaker Teal", hex: "#1CA5A0" }, { name: "Steel Grey", hex: "#6E7A80" },
+          { name: "Grey", hex: "#9E9E9E" }, { name: "Dark Grey", hex: "#4A4A4A" }, { name: "Purple", hex: "#7B1FA2" } ] },
+        "Matte PLA": { type: "PLA Matte", d: "1.75", nozzle: "190-230", bed: "25-60", weight: 1000, image: "https://shop.polymaker.com/cdn/shop/files/CA04001_Isometeic_Top.png", colors: [
+          { name: "Charcoal Black", hex: "#2B2B2B" }, { name: "Cotton White", hex: "#F3F3EF" }, { name: "Muted White", hex: "#ECEAE2" },
+          { name: "Army Beige", hex: "#C9B58B" }, { name: "Army Brown", hex: "#6E5A3C" }, { name: "Earth Brown", hex: "#5B4636" },
+          { name: "Pastel Peach", hex: "#F4C2A1" }, { name: "Sunrise Orange", hex: "#F58B4C" }, { name: "Pastel Banana", hex: "#F6E9A0" },
+          { name: "Savannah Yellow", hex: "#E4C35A" }, { name: "Lime Green", hex: "#A8C64F" }, { name: "Army Light Green", hex: "#A7B080" },
+          { name: "Army Dark Green", hex: "#4C5A3A" }, { name: "Muted Green", hex: "#7EA07E" }, { name: "Forest Green", hex: "#2E5A3A" },
+          { name: "Pastel Mint", hex: "#B7E3C9" }, { name: "Arctic Teal", hex: "#5FA9A6" }, { name: "Pastel Ice", hex: "#CFE6EA" },
+          { name: "Grey", hex: "#9A9A9A" } ] },
+        "Silk PLA": { type: "PLA Silk", d: "1.75", nozzle: "200-230", bed: "25-60", weight: 1000, colors: [
+          { name: "Silver", hex: "#C0C0C0" }, { name: "Gold", hex: "#C9A227" }, { name: "Copper", hex: "#B87333" },
+          { name: "Rose Gold", hex: "#B76E79" }, { name: "Blue", hex: "#2A5CAA" }, { name: "Purple", hex: "#7B1FA2" },
+          { name: "Green", hex: "#2E8B57" }, { name: "Red", hex: "#C0392B" } ] },
+      },
       "SUNLU": {
         "PLA+": { type: "PLA+", d: "1.75", nozzle: "205-225", bed: "50-60", weight: 1000, colors: [
           { name: "White", hex: "#F5F5F5" }, { name: "Black", hex: "#1A1A1A" }, { name: "Grey", hex: "#8A8D8F" },
@@ -6500,7 +6529,7 @@
           { name: "Blue", hex: "#2A5CAA" }, { name: "Orange", hex: "#E67E22" }, { name: "Transparent", hex: "#DDEEF0" } ] },
       },
       "Creality": {
-        "Hyper PLA": { type: "PLA High Speed", d: "1.75", nozzle: "190-240", bed: "45-60", weight: 1000, colors: [
+        "Hyper PLA": { type: "PLA High Speed", d: "1.75", nozzle: "190-240", bed: "45-60", weight: 1000, image: "https://cdn.shopify.com/s/files/1/0893/0603/8637/files/102.png?v=1768970723", colors: [
           { name: "White", hex: "#FFFFFF" }, { name: "Black", hex: "#1A1A1A" }, { name: "Red", hex: "#C0392B" },
           { name: "Blue", hex: "#2A5CAA" }, { name: "Green", hex: "#27AE60" }, { name: "Yellow", hex: "#F4C20D" } ] },
       },
@@ -6569,6 +6598,7 @@
         if (!btn) return;
         applyEasyColor(Number(btn.dataset.easyColor));
       });
+      $("easyProductImage").onerror = () => { $("easyProductImageWrap").hidden = true; };
     }
 
     function renderEasyAdd() {
@@ -6602,6 +6632,23 @@
       prodSel.innerHTML = products.map((p) => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
       if (products.includes(prev)) prodSel.value = prev;
       renderEasyColors();
+      updateEasyProductImage();
+    }
+
+    function easyProductMeta() {
+      const brand = $("easyBrandSelect").value;
+      const product = $("easyProductSelect").value;
+      if (brand === EASY_BY_TYPE_KEY) return null;
+      return (easyCatalog()[brand] || {})[product] || null;
+    }
+    function updateEasyProductImage() {
+      const wrap = $("easyProductImageWrap");
+      const img = $("easyProductImage");
+      if (!wrap || !img) return;
+      const meta = easyProductMeta();
+      const src = meta && meta.image ? meta.image : "";
+      if (src) { img.src = src; wrap.hidden = false; }
+      else { img.removeAttribute("src"); wrap.hidden = true; }
     }
 
     function renderEasyColors() {
