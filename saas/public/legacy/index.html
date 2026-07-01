@@ -213,30 +213,41 @@
     .easy-add-card { border: 1px solid var(--line, #e3e8ef); border-radius: 14px; padding: 14px; margin-bottom: 14px; background: var(--soft, #f7f9fc); }
     .easy-add-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     @media (max-width: 560px) { .easy-add-row { grid-template-columns: 1fr; } }
-    .easy-product-image { margin-top: 12px; display: flex; justify-content: center; }
-    .easy-product-image img { max-height: 156px; max-width: 100%; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px; border: 1px solid var(--line, #e3e8ef); }
-    .easy-color-block { margin-top: 12px; }
-    .easy-color-label { font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--ink, #33415a); }
-    .easy-color-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
-    .easy-color-tile { display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 2px solid var(--line, #e3e8ef); border-radius: 13px; background: var(--panel, #fff); cursor: pointer; transition: border-color .15s, transform .1s; }
+    .easy-summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; margin-bottom: 14px; border: 1px solid var(--line, #e3e8ef); border-radius: 14px; background: var(--panel, #fff); }
+    .easy-summary-rows { display: grid; gap: 5px; min-width: 0; }
+    .easy-summary-row { display: flex; align-items: center; gap: 14px; font-size: 13px; }
+    .easy-summary-row span { min-width: 66px; color: var(--muted, #8a94a6); font-weight: 600; }
+    .easy-summary-row b { color: var(--ink, #33415a); font-weight: 800; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .easy-summary-swatch { width: 54px; height: 54px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); background: #eef1f5; flex: none; }
+    .easy-step-title { display: flex; align-items: center; gap: 8px; margin: 16px 0 9px; font-size: 14px; font-weight: 800; color: var(--ink, #33415a); }
+    .easy-step-no { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--teal, #1f6feb); color: #fff; font-size: 12px; font-weight: 800; flex: none; }
+    .easy-color-block { margin-top: 4px; }
+    .easy-color-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: 10px; }
+    .easy-color-tile { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 11px 6px; border: 1.5px solid var(--line, #e3e8ef); border-radius: 13px; background: var(--panel, #fff); cursor: pointer; transition: border-color .15s, transform .1s; }
     .easy-color-tile:hover { transform: translateY(-1px); }
-    .easy-color-tile.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
-    .easy-tile-img { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 9px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.06); }
-    .easy-tile-dot { position: absolute; right: 5px; bottom: 5px; width: 19px; height: 19px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
-    .easy-tile-name { font-size: 12px; font-weight: 700; text-align: center; color: var(--ink, #33415a); line-height: 1.25; }
+    .easy-color-tile.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 16%, transparent); }
+    .ect-swatch { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); }
+    .ect-name { font-size: 12px; font-weight: 700; text-align: center; color: var(--ink, #33415a); line-height: 1.2; }
+    .ect-check, .epc-check { position: absolute; top: 7px; right: 7px; width: 18px; height: 18px; border-radius: 50%; background: var(--teal, #1f6feb); color: #fff; display: none; place-items: center; font-size: 11px; font-weight: 900; }
+    .easy-color-tile.selected .ect-check, .easy-product-card.selected .epc-check { display: grid; }
     .easy-brand-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
     .easy-brand-chip { padding: 7px 15px; border: 2px solid var(--line, #e3e8ef); border-radius: 999px; background: var(--panel, #fff); font-weight: 800; font-size: 13px; color: var(--ink, #33415a); cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
     .easy-brand-chip:hover { border-color: var(--teal, #1f6feb); }
     .easy-brand-chip.active { border-color: var(--teal, #1f6feb); color: var(--teal, #1f6feb); background: color-mix(in srgb, var(--teal, #1f6feb) 9%, var(--panel, #fff)); }
     .easy-search { width: 100%; height: 42px; margin-bottom: 10px; padding: 0 14px; border: 1px solid var(--line, #e3e8ef); border-radius: 10px; background: var(--panel, #fff); color: var(--ink, #33415a); font-size: 14px; font-weight: 600; }
     .easy-search:focus { outline: none; border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 15%, transparent); }
-    .easy-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; max-height: 366px; overflow-y: auto; padding: 2px; }
-    .easy-product-card { display: flex; flex-direction: column; gap: 6px; padding: 7px; border: 2px solid var(--line, #e3e8ef); border-radius: 12px; background: var(--panel, #fff); cursor: pointer; text-align: center; transition: border-color .15s, transform .1s; min-width: 0; overflow: hidden; }
-    .easy-product-card:hover { transform: translateY(-1px); }
-    .easy-product-card.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
-    .easy-product-card .pimg { width: 100%; aspect-ratio: 1 / 1; border-radius: 8px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.05); }
-    .easy-product-card .pname { width: 100%; font-size: 11px; font-weight: 700; line-height: 1.3; color: var(--ink, #33415a); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 28px; overflow-wrap: anywhere; word-break: break-word; }
-    .easy-product-card .pprice { font-size: 12px; font-weight: 800; color: var(--teal, #1f6feb); }
+    .easy-product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 12px; max-height: 400px; overflow-y: auto; padding: 2px; }
+    .easy-product-card { position: relative; display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1.5px solid var(--line, #e3e8ef); border-radius: 15px; background: var(--panel, #fff); cursor: pointer; text-align: left; transition: border-color .15s, box-shadow .15s, transform .1s; min-width: 0; }
+    .easy-product-card:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--teal, #1f6feb) 40%, var(--line, #e3e8ef)); }
+    .easy-product-card.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 16%, transparent); }
+    .epc-top { display: flex; gap: 11px; align-items: flex-start; min-width: 0; }
+    .epc-img { width: 66px; height: 66px; border-radius: 11px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.05); flex: none; }
+    .epc-info { min-width: 0; flex: 1; }
+    .epc-name { font-size: 13px; font-weight: 800; line-height: 1.3; color: var(--ink, #33415a); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; overflow-wrap: anywhere; }
+    .epc-badge { display: inline-block; margin-top: 5px; padding: 1px 9px; border-radius: 7px; background: color-mix(in srgb, #22c55e 15%, transparent); color: #15803d; font-size: 10px; font-weight: 800; letter-spacing: .3px; }
+    .epc-spec { margin-top: 5px; font-size: 11px; font-weight: 600; color: var(--muted, #8a94a6); }
+    .epc-dots { display: flex; gap: 5px; flex-wrap: wrap; }
+    .epc-dot { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
     .easy-empty-note { grid-column: 1 / -1; padding: 16px; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted, #8a94a6); }
     .easy-add-hint { margin-top: 11px; font-size: 12px; color: var(--muted, #8a94a6); line-height: 1.5; }
     #materialForm.easy-mode #materialFinishField,
@@ -2241,11 +2252,21 @@
                   <button type="button" class="add-mode-btn" data-add-mode="detailed" id="addModeDetailedBtn">แบบละเอียด</button>
                 </div>
                 <div class="easy-add-card" id="easyAddCard">
+                  <div class="easy-summary" id="easySummary" hidden>
+                    <div class="easy-summary-rows">
+                      <div class="easy-summary-row"><span id="easySumBrandLbl">Brand</span><b id="easySumBrand">-</b></div>
+                      <div class="easy-summary-row"><span id="easySumMaterialLbl">Material</span><b id="easySumMaterial">-</b></div>
+                      <div class="easy-summary-row"><span id="easySumColorLbl">Color</span><b id="easySumColor">-</b></div>
+                    </div>
+                    <span class="easy-summary-swatch" id="easySumSwatch"></span>
+                  </div>
+                  <div class="easy-step-title"><span class="easy-step-no">1</span><span id="easyStep1Lbl">แบรนด์</span></div>
                   <div class="easy-brand-chips" id="easyBrandChips"></div>
+                  <div class="easy-step-title"><span class="easy-step-no">2</span><span id="easyStep2Lbl">ซีรีส์วัสดุ</span></div>
                   <input id="easySearchInput" class="easy-search" type="text" placeholder="ค้นหา เช่น PLA, Panchroma, PETG" autocomplete="off">
                   <div class="easy-product-grid" id="easyProductGrid"></div>
                   <div class="easy-color-block" id="easyColorBlock" hidden>
-                    <div class="easy-color-label" id="easyColorLabel">เลือกสี</div>
+                    <div class="easy-step-title"><span class="easy-step-no">3</span><span id="easyStep3Lbl">เลือกสี</span></div>
                     <div class="easy-color-chips" id="easyColorChips"></div>
                   </div>
                   <div class="easy-add-hint" id="easyAddHint">เลือกสินค้าจากร้าน SiamReprap แล้วระบบเติมชื่อ/ชนิด/ราคาให้ — เหลือแค่เลือกสีและจำนวนคงเหลือ</div>
@@ -6610,6 +6631,10 @@
         brand: { th: "แบรนด์", en: "Brand", zh: "品牌", ja: "ブランド", ko: "브랜드" },
         product: { th: "รุ่น / ชนิด", en: "Product / Type", zh: "型号 / 类型", ja: "製品 / 種類", ko: "제품 / 종류" },
         color: { th: "เลือกสี", en: "Choose color", zh: "选择颜色", ja: "色を選択", ko: "색상 선택" },
+        series: { th: "ซีรีส์วัสดุ", en: "Material series", zh: "材料系列", ja: "素材シリーズ", ko: "소재 시리즈" },
+        sumBrand: { th: "แบรนด์", en: "Brand", zh: "品牌", ja: "ブランド", ko: "브랜드" },
+        sumMaterial: { th: "วัสดุ", en: "Material", zh: "材料", ja: "素材", ko: "소재" },
+        sumColor: { th: "สี", en: "Color", zh: "颜色", ja: "色", ko: "색상" },
         search: { th: "ค้นหา", en: "Search", zh: "搜索", ja: "検索", ko: "검색" },
         searchPlaceholder: { th: "ค้นหา เช่น PLA, Panchroma, PETG", en: "Search e.g. PLA, Panchroma, PETG", zh: "搜索，例如 PLA、Panchroma、PETG", ja: "検索 例: PLA, Panchroma, PETG", ko: "검색 예: PLA, Panchroma, PETG" },
         allBrands: { th: "ทุกแบรนด์", en: "All brands", zh: "所有品牌", ja: "すべてのブランド", ko: "모든 브랜드" },
@@ -6672,7 +6697,12 @@
       if (!card) return;
       $("addModeEasyBtn").textContent = easyLabel("easy");
       $("addModeDetailedBtn").textContent = easyLabel("detailed");
-      $("easyColorLabel").textContent = easyLabel("color");
+      $("easyStep1Lbl").textContent = easyLabel("brand");
+      $("easyStep2Lbl").textContent = easyLabel("series");
+      $("easyStep3Lbl").textContent = easyLabel("color");
+      $("easySumBrandLbl").textContent = easyLabel("sumBrand");
+      $("easySumMaterialLbl").textContent = easyLabel("sumMaterial");
+      $("easySumColorLbl").textContent = easyLabel("sumColor");
       $("easyAddHint").textContent = easyLabel("hint");
       const search = $("easySearchInput");
       if (search) search.placeholder = easyLabel("searchPlaceholder");
@@ -6680,6 +6710,7 @@
       $("easyColorBlock").hidden = !easySelected;
       renderEasyGrid();
       if (easySelected) renderEasyColors();
+      updateEasySummary();
       bindEasyAdd();
       setAddMode(easyAddMode);
     }
@@ -6706,7 +6737,12 @@
       grid._items = items;
       if (!items.length) { grid.innerHTML = `<div class="easy-empty-note">${escapeHtml(easyLabel("empty"))}</div>`; return; }
       grid.innerHTML = items
-        .map((p, i) => `<button type="button" class="easy-product-card${easySelected && easySelected.img === p.img ? " selected" : ""}" data-easy-idx="${i}"><span class="pimg" style="background-image:url('${escapeHtml(p.img)}')"></span><span class="pname">${escapeHtml(easyName(p))}</span></button>`)
+        .map((p, i) => {
+          const dots = easyColorsForProduct(p).slice(0, 7).map((c) => `<span class="epc-dot" style="background:${escapeHtml(c.hex)}"></span>`).join("");
+          const badge = p.t ? `<span class="epc-badge">${escapeHtml(p.t)}</span>` : "";
+          const sel = easySelected && easySelected.img === p.img ? " selected" : "";
+          return `<button type="button" class="easy-product-card${sel}" data-easy-idx="${i}"><span class="epc-check">✓</span><div class="epc-top"><span class="epc-img" style="background-image:url('${escapeHtml(p.img)}')"></span><div class="epc-info"><div class="epc-name">${escapeHtml(easyName(p))}</div>${badge}<div class="epc-spec">⌀ 1.75 mm · ± 0.02 mm</div></div></div><div class="epc-dots">${dots}</div></button>`;
+        })
         .join("");
     }
 
@@ -6734,6 +6770,7 @@
       grid.querySelectorAll(".easy-product-card").forEach((el, i) => el.classList.toggle("selected", i === idx));
       $("easyColorBlock").hidden = false;
       renderEasyColors();
+      updateEasySummary();
       renderLiveMaterialPreview();
     }
 
@@ -6742,8 +6779,9 @@
       if (!wrap) return;
       const colors = easyColorsForProduct(easySelected);
       wrap._colors = colors;
+      const cur = (fields.colorName.value || "").trim().toLowerCase();
       wrap.innerHTML = colors
-        .map((c, i) => `<button type="button" class="easy-color-tile" data-easy-color="${i}"><span class="easy-tile-img" style="background:${escapeHtml(c.hex)}"></span><span class="easy-tile-name">${escapeHtml(c.name)}</span></button>`)
+        .map((c, i) => `<button type="button" class="easy-color-tile${c.name.toLowerCase() === cur ? " selected" : ""}" data-easy-color="${i}"><span class="ect-swatch" style="background:${escapeHtml(c.hex)}"></span><span class="ect-name">${escapeHtml(c.name)}</span><span class="ect-check">✓</span></button>`)
         .join("");
     }
 
@@ -6755,7 +6793,21 @@
       fields.colorName.value = c.name;
       setColorValue(c.hex, true);
       wrap.querySelectorAll(".easy-color-tile").forEach((el, i) => el.classList.toggle("selected", i === index));
+      updateEasySummary();
       renderLiveMaterialPreview();
+    }
+
+    function updateEasySummary() {
+      const box = $("easySummary");
+      if (!box) return;
+      if (!easySelected) { box.hidden = true; return; }
+      box.hidden = false;
+      $("easySumBrand").textContent = easySelected.b || "-";
+      $("easySumMaterial").textContent = easyName(easySelected);
+      const cname = (fields.colorName.value || "").trim();
+      $("easySumColor").textContent = cname || "-";
+      const hex = normalizeHex(fields.colorHex.value);
+      $("easySumSwatch").style.background = cname && hex ? hex : "#eef1f5";
     }
 
     function renderCountryOptions() {
