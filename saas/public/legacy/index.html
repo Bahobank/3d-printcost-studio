@@ -217,11 +217,13 @@
     .easy-product-image img { max-height: 156px; max-width: 100%; object-fit: contain; border-radius: 12px; background: #fff; padding: 6px; border: 1px solid var(--line, #e3e8ef); }
     .easy-color-block { margin-top: 12px; }
     .easy-color-label { font-weight: 800; font-size: 13px; margin-bottom: 8px; color: var(--ink, #33415a); }
-    .easy-color-chips { display: flex; flex-wrap: wrap; gap: 8px; }
-    .easy-color-chip { display: flex; align-items: center; gap: 7px; padding: 5px 12px 5px 6px; border: 2px solid var(--line, #e3e8ef); border-radius: 999px; background: var(--panel, #fff); cursor: pointer; font-weight: 700; font-size: 12.5px; color: var(--ink, #33415a); transition: border-color .15s, transform .1s; }
-    .easy-color-chip:hover { transform: translateY(-1px); }
-    .easy-color-chip.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
-    .easy-color-swatch { width: 18px; height: 18px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
+    .easy-color-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 10px; }
+    .easy-color-tile { display: flex; flex-direction: column; gap: 6px; padding: 6px; border: 2px solid var(--line, #e3e8ef); border-radius: 13px; background: var(--panel, #fff); cursor: pointer; transition: border-color .15s, transform .1s; }
+    .easy-color-tile:hover { transform: translateY(-1px); }
+    .easy-color-tile.selected { border-color: var(--teal, #1f6feb); box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal, #1f6feb) 18%, transparent); }
+    .easy-tile-img { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 9px; background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #f2f5f8; border: 1px solid rgba(0,0,0,.06); }
+    .easy-tile-dot { position: absolute; right: 5px; bottom: 5px; width: 19px; height: 19px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,.35); }
+    .easy-tile-name { font-size: 12px; font-weight: 700; text-align: center; color: var(--ink, #33415a); line-height: 1.25; }
     .easy-add-hint { margin-top: 11px; font-size: 12px; color: var(--muted, #8a94a6); line-height: 1.5; }
     #materialForm.easy-mode #materialFinishField,
     #materialForm.easy-mode #rainbowShiftField,
@@ -6594,7 +6596,7 @@
       brandSel.addEventListener("change", renderEasyProducts);
       $("easyProductSelect").addEventListener("change", renderEasyColors);
       $("easyColorChips").addEventListener("click", (event) => {
-        const btn = event.target.closest(".easy-color-chip");
+        const btn = event.target.closest(".easy-color-tile");
         if (!btn) return;
         applyEasyColor(Number(btn.dataset.easyColor));
       });
@@ -6656,16 +6658,22 @@
       if (!wrap) return;
       const brand = $("easyBrandSelect").value;
       const product = $("easyProductSelect").value;
+      const meta = brand === EASY_BY_TYPE_KEY ? null : (easyCatalog()[brand] || {})[product];
+      const img = meta && meta.image ? meta.image : "";
       let colors;
       if (brand === EASY_BY_TYPE_KEY) {
         colors = EASY_STANDARD_COLORS.map((c) => ({ name: easyText(c.name), hex: c.hex }));
       } else {
-        const meta = (easyCatalog()[brand] || {})[product];
         colors = (meta && meta.colors ? meta.colors : []).map((c) => ({ name: c.name, hex: c.hex }));
       }
       wrap._colors = colors;
       wrap.innerHTML = colors
-        .map((c, i) => `<button type="button" class="easy-color-chip" data-easy-color="${i}"><span class="easy-color-swatch" style="background:${escapeHtml(c.hex)}"></span>${escapeHtml(c.name)}</button>`)
+        .map((c, i) => {
+          const face = img
+            ? `<span class="easy-tile-img" style="background-image:url('${escapeHtml(img)}')"><span class="easy-tile-dot" style="background:${escapeHtml(c.hex)}"></span></span>`
+            : `<span class="easy-tile-img" style="background:${escapeHtml(c.hex)}"></span>`;
+          return `<button type="button" class="easy-color-tile" data-easy-color="${i}">${face}<span class="easy-tile-name">${escapeHtml(c.name)}</span></button>`;
+        })
         .join("");
     }
 
@@ -6712,7 +6720,7 @@
         if (specs.nozzle) fields.materialNozzle.value = specs.nozzle;
         if (specs.bed) fields.materialBed.value = specs.bed;
       }
-      wrap.querySelectorAll(".easy-color-chip").forEach((el, i) => el.classList.toggle("selected", i === index));
+      wrap.querySelectorAll(".easy-color-tile").forEach((el, i) => el.classList.toggle("selected", i === index));
       renderLiveMaterialPreview();
     }
 
