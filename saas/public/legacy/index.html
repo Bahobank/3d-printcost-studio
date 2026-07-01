@@ -6454,6 +6454,15 @@
     }
 
     // ===== Easy add (SiamReprap product grid) =====
+    // Easy-add (catalog picker) is still in development: only enabled on local
+    // machines. On the live site the old detailed form is used. To ship it live,
+    // set EASY_ADD_ENABLED = true (or add the production host below).
+    const EASY_ADD_ENABLED = (() => {
+      try {
+        const h = location.hostname;
+        return h === "localhost" || h === "127.0.0.1" || h === "::1" || h.endsWith(".local");
+      } catch (error) { return false; }
+    })();
     let easyAddMode = "easy";
     let easyAddBound = false;
     let easyBrand = "__all__";
@@ -6646,7 +6655,7 @@
     }
 
     function setAddMode(mode) {
-      easyAddMode = mode === "detailed" ? "detailed" : "easy";
+      easyAddMode = (EASY_ADD_ENABLED && mode !== "detailed") ? "easy" : "detailed";
       const form = $("materialForm");
       if (form) form.classList.toggle("easy-mode", easyAddMode === "easy");
       const eb = $("addModeEasyBtn");
@@ -6695,6 +6704,15 @@
     function renderEasyAdd() {
       const card = $("easyAddCard");
       if (!card) return;
+      const toggle = $("addModeToggle");
+      if (!EASY_ADD_ENABLED) {
+        if (toggle) toggle.style.display = "none";
+        card.style.display = "none";
+        setAddMode("detailed");
+        return;
+      }
+      if (toggle) toggle.style.display = "";
+      card.style.display = "";
       $("addModeEasyBtn").textContent = easyLabel("easy");
       $("addModeDetailedBtn").textContent = easyLabel("detailed");
       $("easyStep1Lbl").textContent = easyLabel("brand");
