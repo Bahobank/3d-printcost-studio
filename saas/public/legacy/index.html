@@ -1013,6 +1013,19 @@
     .image-modal-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #fff; font-weight: 800; }
     .image-modal img { width: 100%; max-height: 84vh; object-fit: contain; border-radius: 8px; background: #fff; }
     .image-modal-close { background: #fff; color: #1b2420; width: 40px; padding: 0; }
+    .help-modal { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(10,18,15,.6); }
+    .help-modal.show { display: flex; }
+    .help-modal-inner { width: min(680px, 100%); max-height: 88vh; overflow-y: auto; background: var(--panel, #fff); color: var(--ink, #1b2420); border-radius: 18px; padding: 22px 24px; box-shadow: 0 30px 80px rgba(10,18,15,.4); }
+    .help-modal-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 6px; }
+    .help-modal-bar h2 { font-size: 22px; font-weight: 800; margin: 0; }
+    .help-modal-close { background: var(--soft, #eef2f7); border: 0; width: 36px; height: 36px; border-radius: 50%; font-size: 16px; font-weight: 800; color: var(--ink, #33415a); cursor: pointer; }
+    .help-intro { margin: 4px 0 16px; font-size: 14px; line-height: 1.6; color: var(--muted, #64748b); }
+    .help-steps { display: grid; gap: 12px; }
+    .help-step { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line, #e3e8ef); border-radius: 12px; background: var(--soft, #f7f9fc); }
+    .help-step-num { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--teal, #2563eb); color: #fff; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+    .help-step-body h3 { margin: 0 0 3px; font-size: 15px; font-weight: 800; }
+    .help-step-body p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink, #475569); }
+    .side-nav-help { margin-top: 4px; }
     .feedback-modal { position: fixed; inset: 0; z-index: 45; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(10, 18, 15, .65); }
     .feedback-modal.show { display: flex; }
     .import-choice-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
@@ -2048,6 +2061,10 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l2 4v14H4V7z"/><path d="M6 7h12"/><path d="M8 11h8"/><path d="M8 15h6"/></svg>
             <span class="side-label" data-side-label="orders">Orders</span>
           </button>
+          <button class="tab side-nav-help" id="helpBtn" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
+            <span class="side-label" data-side-label="help">How to use</span>
+          </button>
         </nav>
         <div class="sidebar-foot">
           <button class="icon-button" data-tab="catalogView" type="button" title="Printers">
@@ -2058,6 +2075,17 @@
           </button>
         </div>
       </aside>
+
+      <div class="help-modal" id="helpModal" aria-hidden="true">
+        <div class="help-modal-inner">
+          <div class="help-modal-bar">
+            <h2 id="helpTitle">วิธีการใช้งาน</h2>
+            <button class="help-modal-close" id="helpClose" type="button" aria-label="close">✕</button>
+          </div>
+          <p class="help-intro" id="helpIntro"></p>
+          <div class="help-steps" id="helpSteps"></div>
+        </div>
+      </div>
 
       <div class="studio-workspace">
         <div class="modebar" aria-label="ประเภทงานพิมพ์">
@@ -5331,11 +5359,11 @@
     }
     function sidebarText(key) {
       const labels = {
-        th: { dashboard: "แดชบอร์ด", jobs: "คำนวณงานพิมพ์", materials: "สต็อกวัสดุ", printers: "เครื่องพิมพ์", reports: "ประวัติงาน", orders: "ออเดอร์", selected: "เครื่องที่เลือก", change: "เปลี่ยนเครื่องพิมพ์", noPrinter: "ยังไม่ได้เลือกเครื่องพิมพ์" },
-        en: { dashboard: "Dashboard", jobs: "Print Jobs", materials: "Materials", printers: "Printers", reports: "Reports", orders: "Orders", selected: "Selected printer", change: "Change printer", noPrinter: "No printer selected" },
-        zh: { dashboard: "仪表板", jobs: "打印工作", materials: "材料库存", printers: "打印机", reports: "记录", orders: "订单", selected: "已选打印机", change: "更换打印机", noPrinter: "未选择打印机" },
-        ja: { dashboard: "ダッシュボード", jobs: "印刷ジョブ", materials: "材料在庫", printers: "プリンター", reports: "履歴", orders: "注文", selected: "選択中のプリンター", change: "プリンター変更", noPrinter: "プリンター未選択" },
-        ko: { dashboard: "대시보드", jobs: "출력 작업", materials: "재료 재고", printers: "프린터", reports: "이력", orders: "주문", selected: "선택한 프린터", change: "프린터 변경", noPrinter: "프린터 미선택" }
+        th: { dashboard: "แดชบอร์ด", jobs: "คำนวณงานพิมพ์", materials: "สต็อกวัสดุ", printers: "เครื่องพิมพ์", reports: "ประวัติงาน", orders: "ออเดอร์", help: "วิธีการใช้งาน", selected: "เครื่องที่เลือก", change: "เปลี่ยนเครื่องพิมพ์", noPrinter: "ยังไม่ได้เลือกเครื่องพิมพ์" },
+        en: { dashboard: "Dashboard", jobs: "Print Jobs", materials: "Materials", printers: "Printers", reports: "Reports", orders: "Orders", help: "How to use", selected: "Selected printer", change: "Change printer", noPrinter: "No printer selected" },
+        zh: { dashboard: "仪表板", jobs: "打印工作", materials: "材料库存", printers: "打印机", reports: "记录", orders: "订单", help: "使用方法", selected: "已选打印机", change: "更换打印机", noPrinter: "未选择打印机" },
+        ja: { dashboard: "ダッシュボード", jobs: "印刷ジョブ", materials: "材料在庫", printers: "プリンター", reports: "履歴", orders: "注文", help: "使い方", selected: "選択中のプリンター", change: "プリンター変更", noPrinter: "プリンター未選択" },
+        ko: { dashboard: "대시보드", jobs: "출력 작업", materials: "재료 재고", printers: "프린터", reports: "이력", orders: "주문", help: "사용 방법", selected: "선택한 프린터", change: "프린터 변경", noPrinter: "프린터 미선택" }
       };
       if (key === "orders") return orderText("ordersTab");
       return (labels[lang()] && labels[lang()][key]) || labels.en[key] || key;
@@ -5347,6 +5375,65 @@
       const printerEdit = $("sidebarPrinterEdit");
       if (printerEdit) printerEdit.textContent = sidebarText("change");
     }
+
+    const HELP_GUIDE = {
+      th: { title: "วิธีการใช้งาน", intro: "เริ่มใช้งานง่าย ๆ ตาม 6 ขั้นตอนนี้", steps: [
+        { t: "เลือกเครื่องพิมพ์", d: "ไปเมนู 'เครื่องพิมพ์' เลือกเครื่องที่คุณใช้ เพื่อให้ระบบคิดค่าไฟและค่าสึกหรอได้ถูกต้อง" },
+        { t: "เพิ่มสต็อกวัสดุ", d: "ไปเมนู 'สต็อกวัสดุ' กดเพิ่มวัสดุ ใส่แบรนด์ สี ราคาม้วน และน้ำหนัก ระบบจะคิดต้นทุนต่อกรัมให้อัตโนมัติ" },
+        { t: "คำนวณงานพิมพ์", d: "ไปเมนู 'คำนวณงานพิมพ์' ใส่ชื่องาน เลือกวัสดุที่ใช้ ใส่เวลาพิมพ์ ระบบจะบอกต้นทุนและแนะนำราคาขายให้" },
+        { t: "รวมเป็นออเดอร์", d: "ไปเมนู 'ออเดอร์' จับหลายงานรวมเป็นออเดอร์เดียว เพื่อดูกำไร/ขาดทุนของลูกค้าแต่ละราย" },
+        { t: "ดูภาพรวมและประวัติ", d: "ดูยอดขาย กำไร และสต็อกคงเหลือได้ที่ 'แดชบอร์ด' และดูงานย้อนหลังที่ 'ประวัติงาน'" },
+        { t: "ตั้งค่าและเคล็ดลับ", d: "สลับ FDM/Resin ได้ด้านบน เปลี่ยนภาษา/สกุลเงิน/ธีมได้ที่ตั้งค่า และควรสำรองข้อมูลเป็นระยะ" },
+      ] },
+      en: { title: "How to use", intro: "Get started in 6 easy steps.", steps: [
+        { t: "Pick your printer", d: "Go to 'Printers' and select the machine you use so electricity and wear costs are calculated correctly." },
+        { t: "Add material stock", d: "Go to 'Materials', add a filament/resin with its brand, color, spool price and weight — cost per gram is calculated for you." },
+        { t: "Calculate a print job", d: "Go to 'Print Jobs', enter the job name, choose the materials used and the print time — you'll get the cost and a suggested price." },
+        { t: "Group into orders", d: "Go to 'Orders' to combine several jobs into one order and see the profit/loss per customer." },
+        { t: "See the overview & history", d: "Check sales, profit and remaining stock on the 'Dashboard', and past jobs under 'Reports'." },
+        { t: "Settings & tips", d: "Switch FDM/Resin at the top, change language/currency/theme in settings, and back up your data regularly." },
+      ] },
+      zh: { title: "使用方法", intro: "按这 6 个简单步骤开始使用。", steps: [
+        { t: "选择打印机", d: "进入‘打印机’，选择你使用的机型，以便正确计算电费和损耗。" },
+        { t: "添加材料库存", d: "进入‘材料库存’，添加耗材/树脂，填写品牌、颜色、整卷价格和重量，系统会自动计算每克成本。" },
+        { t: "计算打印工作", d: "进入‘打印工作’，输入名称、选择所用材料和打印时间，系统会给出成本并建议售价。" },
+        { t: "合并为订单", d: "进入‘订单’，把多个工作合并为一个订单，查看每位客户的盈亏。" },
+        { t: "查看总览与记录", d: "在‘仪表板’查看销售、利润和剩余库存，在‘记录’查看历史工作。" },
+        { t: "设置与技巧", d: "顶部可切换 FDM/树脂，在设置中更改语言/货币/主题，并定期备份数据。" },
+      ] },
+      ja: { title: "使い方", intro: "かんたん6ステップで始められます。", steps: [
+        { t: "プリンターを選ぶ", d: "「プリンター」で使用する機種を選ぶと、電気代と摩耗費が正しく計算されます。" },
+        { t: "材料在庫を追加", d: "「材料在庫」でフィラメント/レジンを追加し、ブランド・色・1巻の価格・重量を入力。1gあたりの原価を自動計算します。" },
+        { t: "印刷ジョブを計算", d: "「印刷ジョブ」で名前を入力し、使う材料と印刷時間を選ぶと、原価と推奨販売価格が表示されます。" },
+        { t: "注文にまとめる", d: "「注文」で複数のジョブを1つの注文にまとめ、顧客ごとの損益を確認できます。" },
+        { t: "概要と履歴を見る", d: "「ダッシュボード」で売上・利益・残り在庫を、「履歴」で過去のジョブを確認できます。" },
+        { t: "設定とヒント", d: "上部でFDM/レジンを切替、設定で言語/通貨/テーマを変更、データは定期的にバックアップを。" },
+      ] },
+      ko: { title: "사용 방법", intro: "간단한 6단계로 시작하세요.", steps: [
+        { t: "프린터 선택", d: "‘프린터’에서 사용하는 기기를 선택하면 전기요금과 마모 비용이 정확히 계산됩니다." },
+        { t: "재료 재고 추가", d: "‘재료 재고’에서 필라멘트/레진을 추가하고 브랜드·색상·스풀 가격·무게를 입력하면 그램당 원가가 자동 계산됩니다." },
+        { t: "출력 작업 계산", d: "‘출력 작업’에서 이름을 입력하고 사용 재료와 출력 시간을 선택하면 원가와 추천 판매가가 표시됩니다." },
+        { t: "주문으로 묶기", d: "‘주문’에서 여러 작업을 하나의 주문으로 묶어 고객별 손익을 확인하세요." },
+        { t: "개요와 이력 보기", d: "‘대시보드’에서 매출·이익·남은 재고를, ‘이력’에서 지난 작업을 확인하세요." },
+        { t: "설정과 팁", d: "상단에서 FDM/레진 전환, 설정에서 언어/통화/테마 변경, 데이터는 주기적으로 백업하세요." },
+      ] },
+    };
+    function renderHelp() {
+      const g = HELP_GUIDE[lang()] || HELP_GUIDE.en;
+      if (!$("helpTitle")) return;
+      $("helpTitle").textContent = g.title;
+      $("helpIntro").textContent = g.intro;
+      $("helpSteps").innerHTML = g.steps
+        .map((s, i) => `<div class="help-step"><div class="help-step-num">${i + 1}</div><div class="help-step-body"><h3>${escapeHtml(s.t)}</h3><p>${escapeHtml(s.d)}</p></div></div>`)
+        .join("");
+    }
+    function openHelp() { renderHelp(); const m = $("helpModal"); if (m) { m.classList.add("show"); m.setAttribute("aria-hidden", "false"); } }
+    function closeHelp() { const m = $("helpModal"); if (m) { m.classList.remove("show"); m.setAttribute("aria-hidden", "true"); } }
+    $("helpBtn")?.addEventListener("click", openHelp);
+    $("helpClose")?.addEventListener("click", closeHelp);
+    $("helpModal")?.addEventListener("click", (event) => { if (event.target === $("helpModal")) closeHelp(); });
+    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && $("helpModal")?.classList.contains("show")) closeHelp(); });
+
     function applyLanguage() {
       fields.languageSelect.value = lang();
       if (fields.onboardingLanguageSelect) fields.onboardingLanguageSelect.value = lang();
