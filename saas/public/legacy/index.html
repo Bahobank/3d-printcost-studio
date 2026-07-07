@@ -5543,12 +5543,13 @@
       let dragging = false, moved = false, startX = 0, startY = 0, baseX = 50, baseY = 50;
       const onMove = (cx, cy) => {
         const rect = prev.getBoundingClientRect();
-        const dx = (cx - startX) / Math.max(1, rect.width) * 100;
-        const dy = (cy - startY) / Math.max(1, rect.height) * 100;
+        const z = materialPhoto.zoom || 1;
+        const dx = (cx - startX) / Math.max(1, rect.width) * 100 / z;
+        const dy = (cy - startY) / Math.max(1, rect.height) * 100 / z;
         materialPhoto.x = Math.min(100, Math.max(0, baseX + dx));
         materialPhoto.y = Math.min(100, Math.max(0, baseY + dy));
         const img = $("photoPreviewImg");
-        if (img) img.style.transform = `scale(${materialPhoto.zoom || 1}) translate(${materialPhoto.x - 50}%, ${materialPhoto.y - 50}%)`;
+        if (img) img.style.transform = `scale(${z}) translate(${materialPhoto.x - 50}%, ${materialPhoto.y - 50}%)`;
       };
       prev.addEventListener("pointerdown", (e) => { moved = false; if (!materialPhotoData) return; dragging = true; startX = e.clientX; startY = e.clientY; baseX = materialPhoto.x; baseY = materialPhoto.y; try { prev.setPointerCapture(e.pointerId); } catch (er) {} });
       prev.addEventListener("pointermove", (e) => { if (dragging) { moved = true; e.preventDefault(); onMove(e.clientX, e.clientY); } });
