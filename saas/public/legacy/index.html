@@ -1026,6 +1026,34 @@
     .help-step-body h3 { margin: 0 0 3px; font-size: 15px; font-weight: 800; }
     .help-step-body p { margin: 0; font-size: 13.5px; line-height: 1.55; color: var(--ink, #475569); }
     .side-nav-help { margin-top: 4px; }
+    .swatch.swatch-photo { overflow: hidden; padding: 0; display: inline-block; }
+    .swatch.swatch-photo.swatch-circle { border-radius: 50%; }
+    .swatch.swatch-photo.swatch-square { border-radius: 7px; }
+    .swatch.swatch-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .material-photo-card { border: 1px solid var(--line, #e3e8ef); border-radius: 12px; padding: 14px; margin-top: 4px; background: var(--panel-head, #f7f9fc); }
+    .material-photo-title { font-weight: 800; font-size: 14px; margin-bottom: 10px; color: var(--ink, #33415a); }
+    .photo-mode-toggle { display: flex; gap: 6px; padding: 5px; background: var(--soft, #eef2f7); border-radius: 10px; }
+    .photo-mode-btn { flex: 1; padding: 8px 10px; border: 0; border-radius: 8px; background: transparent; font-weight: 700; font-size: 13px; color: var(--ink, #33415a); cursor: pointer; }
+    .photo-mode-btn.active { background: var(--panel, #fff); color: var(--teal, #2563eb); box-shadow: 0 2px 6px rgba(20,40,80,.1); }
+    .material-photo-body { margin-top: 12px; }
+    .photo-editor { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-start; }
+    .photo-drop { flex: none; }
+    .photo-preview { width: 128px; height: 128px; background: #fff; border: 2px dashed var(--line, #cbd5e1); overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; user-select: none; }
+    .photo-preview.is-circle { border-radius: 50%; }
+    .photo-preview.is-square { border-radius: 12px; }
+    .photo-preview.drag-over { border-color: var(--teal, #2563eb); background: color-mix(in srgb, var(--teal, #2563eb) 8%, #fff); }
+    .photo-preview img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+    .photo-preview-hint { font-size: 10.5px; line-height: 1.4; text-align: center; color: var(--muted, #94a3b8); padding: 0 8px; }
+    .photo-controls { flex: 1; min-width: 200px; display: grid; gap: 10px; }
+    .photo-ctrl-row { display: flex; align-items: center; gap: 10px; justify-content: space-between; }
+    .photo-ctrl-label { font-size: 13px; font-weight: 700; color: var(--ink, #475569); flex: none; }
+    .photo-shape-toggle { display: flex; gap: 6px; }
+    .photo-shape-btn { padding: 6px 12px; border: 1.5px solid var(--line, #e3e8ef); border-radius: 8px; background: var(--panel, #fff); font-weight: 700; font-size: 12.5px; color: var(--ink, #475569); cursor: pointer; }
+    .photo-shape-btn.active { border-color: var(--teal, #2563eb); color: var(--teal, #2563eb); }
+    .photo-zoom { flex: 1; }
+    .photo-ctrl-row-foot { margin-top: 2px; }
+    .photo-ctrl-hint { font-size: 11.5px; color: var(--muted, #94a3b8); }
+    .photo-remove { padding: 6px 12px; font-size: 12.5px; }
     .feedback-modal { position: fixed; inset: 0; z-index: 45; display: none; align-items: center; justify-content: center; padding: 24px; background: rgba(10, 18, 15, .65); }
     .feedback-modal.show { display: flex; }
     .import-choice-actions { display: grid; grid-template-columns: 1fr; gap: 10px; }
@@ -2384,6 +2412,42 @@
                 <div class="finish-preview">
                   <div class="finish-preview-title" id="finishPreviewTitle">ตัวอย่างจากไฟล์ texture</div>
                   <div class="finish-preview-grid" id="finishPreviewGrid"></div>
+                </div>
+                <div class="material-photo-card" id="materialPhotoCard">
+                  <div class="material-photo-title" id="materialPhotoTitle">รูปภาพ Filament</div>
+                  <div class="photo-mode-toggle" id="photoModeToggle">
+                    <button type="button" class="photo-mode-btn active" data-photo-mode="swatch" id="photoModeSwatchBtn">แบบเดิม (สีตัวอย่าง)</button>
+                    <button type="button" class="photo-mode-btn" data-photo-mode="image" id="photoModeImageBtn">แสดงเป็นรูปภาพ</button>
+                  </div>
+                  <div class="material-photo-body" id="materialPhotoBody" hidden>
+                    <div class="photo-editor">
+                      <div class="photo-drop" id="photoDrop" tabindex="0">
+                        <div class="photo-preview is-circle" id="photoPreview"><span class="photo-preview-hint" id="photoPreviewHint">วาง (Ctrl+V) / ลาก / คลิกเพื่อเลือกรูป</span></div>
+                        <input id="photoFileInput" type="file" accept="image/*" hidden>
+                      </div>
+                      <div class="photo-controls">
+                        <div class="photo-ctrl-row">
+                          <span class="photo-ctrl-label" id="photoShapeLabel">กรอบ</span>
+                          <div class="photo-shape-toggle">
+                            <button type="button" class="photo-shape-btn active" data-photo-shape="circle" id="photoShapeCircleBtn">วงกลม</button>
+                            <button type="button" class="photo-shape-btn" data-photo-shape="square" id="photoShapeSquareBtn">สี่เหลี่ยม</button>
+                          </div>
+                        </div>
+                        <div class="photo-ctrl-row">
+                          <span class="photo-ctrl-label" id="photoZoomLabel">ซูม</span>
+                          <input id="photoZoom" class="photo-zoom" type="range" min="100" max="300" step="1" value="100">
+                        </div>
+                        <div class="photo-ctrl-row">
+                          <span class="photo-ctrl-label" id="photoBgLabel">สีพื้นหลัง</span>
+                          <input id="photoBg" type="color" value="#ffffff" class="color-picker">
+                        </div>
+                        <div class="photo-ctrl-row photo-ctrl-row-foot">
+                          <span class="photo-ctrl-hint" id="photoPosHint">ลากบนรูปเพื่อเลื่อนตำแหน่ง</span>
+                          <button type="button" class="btn-secondary photo-remove" id="photoRemoveBtn">ลบรูป</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="grid-2">
                   <div class="field">
@@ -5253,6 +5317,11 @@
       return Math.min(360, Math.max(0, shift));
     }
     function swatchHtml(item) {
+      if (item && item.showPhoto && item.photo && item.id) {
+        const p = item.photo;
+        const shape = p.shape === "square" ? "swatch-square" : "swatch-circle";
+        return `<span class="swatch swatch-photo ${shape}" data-mat-photo="${escapeHtml(item.id)}" style="background:${escapeHtml(p.bg || "#ffffff")}"><img alt="" loading="lazy" style="object-position:${Number(p.x ?? 50)}% ${Number(p.y ?? 50)}%;transform:scale(${Number(p.zoom) || 1})"></span>`;
+      }
       const finish = item.finish || "solid";
       const colorA = normalizeHex(item.colorHex) || "#777777";
       const colorB = normalizeHex(item.secondaryColorHex) || "#ffffff";
@@ -5280,6 +5349,160 @@
       });
       node.innerHTML = `<div class="live-material-preview-copy"><strong>${escapeHtml(finishLabel(finish))}</strong><span>${escapeHtml(colorName)}</span></div><div class="live-material-preview-stack">${sample}</div>`;
     }
+
+    // ===== Material photo (per-item image) =====
+    let materialShowPhoto = false;
+    let materialPhotoData = "";
+    let materialPhoto = { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
+    const materialPhotoCache = new Map();
+    let photoBound = false;
+
+    function photoText(key) {
+      const M = {
+        title: { th: "รูปภาพ Filament", en: "Filament photo", zh: "耗材图片", ja: "フィラメント画像", ko: "필라멘트 사진" },
+        swatch: { th: "แบบเดิม (สีตัวอย่าง)", en: "Color swatch", zh: "颜色样本", ja: "カラー見本", ko: "색상 견본" },
+        image: { th: "แสดงเป็นรูปภาพ", en: "Show photo", zh: "显示图片", ja: "画像で表示", ko: "사진 표시" },
+        shape: { th: "กรอบ", en: "Frame", zh: "外框", ja: "枠", ko: "테두리" },
+        circle: { th: "วงกลม", en: "Circle", zh: "圆形", ja: "円形", ko: "원형" },
+        square: { th: "สี่เหลี่ยม", en: "Square", zh: "方形", ja: "四角", ko: "사각형" },
+        zoom: { th: "ซูม", en: "Zoom", zh: "缩放", ja: "ズーム", ko: "확대" },
+        bg: { th: "สีพื้นหลัง", en: "Background", zh: "背景色", ja: "背景色", ko: "배경색" },
+        pos: { th: "ลากบนรูปเพื่อเลื่อนตำแหน่ง", en: "Drag the image to reposition", zh: "拖动图片调整位置", ja: "画像をドラッグして位置調整", ko: "이미지를 드래그해 위치 조정" },
+        drop: { th: "วาง (Ctrl+V) / ลาก / คลิกเพื่อเลือกรูป", en: "Paste (Ctrl+V) / drag / click to choose", zh: "粘贴 (Ctrl+V) / 拖放 / 点击选择", ja: "貼り付け (Ctrl+V) / ドラッグ / クリックで選択", ko: "붙여넣기 (Ctrl+V) / 드래그 / 클릭하여 선택" },
+        remove: { th: "ลบรูป", en: "Remove", zh: "移除", ja: "削除", ko: "삭제" },
+      };
+      const m = M[key];
+      return (m && (m[lang()] || m.en)) || "";
+    }
+    function applyPhotoLabels() {
+      const set = (id, txt) => { const el = $(id); if (el) el.textContent = txt; };
+      set("materialPhotoTitle", photoText("title"));
+      set("photoModeSwatchBtn", photoText("swatch"));
+      set("photoModeImageBtn", photoText("image"));
+      set("photoShapeLabel", photoText("shape"));
+      set("photoShapeCircleBtn", photoText("circle"));
+      set("photoShapeSquareBtn", photoText("square"));
+      set("photoZoomLabel", photoText("zoom"));
+      set("photoBgLabel", photoText("bg"));
+      set("photoPosHint", photoText("pos"));
+      set("photoRemoveBtn", photoText("remove"));
+      const hint = $("photoPreviewHint");
+      if (hint) hint.textContent = photoText("drop");
+    }
+    function renderMaterialPhotoEditor() {
+      const body = $("materialPhotoBody");
+      if (body) body.hidden = !materialShowPhoto;
+      const sw = $("photoModeSwatchBtn"), im = $("photoModeImageBtn");
+      if (sw) sw.classList.toggle("active", !materialShowPhoto);
+      if (im) im.classList.toggle("active", materialShowPhoto);
+      const cir = $("photoShapeCircleBtn"), sq = $("photoShapeSquareBtn");
+      if (cir) cir.classList.toggle("active", materialPhoto.shape !== "square");
+      if (sq) sq.classList.toggle("active", materialPhoto.shape === "square");
+      const zoom = $("photoZoom"); if (zoom) zoom.value = Math.round((materialPhoto.zoom || 1) * 100);
+      const bg = $("photoBg"); if (bg) bg.value = materialPhoto.bg || "#ffffff";
+      const prev = $("photoPreview");
+      if (prev) {
+        prev.classList.toggle("is-square", materialPhoto.shape === "square");
+        prev.classList.toggle("is-circle", materialPhoto.shape !== "square");
+        prev.style.background = materialPhoto.bg || "#ffffff";
+        if (materialPhotoData) {
+          prev.innerHTML = `<img id="photoPreviewImg" alt="">`;
+          const img = $("photoPreviewImg");
+          img.src = materialPhotoData;
+          img.style.objectPosition = `${materialPhoto.x}% ${materialPhoto.y}%`;
+          img.style.transform = `scale(${materialPhoto.zoom || 1})`;
+        } else {
+          prev.innerHTML = `<span class="photo-preview-hint" id="photoPreviewHint">${escapeHtml(photoText("drop"))}</span>`;
+        }
+      }
+    }
+    function setMaterialPhotoMode(mode) { materialShowPhoto = mode === "image"; renderMaterialPhotoEditor(); }
+    function resetMaterialPhoto() {
+      materialShowPhoto = false;
+      materialPhotoData = "";
+      materialPhoto = { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
+      renderMaterialPhotoEditor();
+    }
+    function ingestPhotoFile(file) {
+      if (!file || !file.type || !file.type.startsWith("image/")) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const img = new Image();
+        img.onload = () => {
+          const max = 480;
+          let w = img.naturalWidth, h = img.naturalHeight;
+          const scale = Math.min(1, max / Math.max(w, h, 1));
+          w = Math.max(1, Math.round(w * scale)); h = Math.max(1, Math.round(h * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+          try { materialPhotoData = canvas.toDataURL("image/jpeg", 0.85); }
+          catch (e) { materialPhotoData = String(reader.result || ""); }
+          materialPhoto.x = 50; materialPhoto.y = 50;
+          if (!materialShowPhoto) setMaterialPhotoMode("image");
+          else renderMaterialPhotoEditor();
+        };
+        img.src = String(reader.result || "");
+      };
+      reader.readAsDataURL(file);
+    }
+    function bindMaterialPhoto() {
+      if (photoBound) return;
+      if (!$("photoModeToggle")) return;
+      photoBound = true;
+      $("photoModeToggle").addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-photo-mode]");
+        if (btn) setMaterialPhotoMode(btn.dataset.photoMode);
+      });
+      $("photoShapeCircleBtn").addEventListener("click", () => { materialPhoto.shape = "circle"; renderMaterialPhotoEditor(); });
+      $("photoShapeSquareBtn").addEventListener("click", () => { materialPhoto.shape = "square"; renderMaterialPhotoEditor(); });
+      $("photoZoom").addEventListener("input", (e) => { materialPhoto.zoom = Math.max(1, Number(e.target.value) / 100); renderMaterialPhotoEditor(); });
+      $("photoBg").addEventListener("input", (e) => { materialPhoto.bg = e.target.value; renderMaterialPhotoEditor(); });
+      $("photoRemoveBtn").addEventListener("click", () => { materialPhotoData = ""; renderMaterialPhotoEditor(); });
+      const drop = $("photoDrop"), fileInput = $("photoFileInput"), prev = $("photoPreview");
+      fileInput.addEventListener("change", (e) => { if (e.target.files && e.target.files[0]) ingestPhotoFile(e.target.files[0]); fileInput.value = ""; });
+      ["dragenter", "dragover"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); prev.classList.add("drag-over"); }));
+      ["dragleave", "drop"].forEach((ev) => drop.addEventListener(ev, (e) => { e.preventDefault(); prev.classList.remove("drag-over"); }));
+      drop.addEventListener("drop", (e) => { const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]; if (f) ingestPhotoFile(f); });
+      document.addEventListener("paste", (e) => {
+        const body = $("materialPhotoBody");
+        if (!body || body.hidden) return;
+        const items = (e.clipboardData && e.clipboardData.items) || [];
+        for (const it of items) {
+          if (it.type && it.type.startsWith("image/")) { const f = it.getAsFile(); if (f) { ingestPhotoFile(f); e.preventDefault(); break; } }
+        }
+      });
+      let dragging = false, moved = false, startX = 0, startY = 0, baseX = 50, baseY = 50;
+      const onMove = (cx, cy) => {
+        const rect = prev.getBoundingClientRect();
+        const dx = (cx - startX) / Math.max(1, rect.width) * 100;
+        const dy = (cy - startY) / Math.max(1, rect.height) * 100;
+        materialPhoto.x = Math.min(100, Math.max(0, baseX - dx));
+        materialPhoto.y = Math.min(100, Math.max(0, baseY - dy));
+        const img = $("photoPreviewImg");
+        if (img) img.style.objectPosition = `${materialPhoto.x}% ${materialPhoto.y}%`;
+      };
+      prev.addEventListener("pointerdown", (e) => { moved = false; if (!materialPhotoData) return; dragging = true; startX = e.clientX; startY = e.clientY; baseX = materialPhoto.x; baseY = materialPhoto.y; try { prev.setPointerCapture(e.pointerId); } catch (er) {} });
+      prev.addEventListener("pointermove", (e) => { if (dragging) { moved = true; e.preventDefault(); onMove(e.clientX, e.clientY); } });
+      prev.addEventListener("pointerup", () => { dragging = false; });
+      prev.addEventListener("pointercancel", () => { dragging = false; });
+      drop.addEventListener("click", () => { if (moved) { moved = false; return; } fileInput.click(); });
+    }
+    async function hydrateMaterialPhotos() {
+      const nodes = document.querySelectorAll(".swatch-photo[data-mat-photo]:not([data-hydrated])");
+      for (const el of nodes) {
+        const id = el.getAttribute("data-mat-photo");
+        el.setAttribute("data-hydrated", "1");
+        let data = materialPhotoCache.get(id);
+        if (data === undefined) { try { data = await getJobImage("matimg:" + id); } catch (e) { data = ""; } materialPhotoCache.set(id, data || ""); }
+        const img = el.querySelector("img");
+        if (img && data) img.src = data;
+      }
+    }
+    bindMaterialPhoto();
+    applyPhotoLabels();
+    renderMaterialPhotoEditor();
+
     function renderTextureVariantSwitch() {
       const node = $("textureVariantSwitch");
       if (!node || !fields.materialFinish) return;
@@ -5489,6 +5712,7 @@
       setText('label[for="materialFinish"]', finishText().finish);
       setText('label[for="colorHex"]', t("colorSample"));
       renderEasyAdd();
+      applyPhotoLabels();
       setText('label[for="secondaryColorHex"]', finishText().secondary);
       fields.secondaryColorHex.title = finishText().secondaryTitle;
       setText('label[for="rainbowShift"]', finishText().rainbowShift);
@@ -7675,6 +7899,7 @@
         return;
       }
       $("stockTable").innerHTML = state.settings.stockView === "grid" ? stockGridHtml(materials) : stockListHtml(materials);
+      hydrateMaterialPhotos();
     }
 
     function renderJobOptions() {
@@ -8528,6 +8753,7 @@
       $("materialSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>${t("addStock")}`;
       $("cancelEdit").hidden = true;
       easySelected = null;
+      resetMaterialPhoto();
       renderMaterialCatalogOptions();
       setAddMode("easy");
     }
@@ -8609,6 +8835,15 @@
       $("materialFormTitle").textContent = `${dt("editMaterial")} ${modeName()}`;
       $("materialSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/></svg>${dt("saveStock")}`;
       $("cancelEdit").hidden = false;
+      materialShowPhoto = Boolean(item.showPhoto && item.photo);
+      materialPhoto = item.photo
+        ? { shape: item.photo.shape || "circle", zoom: Number(item.photo.zoom) || 1, bg: item.photo.bg || "#ffffff", x: Number(item.photo.x ?? 50), y: Number(item.photo.y ?? 50) }
+        : { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
+      materialPhotoData = "";
+      renderMaterialPhotoEditor();
+      if (materialShowPhoto) {
+        getJobImage("matimg:" + item.id).then((d) => { if (d) { materialPhotoData = d; renderMaterialPhotoEditor(); } }).catch(() => {});
+      }
       setAddMode("detailed");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
@@ -9065,7 +9300,9 @@
         packageAmount: num(fields.packageAmount.value),
         remainingAmount: num(fields.remainingAmount.value),
         packagePrice: num(fields.packagePrice.value),
-        shippingCost: num(fields.shippingCost.value)
+        shippingCost: num(fields.shippingCost.value),
+        showPhoto: materialShowPhoto && !!materialPhotoData,
+        photo: (materialShowPhoto && materialPhotoData) ? { shape: materialPhoto.shape, zoom: materialPhoto.zoom, bg: materialPhoto.bg, x: materialPhoto.x, y: materialPhoto.y } : null
       };
       if (!data.brand || !data.material) { showToast(t("materialRequired")); return; }
       if (data.remainingAmount > data.packageAmount) { showToast(t("remainingTooHigh")); return; }
@@ -9076,6 +9313,12 @@
       // to another colour group) are preserved when editing.
       if (index >= 0) state.materials[index] = { ...state.materials[index], ...data };
       else state.materials.push(data);
+      if (data.showPhoto && materialPhotoData) {
+        materialPhotoCache.set(data.id, materialPhotoData);
+        putJobImage("matimg:" + data.id, materialPhotoData).then(() => renderStockTable()).catch(() => {});
+      } else {
+        materialPhotoCache.delete(data.id);
+      }
       resetMaterialForm();
       persist();
       queueAnonymousInsights(wasEditingMaterial ? "stock-update" : "stock-create");
