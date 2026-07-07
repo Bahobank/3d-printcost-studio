@@ -1030,6 +1030,7 @@
     .swatch.swatch-photo.swatch-circle { border-radius: 50%; }
     .swatch.swatch-photo.swatch-square { border-radius: 7px; }
     .swatch.swatch-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    #stockTable .swatch-photo { cursor: zoom-in; }
     .material-photo-card { border: 1px solid var(--line, #e3e8ef); border-radius: 12px; padding: 14px; margin-top: 4px; background: var(--panel-head, #f7f9fc); }
     .material-photo-title { font-weight: 800; font-size: 14px; margin-bottom: 10px; color: var(--ink, #33415a); }
     .photo-mode-toggle { display: flex; gap: 6px; padding: 5px; background: var(--soft, #eef2f7); border-radius: 10px; }
@@ -6102,6 +6103,16 @@
       $("imageModalTitle").textContent = order?.name || orderText("orderImage");
       $("imageModal").classList.add("show");
     }
+    async function openMaterialImageModal(id) {
+      const item = materialById(id);
+      let src = materialPhotoCache.get(id);
+      if (!src) { try { src = await getJobImage("matimg:" + id); } catch (e) { src = ""; } if (src) materialPhotoCache.set(id, src); }
+      if (!src) return;
+      $("imageModalImg").src = src;
+      $("imageModalImg").alt = (item && item.name) || "";
+      $("imageModalTitle").textContent = (item && item.name) || t("modalTitle");
+      $("imageModal").classList.add("show");
+    }
     function closeImageModal() {
       $("imageModal").classList.remove("show");
       $("imageModalImg").src = "";
@@ -9395,6 +9406,8 @@
     });
 
     $("stockTable").addEventListener("click", (event) => {
+      const photoEl = event.target.closest(".swatch-photo[data-mat-photo]");
+      if (photoEl) { openMaterialImageModal(photoEl.getAttribute("data-mat-photo")); return; }
       const renameBtn = event.target.closest("[data-rename-tone]");
       if (renameBtn) {
         const head = renameBtn.closest(".stock-group-head");
