@@ -9,7 +9,10 @@
     // this file directly (top-level window), send them to /dashboard so the
     // subscription paywall applies — prevents bypassing an expired trial via
     // the direct /legacy URL. Legit iframe use (framed) is unaffected.
-    try { if (window.top === window.self) { window.location.replace("/dashboard"); } } catch (e) { location.replace("/dashboard"); }
+    try {
+      var _devHost = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+      if (window.top === window.self && !_devHost) { window.location.replace("/dashboard"); }
+    } catch (e) { location.replace("/dashboard"); }
   </script>
   <style>
     :root {
@@ -257,12 +260,17 @@
     .epc-dot { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,.15); flex: none; }
     .easy-empty-note { grid-column: 1 / -1; padding: 16px; text-align: center; font-size: 13px; font-weight: 600; color: var(--muted, #8a94a6); }
     .easy-add-hint { margin-top: 11px; font-size: 12px; color: var(--muted, #8a94a6); line-height: 1.5; }
-    #materialForm.easy-mode #materialFinishField,
-    #materialForm.easy-mode #rainbowShiftField,
-    #materialForm.easy-mode #secondaryColorField,
+    #materialForm.easy-mode #materialPhotoCard,
     #materialForm.easy-mode #customTypeWrap,
-    #materialForm.easy-mode .material-print-settings-card,
-    #materialForm.easy-mode .finish-preview { display: none !important; }
+    #materialForm.easy-mode .material-print-settings-card { display: none !important; }
+    .material-icon-body { gap: 12px; margin-top: 12px; }
+    .material-icon-body:not([hidden]) { display: grid; }
+    .icon-preview-row { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px; min-height: 96px; }
+    .icon-preview-row .live-material-preview { grid-column: 2; justify-self: center; margin-left: 0; }
+    .icon-preview-row .texture-dot-row { grid-column: 3; justify-self: start; }
+    .icon-preview-row .texture-dot-stack { flex-direction: row; }
+    .icon-preview-row .texture-opacity { transform: none; width: 90px; height: 18px; }
+    .texture-dot-row[hidden] { display: none; }
     #materialForm:not(.easy-mode) #easyAddCard { display: none; }
     .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 18px; border-bottom: 1px solid var(--line); background: var(--panel-head); }
     .panel-head h2 { margin: 0; font-size: 18px; line-height: 1.25; letter-spacing: 0; }
@@ -2360,8 +2368,6 @@
             <form class="panel" id="materialForm">
               <div class="panel-head">
                 <h2 id="materialFormTitle">เพิ่มวัสดุ</h2>
-                <div class="live-material-preview" id="liveMaterialPreview" aria-live="polite"></div>
-                <div class="texture-dot-row" id="textureVariantSwitch" aria-label="Texture variants" hidden></div>
               </div>
               <div class="panel-body stack">
                 <input id="materialId" type="hidden">
@@ -2413,37 +2419,61 @@
                   <label for="customType">ประเภทอื่น ๆ</label>
                   <input id="customType" placeholder="กรอกประเภทวัสดุ">
                 </div>
-                <div class="grid-3">
-                  <div class="field">
-                    <label for="colorName">สี</label>
-                    <input id="colorName" required placeholder="ดำด้าน / Grey">
+                <div class="field">
+                  <label for="colorName">สี</label>
+                  <input id="colorName" required placeholder="ดำด้าน / Grey">
+                </div>
+
+                <div class="material-photo-card" id="materialPhotoCard">
+                  <div class="material-photo-title" id="materialPhotoTitle">รูปแสดงวัสดุ</div>
+                  <div class="photo-mode-toggle" id="photoModeToggle">
+                    <button type="button" class="photo-mode-btn active" data-photo-mode="swatch" id="photoModeSwatchBtn">ไอคอนสี</button>
+                    <button type="button" class="photo-mode-btn" data-photo-mode="image" id="photoModeImageBtn">รูปภาพ</button>
                   </div>
-                  <div class="field" id="materialFinishField">
-                    <label for="materialFinish">ลักษณะสี/ผิว</label>
-                    <select id="materialFinish"></select>
+                  <div class="material-icon-body" id="materialIconBody">
+                    <div class="icon-preview-row">
+                      <div class="live-material-preview" id="liveMaterialPreview" aria-live="polite"></div>
+                      <div class="texture-dot-row" id="textureVariantSwitch" aria-label="Texture variants" hidden></div>
+                    </div>
+                    <div class="grid-2">
+                      <div class="field" id="materialFinishField">
+                        <label for="materialFinish">ลักษณะสี/ผิว</label>
+                        <select id="materialFinish"></select>
+                      </div>
+                      <div class="field" id="colorHexField">
+                        <label for="colorHex">ตัวอย่างสี</label>
+                        <input class="color-picker" id="colorHex" type="color" value="#222222" title="กดเพื่อเลือกสี">
+                      </div>
+                    </div>
+                    <div class="field rainbow-shift-field" id="rainbowShiftField">
+                      <label for="rainbowShift">Rainbow preview</label>
+                      <input class="rainbow-shift" id="rainbowShift" type="range" min="0" max="360" step="1" value="0">
+                      <span class="hint" id="rainbowShiftHint">เลื่อนเพื่อสุ่มตำแหน่งสีรุ้งในพรีวิว</span>
+                    </div>
+                    <div class="field" id="secondaryColorField">
+                      <label for="secondaryColorHex">สีรอง/ลายผสม</label>
+                      <input class="color-picker" id="secondaryColorHex" type="color" value="#ffffff" title="ใช้กับ Dual และ Gradient เพื่อผสม 2 สี">
+                      <span class="hint" id="secondaryColorHint"></span>
+                    </div>
+                    <div class="finish-preview">
+                      <div class="finish-preview-title" id="finishPreviewTitle">ตัวอย่างจากไฟล์ texture</div>
+                      <div class="finish-preview-grid" id="finishPreviewGrid"></div>
+                    </div>
                   </div>
-                  <div class="field" id="colorHexField">
-                    <label for="colorHex">ตัวอย่างสี</label>
-                    <input class="color-picker" id="colorHex" type="color" value="#222222" title="กดเพื่อเลือกสี">
+                  <div class="material-photo-body" id="materialPhotoBody" hidden>
+                    <div class="photo-compact" id="photoCompact"></div>
+                    <input id="photoFileInput" type="file" accept="image/*" hidden>
                   </div>
                 </div>
-                <div class="field rainbow-shift-field" id="rainbowShiftField">
-                  <label for="rainbowShift">Rainbow preview</label>
-                  <input class="rainbow-shift" id="rainbowShift" type="range" min="0" max="360" step="1" value="0">
-                  <span class="hint" id="rainbowShiftHint">เลื่อนเพื่อสุ่มตำแหน่งสีรุ้งในพรีวิว</span>
-                </div>
-                <div class="grid-3">
-                  <div class="field" id="secondaryColorField">
-                    <label for="secondaryColorHex">สีรอง/ลายผสม</label>
-                    <input class="color-picker" id="secondaryColorHex" type="color" value="#ffffff" title="ใช้กับ Dual และ Gradient เพื่อผสม 2 สี">
-                    <span class="hint" id="secondaryColorHint"></span>
-                  </div>
-                  <select id="textureVariantSelect" hidden>
-                    <option value="multiply">Multiply</option>
-                    <option value="screen">Screen</option>
-                  </select>
-                  <input id="textureOpacityValue" type="hidden" value="100">
-                  <input id="rainbowShiftValue" type="hidden" value="0">
+
+                <select id="textureVariantSelect" hidden>
+                  <option value="multiply">Multiply</option>
+                  <option value="screen">Screen</option>
+                </select>
+                <input id="textureOpacityValue" type="hidden" value="100">
+                <input id="rainbowShiftValue" type="hidden" value="0">
+
+                <div class="grid-2">
                   <div class="field">
                     <label for="packageAmount" id="packageAmountLabel">น้ำหนักเต็มม้วน (g)</label>
                     <input id="packageAmount" type="number" min="1" step="0.01" value="1000" required>
@@ -2469,21 +2499,6 @@
                       <label for="materialBed" data-i18n="materialBedLabel">Bed (°C)</label>
                       <input id="materialBed" type="text" inputmode="text" autocomplete="off" placeholder="50-60">
                     </div>
-                  </div>
-                </div>
-                <div class="finish-preview">
-                  <div class="finish-preview-title" id="finishPreviewTitle">ตัวอย่างจากไฟล์ texture</div>
-                  <div class="finish-preview-grid" id="finishPreviewGrid"></div>
-                </div>
-                <div class="material-photo-card" id="materialPhotoCard">
-                  <div class="material-photo-title" id="materialPhotoTitle">รูปภาพ Filament</div>
-                  <div class="photo-mode-toggle" id="photoModeToggle">
-                    <button type="button" class="photo-mode-btn active" data-photo-mode="swatch" id="photoModeSwatchBtn">แบบเดิม (สีตัวอย่าง)</button>
-                    <button type="button" class="photo-mode-btn" data-photo-mode="image" id="photoModeImageBtn">แสดงเป็นรูปภาพ</button>
-                  </div>
-                  <div class="material-photo-body" id="materialPhotoBody" hidden>
-                    <div class="photo-compact" id="photoCompact"></div>
-                    <input id="photoFileInput" type="file" accept="image/*" hidden>
                   </div>
                 </div>
                 <div class="grid-2">
@@ -5384,11 +5399,11 @@
         rainbowShift: fields.rainbowShiftValue.value,
         colorName
       });
-      node.innerHTML = `<div class="live-material-preview-copy"><strong>${escapeHtml(finishLabel(finish))}</strong><span>${escapeHtml(colorName)}</span></div><div class="live-material-preview-stack">${sample}</div>`;
+      node.innerHTML = `<div class="live-material-preview-stack">${sample}</div>`;
     }
 
     // ===== Material photo (per-item image) =====
-    let materialShowPhoto = false;
+    let materialThumbMode = ""; // "" (none) | "swatch" | "image"
     let materialPhotoData = "";
     let materialPhoto = { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
     const materialPhotoCache = new Map();
@@ -5396,7 +5411,7 @@
 
     function photoText(key) {
       const M = {
-        title: { th: "รูปภาพ Filament", en: "Filament photo", zh: "耗材图片", ja: "フィラメント画像", ko: "필라멘트 사진" },
+        title: { th: "รูปแสดงวัสดุ", en: "Thumbnail", zh: "缩略图", ja: "サムネイル", ko: "썸네일" },
         swatch: { th: "ไอคอนสี", en: "Color icon", zh: "颜色图标", ja: "カラーアイコン", ko: "색상 아이콘" },
         image: { th: "รูปภาพ", en: "Photo", zh: "图片", ja: "画像", ko: "사진" },
         modalTitle: { th: "แก้ไขรูปภาพ", en: "Edit photo", zh: "编辑图片", ja: "画像を編集", ko: "사진 편집" },
@@ -5435,10 +5450,12 @@
     }
     function renderMaterialPhotoEditor() {
       const body = $("materialPhotoBody");
-      if (body) body.hidden = !materialShowPhoto;
+      if (body) body.hidden = materialThumbMode !== "image";
+      const iconBody = $("materialIconBody");
+      if (iconBody) iconBody.hidden = materialThumbMode !== "swatch";
       const sw = $("photoModeSwatchBtn"), im = $("photoModeImageBtn");
-      if (sw) sw.classList.toggle("active", !materialShowPhoto);
-      if (im) im.classList.toggle("active", materialShowPhoto);
+      if (sw) sw.classList.toggle("active", materialThumbMode === "swatch");
+      if (im) im.classList.toggle("active", materialThumbMode === "image");
       const cir = $("photoShapeCircleBtn"), sq = $("photoShapeSquareBtn");
       if (cir) cir.classList.toggle("active", materialPhoto.shape !== "square");
       if (sq) sq.classList.toggle("active", materialPhoto.shape === "square");
@@ -5472,9 +5489,9 @@
     }
     function openPhotoEditor() { renderMaterialPhotoEditor(); const m = $("photoModal"); if (m) { m.classList.add("show"); m.setAttribute("aria-hidden", "false"); } }
     function closePhotoEditor() { const m = $("photoModal"); if (m) { m.classList.remove("show"); m.setAttribute("aria-hidden", "true"); } renderPhotoCompact(); }
-    function setMaterialPhotoMode(mode) { materialShowPhoto = mode === "image"; renderMaterialPhotoEditor(); }
+    function setMaterialPhotoMode(mode) { materialThumbMode = mode === "image" ? "image" : "swatch"; renderMaterialPhotoEditor(); }
     function resetMaterialPhoto() {
-      materialShowPhoto = false;
+      materialThumbMode = "";
       materialPhotoData = "";
       materialPhoto = { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
       closePhotoEditor();
@@ -5496,7 +5513,7 @@
           try { materialPhotoData = canvas.toDataURL("image/jpeg", 0.85); }
           catch (e) { materialPhotoData = String(reader.result || ""); }
           materialPhoto.x = 50; materialPhoto.y = 50;
-          materialShowPhoto = true;
+          materialThumbMode = "image";
           renderMaterialPhotoEditor();
           openPhotoEditor();
         };
@@ -6855,12 +6872,7 @@
     // Easy-add (catalog picker) is still in development: only enabled on local
     // machines. On the live site the old detailed form is used. To ship it live,
     // set EASY_ADD_ENABLED = true (or add the production host below).
-    const EASY_ADD_ENABLED = (() => {
-      try {
-        const h = location.hostname;
-        return h === "localhost" || h === "127.0.0.1" || h === "::1" || h.endsWith(".local");
-      } catch (error) { return false; }
-    })();
+    const EASY_ADD_ENABLED = false;
     let easyAddMode = "easy";
     let easyAddBound = false;
     let easyBrand = "__all__";
@@ -8922,13 +8934,13 @@
       $("materialFormTitle").textContent = `${dt("editMaterial")} ${modeName()}`;
       $("materialSubmit").innerHTML = `<svg class="icon" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/></svg>${dt("saveStock")}`;
       $("cancelEdit").hidden = false;
-      materialShowPhoto = Boolean(item.showPhoto && item.photo);
+      materialThumbMode = (item.showPhoto && item.photo) ? "image" : "swatch";
       materialPhoto = item.photo
         ? { shape: item.photo.shape || "circle", zoom: Number(item.photo.zoom) || 1, bg: item.photo.bg || "#ffffff", x: Number(item.photo.x ?? 50), y: Number(item.photo.y ?? 50) }
         : { shape: "circle", zoom: 1, bg: "#ffffff", x: 50, y: 50 };
       materialPhotoData = "";
       renderMaterialPhotoEditor();
-      if (materialShowPhoto) {
+      if (materialThumbMode === "image") {
         getJobImage("matimg:" + item.id).then((d) => { if (d) { materialPhotoData = d; renderMaterialPhotoEditor(); } }).catch(() => {});
       }
       setAddMode("detailed");
@@ -9388,8 +9400,8 @@
         remainingAmount: num(fields.remainingAmount.value),
         packagePrice: num(fields.packagePrice.value),
         shippingCost: num(fields.shippingCost.value),
-        showPhoto: materialShowPhoto && !!materialPhotoData,
-        photo: (materialShowPhoto && materialPhotoData) ? { shape: materialPhoto.shape, zoom: materialPhoto.zoom, bg: materialPhoto.bg, x: materialPhoto.x, y: materialPhoto.y } : null
+        showPhoto: materialThumbMode === "image" && !!materialPhotoData,
+        photo: (materialThumbMode === "image" && materialPhotoData) ? { shape: materialPhoto.shape, zoom: materialPhoto.zoom, bg: materialPhoto.bg, x: materialPhoto.x, y: materialPhoto.y } : null
       };
       if (!data.brand || !data.material) { showToast(t("materialRequired")); return; }
       if (data.remainingAmount > data.packageAmount) { showToast(t("remainingTooHigh")); return; }
