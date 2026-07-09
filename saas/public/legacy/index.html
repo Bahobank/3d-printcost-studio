@@ -4,6 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>3D PrintCost Studio</title>
+  <script>
+    // The app is meant to run inside the /dashboard iframe. If someone opens
+    // this file directly (top-level window), send them to /dashboard so the
+    // subscription paywall applies — prevents bypassing an expired trial via
+    // the direct /legacy URL. Legit iframe use (framed) is unaffected.
+    try { if (window.top === window.self) { window.location.replace("/dashboard"); } } catch (e) { location.replace("/dashboard"); }
+  </script>
   <style>
     :root {
       --bg: #f6f9ff;
