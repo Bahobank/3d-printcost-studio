@@ -25,9 +25,9 @@ export function LegacyDashboardShell({ profile }: { profile: UserProfile }) {
       ) : (
         <section className="grid min-h-screen place-items-center px-5">
           <div className="max-w-xl rounded-2xl bg-white p-8 text-center shadow-2xl">
-            <h1 className="text-3xl font-black">ทดลองใช้ฟรีครบ 7 วันแล้ว</h1>
+            <h1 className="text-3xl font-bold">ทดลองใช้ฟรีครบ 7 วันแล้ว</h1>
             <p className="mt-2 font-semibold text-slate-500">เลือกแผนที่เหมาะกับธุรกิจของคุณเพื่อใช้งานต่อ</p>
-            <p className="mt-4 text-sm font-bold text-emerald-700">ข้อมูลของคุณยังถูกเก็บไว้อย่างปลอดภัย</p>
+            <p className="mt-4 text-sm font-semibold text-emerald-700">ข้อมูลของคุณยังถูกเก็บไว้อย่างปลอดภัย</p>
           </div>
         </section>
       )}

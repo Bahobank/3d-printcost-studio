@@ -75,7 +75,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <CheckCircle2 size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">ชำระเงินสำเร็จ</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">ชำระเงินสำเร็จ</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-emerald-50">
               {checkoutMode === "access-success" ? "Access Code ถูกยืนยันแล้ว ระบบเปิดใช้งานแพ็กเกจให้คุณเรียบร้อย" : checkoutSuccessText(paymentMode)}
             </p>
@@ -92,7 +92,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <Wallet size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">เติมเงิน Wallet สำเร็จ</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">เติมเงิน Wallet สำเร็จ</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-violet-50">Stripe ยืนยันการชำระเงินแล้ว ยอด Wallet จะถูกเพิ่มผ่าน webhook โดยอัตโนมัติ</p>
           </div>
 
@@ -107,7 +107,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <AlertTriangle size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">ยอด Wallet ไม่เพียงพอ</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">ยอด Wallet ไม่เพียงพอ</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-orange-50">กรุณาเติมเงิน Wallet แล้วลองชำระอีกครั้ง</p>
           </div>
 
@@ -122,7 +122,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <CreditCard size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">ตัวอย่าง Checkout</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">ตัวอย่าง Checkout</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-blue-50">โหมดพัฒนาแสดงแพ็กเกจที่เลือกโดยไม่เปิด Stripe Checkout จริง</p>
           </div>
 
@@ -138,7 +138,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <AlertTriangle size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">ไม่สามารถเปิด Stripe Checkout ได้</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">ไม่สามารถเปิด Stripe Checkout ได้</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-orange-50">กรุณาลองใหม่อีกครั้ง หรือติดต่อทีมสนับสนุนหากยังพบปัญหา</p>
           </div>
 
@@ -154,7 +154,7 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
             <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-white ring-1 ring-white/20">
               <AlertTriangle size={30} strokeWidth={2.4} />
             </div>
-            <h1 className="mt-5 text-3xl font-black tracking-tight">ไม่สามารถเปิดช่องทางชำระเงินนี้ได้</h1>
+            <h1 className="mt-5 text-3xl font-bold tracking-tight">ไม่สามารถเปิดช่องทางชำระเงินนี้ได้</h1>
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-6 text-orange-50">
               {paymentMode === "promptpay_period"
                 ? "PromptPay is not available for this payment. Please use card payment or contact support."
@@ -170,10 +170,10 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         </section>
       ) : (
         <section className="card p-7">
-          <h1 className="text-3xl font-black">Billing</h1>
+          <h1 className="text-3xl font-bold">Billing</h1>
           <p className="mt-2 text-slate-500">จัดการแพ็กเกจ ต่ออายุ และวิธีชำระเงินผ่าน Stripe Billing, Stripe PromptPay และ Wallet</p>
           <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-            <div className="font-bold">สถานะปัจจุบัน: {profile.subscription_status ?? "-"}</div>
+            <div className="font-semibold">สถานะปัจจุบัน: {profile.subscription_status ?? "-"}</div>
             <div className="mt-1 text-slate-500">แพ็กเกจ: {profile.subscription_plan ?? "-"}</div>
             <div className="mt-1 text-slate-500">รอบชำระเงิน: {profile.billing_cycle ?? "-"}</div>
             {profile.stripe_customer_id ? (
@@ -211,7 +211,7 @@ function PaymentMethodOptions({ hasStripeCustomer }: { hasStripeCustomer: boolea
             <CreditCard size={22} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-slate-950">บัตรเครดิต / เดบิต</h2>
+            <h2 className="text-lg font-bold text-slate-950">บัตรเครดิต / เดบิต</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">ชำระผ่าน Stripe Billing พร้อมต่ออายุอัตโนมัติ</p>
           </div>
         </div>
@@ -236,7 +236,7 @@ function PaymentMethodOptions({ hasStripeCustomer }: { hasStripeCustomer: boolea
             <QrCode size={22} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-slate-950">PromptPay ผ่าน Stripe</h2>
+            <h2 className="text-lg font-bold text-slate-950">PromptPay ผ่าน Stripe</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">จ่ายด้วย QR ผ่าน Stripe PromptPay แบบจ่ายครั้งเดียวต่อรอบ (รายเดือน/รายปี) ไม่ต่ออายุอัตโนมัติ</p>
           </div>
         </div>
@@ -252,7 +252,7 @@ function PaymentMethodOptions({ hasStripeCustomer }: { hasStripeCustomer: boolea
             <Wallet size={22} />
           </div>
           <div>
-            <h2 className="text-lg font-black text-slate-950">Wallet</h2>
+            <h2 className="text-lg font-bold text-slate-950">Wallet</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">เติมเงินผ่าน Stripe แล้วใช้ยอด Wallet ชำระแพ็กเกจ</p>
           </div>
         </div>
@@ -268,25 +268,25 @@ function WalletTopUp() {
   return (
     <form action="/api/stripe/wallet-topup" className="space-y-3" method="POST">
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
-        <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 text-xs font-black text-violet-800 transition hover:bg-violet-50">
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 text-xs font-bold text-violet-800 transition hover:bg-violet-50">
           <input className="accent-violet-600" defaultChecked name="method" type="radio" value="auto" />
           บัตร / Apple Pay / Google Pay
         </label>
-        <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 text-xs font-black text-violet-800 transition hover:bg-violet-50">
+        <label className="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-violet-200 bg-white px-3 text-xs font-bold text-violet-800 transition hover:bg-violet-50">
           <input className="accent-violet-600" name="method" type="radio" value="promptpay" />
           PromptPay
         </label>
       </div>
       <div className="grid grid-cols-3 gap-2">
         {topUpAmounts.map((amount) => (
-          <button className="h-10 rounded-xl border border-violet-100 bg-white text-xs font-black text-violet-700 transition hover:bg-violet-100" key={amount} name="amount" type="submit" value={amount}>
+          <button className="h-10 rounded-xl border border-violet-100 bg-white text-xs font-bold text-violet-700 transition hover:bg-violet-100" key={amount} name="amount" type="submit" value={amount}>
             +฿{amount.toLocaleString("th-TH")}
           </button>
         ))}
       </div>
       <div className="grid gap-2 sm:grid-cols-[1fr_auto]">
-        <input className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold outline-none focus:border-violet-500" min="50" name="amount" placeholder="จำนวนอื่น" type="number" />
-        <button className="h-11 rounded-xl bg-violet-600 px-4 text-sm font-black text-white hover:bg-violet-700" type="submit">เติมเงิน</button>
+        <input className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold outline-none focus:border-violet-500" min="50" name="amount" placeholder="จำนวนอื่น" type="number" />
+        <button className="h-11 rounded-xl bg-violet-600 px-4 text-sm font-bold text-white hover:bg-violet-700" type="submit">เติมเงิน</button>
       </div>
     </form>
   );
@@ -297,13 +297,13 @@ function PlanSummary({ billingLabel, selectedPlan, selectedPrice }: { billingLab
     <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-black text-blue-700">แพ็กเกจที่เลือก</p>
-          <h2 className="mt-1 text-2xl font-black text-slate-950">{selectedPlan.title} ({billingLabel})</h2>
+          <p className="text-sm font-bold text-blue-700">แพ็กเกจที่เลือก</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-950">{selectedPlan.title} ({billingLabel})</h2>
           <p className="mt-2 text-sm font-semibold text-slate-600">{selectedPlan.description}</p>
         </div>
         <div className="text-left sm:text-right">
-          <p className="text-sm font-bold text-slate-500">ยอดชำระ</p>
-          <p className="mt-1 text-3xl font-black text-blue-600">{selectedPrice}</p>
+          <p className="text-sm font-semibold text-slate-500">ยอดชำระ</p>
+          <p className="mt-1 text-3xl font-bold text-blue-600">{selectedPrice}</p>
         </div>
       </div>
     </div>
@@ -318,7 +318,7 @@ function DataSafeCard() {
           <ShieldCheck size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-black text-slate-950">ข้อมูลของคุณยังอยู่ครบถ้วน</h3>
+          <h3 className="text-lg font-bold text-slate-950">ข้อมูลของคุณยังอยู่ครบถ้วน</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">ข้อมูลการพิมพ์ สต๊อก และประวัติงานทั้งหมดจะยังคงอยู่เหมือนเดิมหลังอัปเกรด</p>
         </div>
       </div>

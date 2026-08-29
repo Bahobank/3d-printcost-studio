@@ -163,7 +163,7 @@ export default async function HomePage({
             />
           </a>
 
-          <nav className="hidden items-center gap-7 text-sm font-bold text-slate-600 min-[900px]:flex">
+          <nav className="hidden items-center gap-7 text-sm font-semibold text-slate-600 min-[900px]:flex">
             <a className="transition hover:text-blue-600" href="#features">
               {copy.nav.features}
             </a>
@@ -216,7 +216,7 @@ export default async function HomePage({
                 {copy.hero.badge}
               </span>
 
-              <h1 className="mt-6 text-[2.1rem] font-bold leading-[1.15] tracking-tight text-slate-950 sm:text-[2.9rem]">
+              <h1 className="mt-6 text-[2.1rem] font-semibold leading-[1.15] tracking-tight text-slate-950 sm:text-[2.9rem]">
                 {copy.hero.title}
                 <span className="mt-2 block text-blue-600">{copy.hero.titleAccent}</span>
               </h1>
@@ -254,8 +254,8 @@ export default async function HomePage({
                   {copy.demo.caption}
                 </p>
                 <div className="mt-3 flex items-baseline justify-between gap-3">
-                  <h2 className="text-lg font-bold text-slate-950">{copy.demo.jobName}</h2>
-                  <span className="shrink-0 text-xs font-bold text-slate-400">{copy.demo.jobMeta}</span>
+                  <h2 className="text-lg font-semibold text-slate-950">{copy.demo.jobName}</h2>
+                  <span className="shrink-0 text-xs font-semibold text-slate-400">{copy.demo.jobMeta}</span>
                 </div>
 
                 <dl className="mt-6 space-y-3">
@@ -300,7 +300,7 @@ export default async function HomePage({
         <section className="scroll-mt-20 border-y border-white/80 bg-white/60 py-16 sm:py-20" id="features">
           <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
             <div className="max-w-[760px]">
-              <h2 className="text-[1.75rem] font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
+              <h2 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
                 {copy.problem.title}
               </h2>
               <p className="mt-4 text-base leading-7 text-slate-600">{copy.problem.subtitle}</p>
@@ -320,7 +320,7 @@ export default async function HomePage({
                         {String(index + 1).padStart(2, "0")}
                       </span>
 
-                      <h3 className="mt-4 text-xl font-bold leading-8 text-slate-950 sm:text-2xl sm:leading-9">
+                      <h3 className="mt-4 text-xl font-semibold leading-8 text-slate-950 sm:text-2xl sm:leading-9">
                         {problem.title}
                       </h3>
                       <p className="mt-3 text-base leading-8 text-slate-600">{problem.description}</p>
@@ -367,7 +367,7 @@ export default async function HomePage({
         <section className="scroll-mt-20 py-16 sm:py-20" id="how">
           <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
             <div className="max-w-[720px]">
-              <h2 className="text-[1.75rem] font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
+              <h2 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
                 {copy.steps.title}
               </h2>
               <p className="mt-4 text-base leading-7 text-slate-600">{copy.steps.subtitle}</p>
@@ -382,7 +382,7 @@ export default async function HomePage({
                   <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-600 text-lg font-semibold text-white shadow-[0_12px_28px_rgba(37,99,235,0.32)]">
                     {index + 1}
                   </span>
-                  <h3 className="mt-4 text-base font-bold leading-6 text-slate-950">{item.title}</h3>
+                  <h3 className="mt-4 text-base font-semibold leading-6 text-slate-950">{item.title}</h3>
                   <p className="mt-2 text-sm leading-7 text-slate-600">{item.description}</p>
                 </li>
               ))}
@@ -394,7 +394,7 @@ export default async function HomePage({
         <section className="scroll-mt-20 border-y border-white/80 bg-white/60 py-16 sm:py-20" id="pricing">
           <div className="mx-auto w-full max-w-[1180px] px-5 sm:px-8">
             <div className="max-w-[720px]">
-              <h2 className="text-[1.75rem] font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
+              <h2 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
                 {copy.pricing.title}
               </h2>
               <p className="mt-4 text-base leading-7 text-slate-600">{copy.pricing.subtitle}</p>
@@ -419,7 +419,7 @@ export default async function HomePage({
                     ) : null}
 
                     <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-xl font-bold text-slate-950">{planCopy.name}</h3>
+                      <h3 className="text-xl font-semibold text-slate-950">{planCopy.name}</h3>
                       <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-600">
                         {planCopy.badge}
                       </span>
@@ -427,10 +427,10 @@ export default async function HomePage({
                     <p className="mt-2 text-sm leading-6 text-slate-500">{planCopy.description}</p>
 
                     <div className="mt-6 flex items-baseline gap-2">
-                      <span className="text-4xl font-bold tracking-tight text-slate-950">
+                      <span className="text-4xl font-semibold tracking-tight text-slate-950">
                         {formatPlanPrice(monthly.amount, currency)}
                       </span>
-                      <span className="text-sm font-bold text-slate-500">{copy.pricing.perMonth}</span>
+                      <span className="text-sm font-semibold text-slate-500">{copy.pricing.perMonth}</span>
                     </div>
                     <p className="mt-2 text-sm font-semibold text-slate-500">
                       {copy.pricing.yearlyNote(
@@ -476,7 +476,7 @@ export default async function HomePage({
         {/* ---------- faq ---------- */}
         <section className="scroll-mt-20 py-16 sm:py-20" id="faq">
           <div className="mx-auto w-full max-w-[820px] px-5 sm:px-8">
-            <h2 className="text-[1.75rem] font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
+            <h2 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-slate-950 sm:text-[2.1rem]">
               {copy.faq.title}
             </h2>
             <p className="mt-4 text-base leading-7 text-slate-600">{copy.faq.subtitle}</p>
@@ -506,7 +506,7 @@ export default async function HomePage({
               <div className="absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-white/10 blur-2xl" />
             </div>
             <div className="relative">
-              <h2 className="mx-auto max-w-[680px] text-[1.7rem] font-bold leading-tight tracking-tight text-white sm:text-[2.15rem]">
+              <h2 className="mx-auto max-w-[680px] text-[1.7rem] font-semibold leading-tight tracking-tight text-white sm:text-[2.15rem]">
                 {copy.finalCta.title}
               </h2>
               <p className="mx-auto mt-4 max-w-[560px] text-base leading-7 text-blue-100">
@@ -546,7 +546,7 @@ export default async function HomePage({
             <p className="mt-3 text-sm leading-6 text-slate-500">{copy.footer.tagline}</p>
           </div>
 
-          <div className="flex flex-col gap-3 text-sm font-bold text-slate-500 min-[760px]:items-end">
+          <div className="flex flex-col gap-3 text-sm font-semibold text-slate-500 min-[760px]:items-end">
             <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
               <a className="transition hover:text-blue-600" href="/privacy">
                 {copy.footer.privacy}

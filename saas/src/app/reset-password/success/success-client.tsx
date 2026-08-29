@@ -26,9 +26,9 @@ export function ResetPasswordSuccessClient({ lang }: { lang: AuthLanguage }) {
         <div className="mx-auto mt-8 grid h-16 w-16 place-items-center rounded-2xl bg-emerald-50 text-emerald-600">
           <CheckCircle2 size={34} strokeWidth={2.4} />
         </div>
-        <h1 className="mt-7 text-3xl font-black tracking-tight text-slate-950">{copy.successTitle}</h1>
+        <h1 className="mt-7 text-3xl font-bold tracking-tight text-slate-950">{copy.successTitle}</h1>
         <p className="mt-3 text-base font-semibold leading-7 text-slate-500">{copy.successDescription}</p>
-        <a className="mt-7 flex h-12 w-full items-center justify-center rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700" href={`/login?lang=${lang}`}>
+        <a className="mt-7 flex h-12 w-full items-center justify-center rounded-xl bg-blue-600 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700" href={`/login?lang=${lang}`}>
           {copy.goToSignIn}
         </a>
       </section>

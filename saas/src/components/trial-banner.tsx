@@ -10,7 +10,7 @@ export function TrialBanner({ profile }: { profile: UserProfile }) {
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-900">
         การชำระเงินมีปัญหา กรุณาตรวจสอบแพ็กเกจในหน้า{" "}
-        <Link className="font-bold underline" href="/billing">
+        <Link className="font-semibold underline" href="/billing">
           Billing
         </Link>
       </div>
@@ -22,7 +22,7 @@ export function TrialBanner({ profile }: { profile: UserProfile }) {
     return (
       <div className="rounded-2xl border border-blue-200 bg-blue-50 px-4 py-3 text-blue-900">
         เหลือเวลาทดลองใช้งานอีก <strong>{days} วัน</strong>{" "}
-        <Link className="font-bold underline" href="/pricing">
+        <Link className="font-semibold underline" href="/pricing">
           เลือกแพ็กเกจ
         </Link>
       </div>

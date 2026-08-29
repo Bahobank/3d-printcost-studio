@@ -28,7 +28,7 @@ function PreviewInner() {
           <a
             key={l}
             href={`/preview-expired?lang=${l}`}
-            className={`rounded-lg px-3 py-1.5 text-xs font-bold ${l === language ? "bg-blue-600 text-white" : "bg-white/90 text-slate-700"}`}
+            className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${l === language ? "bg-blue-600 text-white" : "bg-white/90 text-slate-700"}`}
           >
             {l.toUpperCase()}
           </a>
@@ -38,9 +38,9 @@ function PreviewInner() {
       {/* the blocked-app background card */}
       <section className="grid min-h-screen place-items-center px-5">
         <div className="max-w-xl rounded-2xl bg-white p-8 text-center shadow-2xl">
-          <h1 className="text-3xl font-black">{card.title}</h1>
+          <h1 className="text-3xl font-bold">{card.title}</h1>
           <p className="mt-2 font-semibold text-slate-500">{card.subtitle}</p>
-          <p className="mt-4 text-sm font-bold text-emerald-700">{card.safe}</p>
+          <p className="mt-4 text-sm font-semibold text-emerald-700">{card.safe}</p>
         </div>
       </section>
 

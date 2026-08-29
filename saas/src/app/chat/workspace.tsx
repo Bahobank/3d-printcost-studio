@@ -83,12 +83,12 @@ export function ChatWorkspace() {
       <div className="border-b border-slate-200 bg-white/70 p-7">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-black">แชทช่วยงานร้านพิมพ์</h1>
+            <h1 className="text-3xl font-bold">แชทช่วยงานร้านพิมพ์</h1>
             <p className="mt-2 max-w-2xl text-slate-500">
               คุยเพื่อช่วยคิดต้นทุน วางสต็อก เตรียมคำตอบลูกค้า และสรุปงานประจำวันของร้าน
             </p>
           </div>
-          <div className="inline-flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 font-bold text-blue-700">
+          <div className="inline-flex items-center gap-2 rounded-2xl border border-blue-100 bg-blue-50 px-4 py-2 font-semibold text-blue-700">
             <Sparkles size={18} />
             พร้อมช่วยงาน
           </div>
@@ -146,11 +146,11 @@ export function ChatWorkspace() {
         </div>
 
         <aside className="border-t border-slate-200 bg-slate-50/80 p-5 lg:border-l lg:border-t-0">
-          <h2 className="text-lg font-black">เริ่มคุยเร็ว</h2>
+          <h2 className="text-lg font-bold">เริ่มคุยเร็ว</h2>
           <div className="mt-4 space-y-3">
             {suggestions.map((suggestion) => (
               <button
-                className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left font-bold leading-6 text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-left font-semibold leading-6 text-slate-700 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                 key={suggestion}
                 onClick={() => sendMessage(suggestion)}
                 type="button"
@@ -162,7 +162,7 @@ export function ChatWorkspace() {
 
           {latestAssistantMessage && (
             <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4">
-              <div className="text-sm font-black text-slate-500">คำตอบล่าสุด</div>
+              <div className="text-sm font-bold text-slate-500">คำตอบล่าสุด</div>
               <p className="mt-2 text-sm leading-6 text-slate-600">{latestAssistantMessage.text}</p>
             </div>
           )}

@@ -188,13 +188,13 @@ export default async function SignupPage({
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
               <Mail className="h-7 w-7" />
             </div>
-            <h2 id="confirm-email-title" className="mt-5 text-2xl font-black tracking-tight text-slate-950">
+            <h2 id="confirm-email-title" className="mt-5 text-2xl font-bold tracking-tight text-slate-950">
               {copy.noticeTitle}
             </h2>
             <p className="mt-3 text-base font-semibold leading-7 text-slate-600">
               {copy.noticeBody}
             </p>
-            {maskedEmail ? <p className="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-black text-slate-700">{maskedEmail}</p> : null}
+            {maskedEmail ? <p className="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">{maskedEmail}</p> : null}
             <p className="mt-3 text-sm font-semibold leading-6 text-slate-500">{copy.noticeHint}</p>
             {params?.message ? (
               <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-700">
@@ -211,13 +211,13 @@ export default async function SignupPage({
                 <input name="lang" type="hidden" value={currentLanguage} />
                 <input name="email" type="hidden" value={maskedEmail} />
                 <PendingSubmitButton
-                  className="flex h-11 w-full items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-base font-black text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:bg-blue-50 disabled:text-blue-400"
+                  className="flex h-11 w-full items-center justify-center rounded-xl border border-blue-200 bg-blue-50 text-base font-bold text-blue-700 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:bg-blue-50 disabled:text-blue-400"
                   idleText={copy.resendButton}
                   pendingText={copy.resendPending}
                 />
               </form>
             ) : null}
-            <a className="mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700" href={`/login?lang=${currentLanguage}`}>
+            <a className="mt-3 flex h-11 w-full items-center justify-center rounded-xl bg-blue-600 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700" href={`/login?lang=${currentLanguage}`}>
               {copy.noticeButton}
             </a>
           </div>
@@ -233,12 +233,12 @@ export default async function SignupPage({
         <div className="relative z-10">
           <div className="flex flex-col items-center text-center">
             <img alt="3D PrintCost Studio" className="h-10 w-auto object-contain" src="/assets/official-3d-printcost-logo.png" />
-            <p className="mt-2 text-sm font-black tracking-tight text-slate-950">{copy.productName}</p>
-            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-4 py-1.5 text-sm font-black text-blue-700 shadow-sm">
+            <p className="mt-2 text-sm font-bold tracking-tight text-slate-950">{copy.productName}</p>
+            <div className="mt-3 inline-flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-4 py-1.5 text-sm font-bold text-blue-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
               {copy.badge}
             </div>
-            <h1 className="mt-4 text-2xl font-black tracking-tight text-slate-950 sm:text-[28px]">{copy.title}</h1>
+            <h1 className="mt-4 text-2xl font-bold tracking-tight text-slate-950 sm:text-[28px]">{copy.title}</h1>
             <p className="mt-2 whitespace-pre-line text-base font-semibold leading-7 text-slate-500">{copy.subtitle}</p>
           </div>
 
@@ -251,7 +251,7 @@ export default async function SignupPage({
           <form action={createAccount} className="mt-4 space-y-2.5">
             <input name="lang" type="hidden" value={currentLanguage} />
             <label className="block">
-              <span className="mb-1.5 block text-sm font-black text-slate-950">{copy.email}</span>
+              <span className="mb-1.5 block text-sm font-bold text-slate-950">{copy.email}</span>
               <span className="flex h-10 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
                 <Mail className="h-4 w-4 text-slate-400" />
                 <input aria-label={copy.email} autoComplete="email" className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400" name="email" placeholder="name@example.com" required type="email" />
@@ -259,7 +259,7 @@ export default async function SignupPage({
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-black text-slate-950">{copy.password}</span>
+              <span className="mb-1.5 block text-sm font-bold text-slate-950">{copy.password}</span>
               <span className="flex h-10 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
                 <LockKeyhole className="h-4 w-4 text-slate-400" />
                 <input aria-label={copy.password} autoComplete="new-password" className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400" name="password" placeholder="********" required type="password" />
@@ -267,7 +267,7 @@ export default async function SignupPage({
             </label>
 
             <label className="block">
-              <span className="mb-1.5 block text-sm font-black text-slate-950">{copy.confirmPassword}</span>
+              <span className="mb-1.5 block text-sm font-bold text-slate-950">{copy.confirmPassword}</span>
               <span className="flex h-10 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
                 <LockKeyhole className="h-4 w-4 text-slate-400" />
                 <input aria-label={copy.confirmPassword} autoComplete="new-password" className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400" name="confirmPassword" placeholder="********" required type="password" />
@@ -275,7 +275,7 @@ export default async function SignupPage({
             </label>
 
             <PendingSubmitButton
-              className="flex h-10 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
+              className="flex h-10 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
               icon={<UserPlus className="h-4 w-4" />}
               idleText={copy.primaryCta}
               pendingText={copy.pendingCta}
@@ -292,7 +292,7 @@ export default async function SignupPage({
             <input name="lang" type="hidden" value={currentLanguage} />
             <input name="provider" type="hidden" value="google" />
             <PendingSubmitButton
-              className="flex h-10 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-base font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70"
+              className="flex h-10 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-base font-bold text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70"
               icon={<GoogleMark />}
               idleText={copy.google}
               pendingText={copy.googlePending}
@@ -306,7 +306,7 @@ export default async function SignupPage({
 
           <p className="mt-4 text-center text-sm font-semibold text-slate-500">
             {copy.alreadyHaveAccount}{" "}
-            <a className="font-black text-blue-600 hover:text-blue-700" href={`/login?lang=${currentLanguage}`}>
+            <a className="font-bold text-blue-600 hover:text-blue-700" href={`/login?lang=${currentLanguage}`}>
               {copy.signIn}
             </a>
           </p>

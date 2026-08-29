@@ -12,9 +12,9 @@ export default function PrivacyPolicyPage() {
   return (
     <main className="min-h-screen bg-slate-50 px-6 py-12 text-slate-800">
       <article className="mx-auto w-full max-w-3xl rounded-3xl border border-slate-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(15,23,42,0.06)] sm:px-12">
-        <a href="/login" className="text-sm font-bold text-blue-600 hover:text-blue-700">← Back to 3D PrintCost Studio</a>
+        <a href="/login" className="text-sm font-semibold text-blue-600 hover:text-blue-700">← Back to 3D PrintCost Studio</a>
 
-        <h1 className="mt-6 text-3xl font-black tracking-tight text-slate-950">Privacy Policy</h1>
+        <h1 className="mt-6 text-3xl font-bold tracking-tight text-slate-950">Privacy Policy</h1>
         <p className="mt-2 text-sm font-semibold text-slate-500">Last updated: {LAST_UPDATED}</p>
 
         <p className="mt-6 leading-7">
@@ -46,7 +46,7 @@ export default function PrivacyPolicyPage() {
           <p className="mt-2 leading-7">
             When you sign in with Google, we only request your basic profile and email address to create your account and
             identify you. Our use of information received from Google APIs adheres to the{" "}
-            <a className="font-bold text-blue-600 hover:text-blue-700" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
+            <a className="font-semibold text-blue-600 hover:text-blue-700" href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer">
               Google API Services User Data Policy
             </a>
             , including the Limited Use requirements. We do not sell Google user data, do not use it for advertising, and do
@@ -75,7 +75,7 @@ export default function PrivacyPolicyPage() {
           <p className="mt-2 leading-7">
             We keep your data for as long as your account is active. You may request access to, correction of, or deletion
             of your personal data at any time by emailing us at{" "}
-            <a className="font-bold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            <a className="font-semibold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
             When you delete your account, your associated data is removed.
           </p>
         </Section>
@@ -100,14 +100,14 @@ export default function PrivacyPolicyPage() {
         <Section title="10. Contact us">
           <p className="mt-2 leading-7">
             If you have any questions about this Privacy Policy, contact us at{" "}
-            <a className="font-bold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+            <a className="font-semibold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
           </p>
         </Section>
 
         <hr className="my-10 border-slate-200" />
 
         {/* ===== ภาษาไทย ===== */}
-        <h2 className="text-2xl font-black tracking-tight text-slate-950">นโยบายความเป็นส่วนตัว (ภาษาไทย)</h2>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-950">นโยบายความเป็นส่วนตัว (ภาษาไทย)</h2>
         <p className="mt-2 text-sm font-semibold text-slate-500">ปรับปรุงล่าสุด: 30 มิถุนายน 2026</p>
         <p className="mt-4 leading-8">
           นโยบายนี้อธิบายวิธีที่ <strong>3D PrintCost Studio</strong> (โดย BAHO) เก็บรวบรวม ใช้ และปกป้องข้อมูลของคุณ
@@ -123,7 +123,7 @@ export default function PrivacyPolicyPage() {
           เราใช้ข้อมูลเพื่อให้บริการ ซิงค์ข้อมูล ประมวลผลการชำระเงิน และพัฒนาผลิตภัณฑ์ เราปฏิบัติตาม
           นโยบายข้อมูลผู้ใช้ของ Google API (รวมข้อกำหนด Limited Use) ไม่ขายข้อมูล และไม่ใช้เพื่อการโฆษณา
           คุณสามารถขอเข้าถึง แก้ไข หรือลบข้อมูลส่วนบุคคลได้ทุกเมื่อ โดยอีเมลมาที่{" "}
-          <a className="font-bold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          <a className="font-semibold text-blue-600 hover:text-blue-700" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
         </p>
       </article>
     </main>
@@ -133,7 +133,7 @@ export default function PrivacyPolicyPage() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-8">
-      <h2 className="text-xl font-black text-slate-950">{title}</h2>
+      <h2 className="text-xl font-bold text-slate-950">{title}</h2>
       {children}
     </section>
   );

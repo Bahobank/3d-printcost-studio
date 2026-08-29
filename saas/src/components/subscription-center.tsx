@@ -381,7 +381,7 @@ function CopyButton({ value, label, copiedLabel }: { value: string; label: strin
     }
   }
   return (
-    <button className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 text-sm font-black text-blue-700 transition hover:bg-blue-100" onClick={copy} type="button">
+    <button className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3 text-sm font-bold text-blue-700 transition hover:bg-blue-100" onClick={copy} type="button">
       {copied ? <Check size={15} /> : <Copy size={15} />}
       {copied ? copiedLabel : label}
     </button>
@@ -393,7 +393,7 @@ function SectionCard({ icon, title, children }: { icon: React.ReactNode; title: 
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_10px_30px_rgba(15,23,42,0.05)] sm:p-5">
       <div className="mb-3 flex items-center gap-2">
         <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-blue-50 text-[#2563EB]">{icon}</span>
-        <h3 className="text-base font-black text-slate-950 sm:text-lg">{title}</h3>
+        <h3 className="text-base font-bold text-slate-950 sm:text-lg">{title}</h3>
       </div>
       {children}
     </section>
@@ -507,35 +507,35 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
           <X size={22} />
         </button>
 
-        <h2 className="pr-12 text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{copy.title}</h2>
+        <h2 className="pr-12 text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{copy.title}</h2>
 
         {loading && !data ? (
-          <p className="mt-6 text-center text-sm font-bold text-slate-500">{copy.loading}</p>
+          <p className="mt-6 text-center text-sm font-semibold text-slate-500">{copy.loading}</p>
         ) : (
           <div className="mt-5 space-y-4">
             {/* A) Current plan */}
             <SectionCard icon={<Crown size={18} />} title={copy.planSection}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-2xl font-black text-slate-950">{name ?? copy.noPlanYet}</span>
-                <span className={["rounded-full px-3 py-1 text-xs font-black", statusKey === "active" ? "bg-emerald-100 text-emerald-700" : statusKey === "trialing" ? "bg-blue-100 text-blue-700" : statusKey === "past_due" ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"].join(" ")}>
+                <span className="text-2xl font-bold text-slate-950">{name ?? copy.noPlanYet}</span>
+                <span className={["rounded-full px-3 py-1 text-xs font-bold", statusKey === "active" ? "bg-emerald-100 text-emerald-700" : statusKey === "trialing" ? "bg-blue-100 text-blue-700" : statusKey === "past_due" ? "bg-amber-100 text-amber-800" : "bg-slate-200 text-slate-600"].join(" ")}>
                   {copy.status[statusKey] ?? statusKey}
                 </span>
               </div>
               <div className="mt-3 grid gap-2 sm:grid-cols-2">
                 {plan?.canCancel || plan?.status === "active" ? (
                   <div className="rounded-xl bg-slate-50 px-3 py-2">
-                    <p className="text-xs font-bold text-slate-500">{copy.autoRenew}</p>
-                    <p className="text-sm font-black text-slate-900">{plan?.autoRenew ? copy.on : copy.off}</p>
+                    <p className="text-xs font-semibold text-slate-500">{copy.autoRenew}</p>
+                    <p className="text-sm font-bold text-slate-900">{plan?.autoRenew ? copy.on : copy.off}</p>
                   </div>
                 ) : null}
                 {periodValue ? (
                   <div className="rounded-xl bg-slate-50 px-3 py-2">
-                    <p className="text-xs font-bold text-slate-500">{periodLabel}</p>
-                    <p className="text-sm font-black text-slate-900">{formatDate(periodValue)}</p>
+                    <p className="text-xs font-semibold text-slate-500">{periodLabel}</p>
+                    <p className="text-sm font-bold text-slate-900">{formatDate(periodValue)}</p>
                   </div>
                 ) : null}
               </div>
-              <button className="mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-[#2563EB] px-5 text-sm font-black text-white transition hover:bg-blue-700" onClick={onChangePlan} type="button">
+              <button className="mt-4 inline-flex h-11 items-center justify-center rounded-xl bg-[#2563EB] px-5 text-sm font-bold text-white transition hover:bg-blue-700" onClick={onChangePlan} type="button">
                 {copy.changePlan}
               </button>
             </SectionCard>
@@ -543,11 +543,11 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
             {/* B) Payment method */}
             <SectionCard icon={<CreditCard size={18} />} title={copy.paymentSection}>
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <p className="text-sm font-black text-slate-900">
-                  {data?.paymentMethod ? `${data.paymentMethod.brand.toUpperCase()} •••• ${data.paymentMethod.last4}` : <span className="font-bold text-slate-500">{copy.noPaymentMethod}</span>}
+                <p className="text-sm font-bold text-slate-900">
+                  {data?.paymentMethod ? `${data.paymentMethod.brand.toUpperCase()} •••• ${data.paymentMethod.last4}` : <span className="font-semibold text-slate-500">{copy.noPaymentMethod}</span>}
                 </p>
                 <form action="/api/stripe/portal" method="POST">
-                  <button className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-100" type="submit">
+                  <button className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-100" type="submit">
                     {copy.managePayment}
                   </button>
                 </form>
@@ -561,15 +561,15 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
                   {data.invoices.map((invoice) => (
                     <li className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2" key={invoice.id}>
                       <div className="min-w-0">
-                        <p className="text-sm font-black text-slate-900">{formatInvoice(invoice.amount, invoice.currency)}</p>
-                        <p className="truncate text-xs font-bold text-slate-500">{formatDate(invoice.date)}{invoice.planLabel ? ` · ${invoice.planLabel}` : ""}</p>
+                        <p className="text-sm font-bold text-slate-900">{formatInvoice(invoice.amount, invoice.currency)}</p>
+                        <p className="truncate text-xs font-semibold text-slate-500">{formatDate(invoice.date)}{invoice.planLabel ? ` · ${invoice.planLabel}` : ""}</p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={["rounded-full px-2.5 py-1 text-[11px] font-black", invoice.status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"].join(" ")}>
+                        <span className={["rounded-full px-2.5 py-1 text-[11px] font-bold", invoice.status === "paid" ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"].join(" ")}>
                           {(invoice.status && copy.invoiceStatus[invoice.status]) ?? invoice.status ?? ""}
                         </span>
                         {invoice.receiptUrl ? (
-                          <a className="inline-flex h-9 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 text-xs font-black text-blue-700 transition hover:bg-blue-100" href={invoice.receiptUrl} rel="noreferrer" target="_blank">
+                          <a className="inline-flex h-9 items-center gap-1 rounded-lg border border-blue-200 bg-blue-50 px-2.5 text-xs font-bold text-blue-700 transition hover:bg-blue-100" href={invoice.receiptUrl} rel="noreferrer" target="_blank">
                             <ExternalLink size={13} />
                             {copy.downloadReceipt}
                           </a>
@@ -579,7 +579,7 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
                   ))}
                 </ul>
               ) : (
-                <p className="rounded-xl bg-slate-50 px-3 py-3 text-sm font-bold text-slate-500">{copy.noHistory}</p>
+                <p className="rounded-xl bg-slate-50 px-3 py-3 text-sm font-semibold text-slate-500">{copy.noHistory}</p>
               )}
             </SectionCard>
 
@@ -587,19 +587,19 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
             <SectionCard icon={<Wallet size={18} />} title={copy.walletSection}>
               <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                 <div className="rounded-xl bg-violet-50 px-3 py-3">
-                  <p className="text-xs font-bold text-violet-500">{copy.walletBalance}</p>
-                  <p className="text-xl font-black text-violet-700">{formatThb(data?.wallet.balance ?? 0)}</p>
+                  <p className="text-xs font-semibold text-violet-500">{copy.walletBalance}</p>
+                  <p className="text-xl font-bold text-violet-700">{formatThb(data?.wallet.balance ?? 0)}</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 px-3 py-3">
-                  <p className="text-xs font-bold text-slate-500">{copy.walletEarned}</p>
-                  <p className="text-xl font-black text-emerald-600">{formatThb(data?.wallet.earned ?? 0)}</p>
+                  <p className="text-xs font-semibold text-slate-500">{copy.walletEarned}</p>
+                  <p className="text-xl font-bold text-emerald-600">{formatThb(data?.wallet.earned ?? 0)}</p>
                 </div>
                 <div className="rounded-xl bg-slate-50 px-3 py-3">
-                  <p className="text-xs font-bold text-slate-500">{copy.walletSpent}</p>
-                  <p className="text-xl font-black text-slate-700">{formatThb(data?.wallet.spent ?? 0)}</p>
+                  <p className="text-xs font-semibold text-slate-500">{copy.walletSpent}</p>
+                  <p className="text-xl font-bold text-slate-700">{formatThb(data?.wallet.spent ?? 0)}</p>
                 </div>
               </div>
-              <button className="mt-3 text-sm font-black text-violet-700 underline-offset-2 hover:underline" onClick={() => setShowWalletHistory((value) => !value)} type="button">
+              <button className="mt-3 text-sm font-bold text-violet-700 underline-offset-2 hover:underline" onClick={() => setShowWalletHistory((value) => !value)} type="button">
                 {showWalletHistory ? copy.walletHistoryHide : copy.walletHistoryBtn}
               </button>
               {showWalletHistory ? (
@@ -609,37 +609,37 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
                       const isSpend = txn.type === "subscription_payment" || txn.type === "subscription_renewal";
                       return (
                         <li className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-sm" key={index}>
-                          <span className="min-w-0 truncate font-bold text-slate-600">{copy.txnType[txn.type] ?? txn.type}<span className="text-slate-400"> · {formatDate(txn.date)}</span></span>
-                          <span className={["shrink-0 font-black", isSpend ? "text-slate-500" : "text-emerald-600"].join(" ")}>{isSpend ? "-" : "+"}{formatThb(txn.amount)}</span>
+                          <span className="min-w-0 truncate font-semibold text-slate-600">{copy.txnType[txn.type] ?? txn.type}<span className="text-slate-400"> · {formatDate(txn.date)}</span></span>
+                          <span className={["shrink-0 font-bold", isSpend ? "text-slate-500" : "text-emerald-600"].join(" ")}>{isSpend ? "-" : "+"}{formatThb(txn.amount)}</span>
                         </li>
                       );
                     })}
                   </ul>
                 ) : (
-                  <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-bold text-slate-500">{copy.walletEmpty}</p>
+                  <p className="mt-2 rounded-xl bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-500">{copy.walletEmpty}</p>
                 )
               ) : null}
-              <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold leading-5 text-slate-500">{copy.walletNote}</p>
+              <p className="mt-3 rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-500">{copy.walletNote}</p>
             </SectionCard>
 
             {/* E) Referral */}
             <SectionCard icon={<Gift size={18} />} title={copy.referralSection}>
               <div className="space-y-3">
                 <div>
-                  <p className="text-xs font-bold text-slate-500">{copy.referralCodeLabel}</p>
+                  <p className="text-xs font-semibold text-slate-500">{copy.referralCodeLabel}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <span className="rounded-xl bg-slate-100 px-3 py-2 text-base font-black tracking-wider text-slate-900">{data?.referral.code ?? "..."}</span>
+                    <span className="rounded-xl bg-slate-100 px-3 py-2 text-base font-bold tracking-wider text-slate-900">{data?.referral.code ?? "..."}</span>
                     {data?.referral.code ? <CopyButton value={data.referral.code} label={copy.copyCode} copiedLabel={copy.copied} /> : null}
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-slate-500">{copy.referralLinkLabel}</p>
+                  <p className="text-xs font-semibold text-slate-500">{copy.referralLinkLabel}</p>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <span className="min-w-0 flex-1 truncate rounded-xl bg-slate-100 px-3 py-2 text-sm font-bold text-slate-700">{data?.referral.link ?? "..."}</span>
+                    <span className="min-w-0 flex-1 truncate rounded-xl bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700">{data?.referral.link ?? "..."}</span>
                     {data?.referral.link ? <CopyButton value={data.referral.link} label={copy.copyLink} copiedLabel={copy.copied} /> : null}
                   </div>
                 </div>
-                <p className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold leading-5 text-emerald-800">{copy.referralNote}</p>
+                <p className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-semibold leading-5 text-emerald-800">{copy.referralNote}</p>
               </div>
             </SectionCard>
 
@@ -648,38 +648,38 @@ export function SubscriptionCenter({ open, language, currency, onClose, onChange
               <SectionCard icon={<Crown size={18} />} title={copy.manageSection}>
                 {cancelState === "done" ? (
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
-                    <p className="text-sm font-black text-emerald-700">{copy.cancelSuccess}</p>
-                    {periodValue ? <p className="mt-1 text-sm font-black text-emerald-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
+                    <p className="text-sm font-bold text-emerald-700">{copy.cancelSuccess}</p>
+                    {periodValue ? <p className="mt-1 text-sm font-bold text-emerald-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
                   </div>
                 ) : resumeState === "done" ? (
                   <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3">
-                    <p className="text-sm font-black text-emerald-700">{copy.resumed}</p>
+                    <p className="text-sm font-bold text-emerald-700">{copy.resumed}</p>
                   </div>
                 ) : plan?.cancelAtPeriodEnd ? (
                   <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3">
-                    <p className="text-sm font-black text-amber-900">{copy.scheduledTitle}</p>
-                    {periodValue ? <p className="mt-1 text-sm font-bold text-amber-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
-                    <button className="mt-3 h-10 rounded-xl bg-[#2563EB] px-4 text-sm font-black text-white transition hover:bg-blue-700 disabled:opacity-60" disabled={resumeState === "loading"} onClick={resumePlan} type="button">
+                    <p className="text-sm font-bold text-amber-900">{copy.scheduledTitle}</p>
+                    {periodValue ? <p className="mt-1 text-sm font-semibold text-amber-800">{copy.usableUntil}: {formatDate(periodValue)}</p> : null}
+                    <button className="mt-3 h-10 rounded-xl bg-[#2563EB] px-4 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60" disabled={resumeState === "loading"} onClick={resumePlan} type="button">
                       {resumeState === "loading" ? copy.resuming : copy.resumePlan}
                     </button>
-                    {resumeState === "error" ? <p className="mt-2 text-xs font-black text-rose-600">{copy.resumeError}</p> : null}
+                    {resumeState === "error" ? <p className="mt-2 text-xs font-bold text-rose-600">{copy.resumeError}</p> : null}
                   </div>
                 ) : cancelState === "confirm" || cancelState === "loading" || cancelState === "error" ? (
                   <div className="rounded-xl border border-slate-200 bg-white px-4 py-3">
-                    <p className="text-sm font-black text-slate-950">{copy.cancelTitle}</p>
-                    <p className="mt-1 text-sm font-bold leading-6 text-slate-500">{copy.cancelBody}</p>
+                    <p className="text-sm font-bold text-slate-950">{copy.cancelTitle}</p>
+                    <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">{copy.cancelBody}</p>
                     <div className="mt-3 flex flex-wrap gap-2">
-                      <button className="h-10 rounded-xl bg-[#2563EB] px-4 text-sm font-black text-white transition hover:bg-blue-700 disabled:opacity-60" disabled={cancelState === "loading"} onClick={() => setCancelState("idle")} type="button">
+                      <button className="h-10 rounded-xl bg-[#2563EB] px-4 text-sm font-bold text-white transition hover:bg-blue-700 disabled:opacity-60" disabled={cancelState === "loading"} onClick={() => setCancelState("idle")} type="button">
                         {copy.keepUsing}
                       </button>
-                      <button className="h-10 rounded-xl border border-rose-200 bg-white px-4 text-sm font-black text-rose-600 transition hover:bg-rose-50 disabled:opacity-60" disabled={cancelState === "loading"} onClick={cancelPlan} type="button">
+                      <button className="h-10 rounded-xl border border-rose-200 bg-white px-4 text-sm font-bold text-rose-600 transition hover:bg-rose-50 disabled:opacity-60" disabled={cancelState === "loading"} onClick={cancelPlan} type="button">
                         {cancelState === "loading" ? copy.canceling : copy.confirmCancel}
                       </button>
                     </div>
-                    {cancelState === "error" ? <p className="mt-2 text-xs font-black text-rose-600">{copy.cancelError}</p> : null}
+                    {cancelState === "error" ? <p className="mt-2 text-xs font-bold text-rose-600">{copy.cancelError}</p> : null}
                   </div>
                 ) : (
-                  <button className="text-sm font-bold text-slate-400 underline-offset-2 transition hover:text-rose-600 hover:underline" onClick={() => setCancelState("confirm")} type="button">
+                  <button className="text-sm font-semibold text-slate-400 underline-offset-2 transition hover:text-rose-600 hover:underline" onClick={() => setCancelState("confirm")} type="button">
                     {copy.cancelPlan}
                   </button>
                 )}

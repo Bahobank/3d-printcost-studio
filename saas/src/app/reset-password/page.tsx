@@ -21,20 +21,20 @@ export default async function ResetPasswordPage({
           <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-blue-50 text-blue-600">
             <LockKeyhole size={28} strokeWidth={2.4} />
           </div>
-          <h1 className="text-3xl font-black tracking-tight text-slate-950">{copy.title}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-950">{copy.title}</h1>
           <p className="mt-3 text-base font-semibold leading-7 text-slate-500">{copy.description}</p>
         </div>
 
         <form action={updatePassword} className="mt-8 space-y-4" noValidate>
           <input name="lang" type="hidden" value={lang} />
           {params?.error ? (
-            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-black leading-6 text-red-600" role="alert">
+            <p className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold leading-6 text-red-600" role="alert">
               {copy.errorTitle}: {params.error}
             </p>
           ) : null}
 
           <label className="block">
-            <span className="mb-2 block text-sm font-black text-slate-950">{copy.password}</span>
+            <span className="mb-2 block text-sm font-bold text-slate-950">{copy.password}</span>
             <span className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
               <LockKeyhole className="h-5 w-5 text-slate-400" />
               <input autoComplete="new-password" className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400" minLength={8} name="password" placeholder="********" required type="password" />
@@ -42,7 +42,7 @@ export default async function ResetPasswordPage({
           </label>
 
           <label className="block">
-            <span className="mb-2 block text-sm font-black text-slate-950">{copy.confirmPassword}</span>
+            <span className="mb-2 block text-sm font-bold text-slate-950">{copy.confirmPassword}</span>
             <span className="flex h-12 items-center gap-3 rounded-xl border border-slate-200 bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:border-blue-400 focus-within:ring-4 focus-within:ring-blue-100">
               <LockKeyhole className="h-5 w-5 text-slate-400" />
               <input autoComplete="new-password" className="h-full min-w-0 flex-1 bg-transparent text-base font-semibold text-slate-950 outline-none placeholder:text-slate-400" minLength={8} name="confirmPassword" placeholder="********" required type="password" />
@@ -50,7 +50,7 @@ export default async function ResetPasswordPage({
           </label>
 
           <PendingSubmitButton
-            className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
+            className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
             icon={<LockKeyhole className="h-5 w-5" />}
             idleText={copy.button}
             pendingText={copy.pending}

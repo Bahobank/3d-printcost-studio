@@ -133,14 +133,14 @@ export function AnnouncementPopup() {
             <Megaphone size={13} strokeWidth={2.75} />
             {NEW_BADGE[lang]}
           </span>
-          <h2 className="mt-3 text-2xl font-black leading-tight text-slate-950">{title}</h2>
+          <h2 className="mt-3 text-2xl font-bold leading-tight text-slate-950">{title}</h2>
           <p className="mt-2 whitespace-pre-line text-sm font-semibold leading-7 text-slate-600">{body}</p>
 
           <div className="mt-6 flex items-center justify-end gap-3">
             {hasCta ? (
               <>
                 <button
-                  className="rounded-xl px-4 py-2.5 text-sm font-bold text-slate-500 transition hover:bg-slate-100"
+                  className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-500 transition hover:bg-slate-100"
                   onClick={() => dismiss()}
                   type="button"
                 >

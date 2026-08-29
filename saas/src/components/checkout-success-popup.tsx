@@ -82,9 +82,9 @@ export function CheckoutSuccessPopup() {
         <div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-emerald-100 text-emerald-600">
           <CheckCircle2 size={38} strokeWidth={2.5} />
         </div>
-        <h2 className="mt-4 text-2xl font-black text-slate-950">{msg.title}</h2>
+        <h2 className="mt-4 text-2xl font-bold text-slate-950">{msg.title}</h2>
         <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">{msg.body}</p>
-        <p className="mt-3 text-xs font-bold text-slate-400">{REDIRECTING[lang]}</p>
+        <p className="mt-3 text-xs font-semibold text-slate-400">{REDIRECTING[lang]}</p>
       </div>
     </div>
   );

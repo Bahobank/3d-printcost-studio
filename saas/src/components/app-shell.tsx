@@ -44,15 +44,15 @@ export async function AppShell({ children, profile }: { children: React.ReactNod
       <div className="mx-auto flex max-w-7xl gap-5">
         <aside className="card sticky top-5 h-[calc(100vh-2.5rem)] w-72 shrink-0 p-5">
           <div className="mb-7">
-            <div className="text-2xl font-black">3D PrintCost Studio</div>
-            <div className="text-sm font-bold tracking-wide text-blue-600">BY BAHO</div>
+            <div className="text-2xl font-bold">3D PrintCost Studio</div>
+            <div className="text-sm font-semibold tracking-wide text-blue-600">BY BAHO</div>
           </div>
           <nav className="space-y-1">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
                 <Link
-                  className="flex items-center gap-3 rounded-2xl px-3 py-3 font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700"
+                  className="flex items-center gap-3 rounded-2xl px-3 py-3 font-semibold text-slate-700 hover:bg-blue-50 hover:text-blue-700"
                   href={item.href}
                   key={item.href}
                 >
@@ -73,9 +73,9 @@ export async function AppShell({ children, profile }: { children: React.ReactNod
           <TrialSubscriptionControl canUseApp={canUseApp} daysLeft={daysLeft} profile={session.profile} />
           {canUseApp ? children : (
             <section className="card p-7 text-center">
-              <h1 className="text-3xl font-black">ทดลองใช้ฟรีครบ 7 วันแล้ว</h1>
+              <h1 className="text-3xl font-bold">ทดลองใช้ฟรีครบ 7 วันแล้ว</h1>
               <p className="mt-2 font-semibold text-slate-500">เลือกแผนที่เหมาะกับธุรกิจของคุณเพื่อใช้งานต่อ</p>
-              <p className="mt-4 text-sm font-bold text-emerald-700">ข้อมูลของคุณยังถูกเก็บไว้อย่างปลอดภัย</p>
+              <p className="mt-4 text-sm font-semibold text-emerald-700">ข้อมูลของคุณยังถูกเก็บไว้อย่างปลอดภัย</p>
             </section>
           )}
         </main>

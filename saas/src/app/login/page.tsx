@@ -296,11 +296,11 @@ export default async function LoginPage({
             />
 
             <div className="mt-10 max-w-[560px]">
-              <h1 className="text-3xl font-black leading-tight tracking-tight text-slate-950 sm:text-[2.15rem]">
+              <h1 className="text-3xl font-bold leading-tight tracking-tight text-slate-950 sm:text-[2.15rem]">
                 {copy.heroTitle}
                 <span className="mt-2 block text-[1.75rem] leading-tight text-blue-600 sm:text-[2rem]">{copy.heroAccent}</span>
               </h1>
-              <p className="mt-5 text-base font-bold leading-7 text-slate-700 sm:text-lg">{copy.heroTagline}</p>
+              <p className="mt-5 text-base font-semibold leading-7 text-slate-700 sm:text-lg">{copy.heroTagline}</p>
               {copy.heroDescription ? (
                 <p className="mt-3 text-base leading-7 text-slate-600">{copy.heroDescription}</p>
               ) : null}
@@ -320,7 +320,7 @@ export default async function LoginPage({
                     >
                       <Icon className="h-7 w-7" strokeWidth={2.2} />
                     </div>
-                    <h2 className="text-base font-black leading-6 text-slate-950">{feature.title}</h2>
+                    <h2 className="text-base font-bold leading-6 text-slate-950">{feature.title}</h2>
                     <p className="mt-2 text-sm leading-6 text-slate-600">{feature.description}</p>
                   </div>
                 );
@@ -350,24 +350,24 @@ export default async function LoginPage({
               />
 
               <div className="mb-7">
-                <h2 className="text-3xl font-black tracking-tight text-slate-950">{copy.welcome}</h2>
+                <h2 className="text-3xl font-bold tracking-tight text-slate-950">{copy.welcome}</h2>
                 <p className="mt-3 text-sm leading-6 text-slate-500 sm:text-base sm:leading-7">{copy.subtitle}</p>
               </div>
 
               <form action={signInWithPassword} className="space-y-4" noValidate>
                 <input name="lang" type="hidden" value={currentLanguage} />
                 {params?.error ? (
-                  <p className="-mb-1 text-sm font-black leading-6 text-red-600" role="alert">
+                  <p className="-mb-1 text-sm font-bold leading-6 text-red-600" role="alert">
                     {copy.errorTitle}: {params.error}
                   </p>
                 ) : null}
                 {params?.message ? (
-                  <p className="-mb-1 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-black leading-6 text-emerald-700" role="status">
+                  <p className="-mb-1 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold leading-6 text-emerald-700" role="status">
                     {loginMessageTitle(currentLanguage)}: {params.message}
                   </p>
                 ) : null}
                 <label className="block">
-                  <span className="mb-2 block text-sm font-black text-slate-950">{copy.email}</span>
+                  <span className="mb-2 block text-sm font-bold text-slate-950">{copy.email}</span>
                   <span className={(params?.error ? "border-red-300 ring-4 ring-red-50 " : "border-slate-200 focus-within:border-blue-400 focus-within:ring-blue-100 ") + "flex h-12 items-center gap-3 rounded-xl border bg-white px-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition focus-within:ring-4"}>
                     <Mail className="h-5 w-5 text-slate-400" />
                     <input
@@ -383,9 +383,9 @@ export default async function LoginPage({
                 </label>
 
                 <label className="block">
-                  <span className="mb-2 flex items-center justify-between text-sm font-black text-slate-950">
+                  <span className="mb-2 flex items-center justify-between text-sm font-bold text-slate-950">
                     {copy.password}
-                    <a className="text-sm font-bold text-blue-600 hover:text-blue-700" href={`/forgot-password?lang=${currentLanguage}`}>
+                    <a className="text-sm font-semibold text-blue-600 hover:text-blue-700" href={`/forgot-password?lang=${currentLanguage}`}>
                       {copy.forgotPassword}
                     </a>
                   </span>
@@ -413,7 +413,7 @@ export default async function LoginPage({
                 </label>
 
                 <PendingSubmitButton
-                  className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
+                  className="flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-blue-600 text-base font-bold text-white shadow-[0_18px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-500"
                   icon={<LockKeyhole className="h-5 w-5" />}
                   idleText={copy.signIn}
                   pendingText="กำลังเข้าสู่ระบบ..."
@@ -431,7 +431,7 @@ export default async function LoginPage({
                   <input name="lang" type="hidden" value={currentLanguage} />
                   <input name="provider" type="hidden" value="google" />
                   <PendingSubmitButton
-                    className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-black text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
+                    className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-slate-200 bg-white text-sm font-bold text-slate-800 shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition hover:border-blue-200 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base"
                     icon={<GoogleMark />}
                     idleText={copy.google}
                     pendingText="กำลังเชื่อมต่อกับ Google..."
@@ -441,7 +441,7 @@ export default async function LoginPage({
 
               <p className="mt-6 text-center text-sm font-semibold text-slate-500">
                 {copy.noAccount}{" "}
-                <a className="font-black text-blue-600 hover:text-blue-700" href={`/signup?lang=${currentLanguage}`}>
+                <a className="font-bold text-blue-600 hover:text-blue-700" href={`/signup?lang=${currentLanguage}`}>
                   {copy.createAccount}
                 </a>
               </p>

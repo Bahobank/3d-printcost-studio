@@ -626,8 +626,8 @@ function BrandLockup({ copy }: { copy: PricingCopy }) {
     <div className="flex items-center gap-3 text-left">
       <img alt="3D PrintCost Studio" className="h-12 w-12 rounded-xl bg-white object-contain p-1 shadow-sm ring-1 ring-blue-100" src="/assets/official-3d-printcost-logo.png" />
       <div>
-        <div className="text-lg font-black leading-tight text-slate-950 sm:text-xl">3D PrintCost Studio</div>
-        <div className="text-xs font-black tracking-wide text-[#2563EB]">{copy.byBaho}</div>
+        <div className="text-lg font-bold leading-tight text-slate-950 sm:text-xl">3D PrintCost Studio</div>
+        <div className="text-xs font-bold tracking-wide text-[#2563EB]">{copy.byBaho}</div>
       </div>
     </div>
   );
@@ -647,13 +647,13 @@ function PlanCard({ billingCycle, copy, currentCycle, currentPlan, expired, lang
   return (
     <article className={["relative flex min-h-[390px] flex-col rounded-2xl border bg-white p-4 shadow-[0_16px_44px_rgba(15,23,42,0.07)] sm:p-5", recommended ? "border-[#2563EB] ring-2 ring-blue-100" : "border-slate-200"].join(" ")}>
       {recommended ? (
-        <div className="absolute -top-3 right-5 inline-flex items-center gap-1.5 rounded-full bg-[#2563EB] px-3 py-1.5 text-xs font-black text-white shadow-md shadow-blue-100">
+        <div className="absolute -top-3 right-5 inline-flex items-center gap-1.5 rounded-full bg-[#2563EB] px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-blue-100">
           <Star size={12} fill="currentColor" />
           {copy.recommended}
         </div>
       ) : null}
       {isCurrent ? (
-        <div className="absolute -top-3 left-5 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-black text-white shadow-md">
+        <div className="absolute -top-3 left-5 inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-md">
           <CheckCircle2 size={12} fill="currentColor" />
           {copy.currentPlanBadge}
         </div>
@@ -665,8 +665,8 @@ function PlanCard({ billingCycle, copy, currentCycle, currentPlan, expired, lang
         </div>
         <div>
           <div className="flex flex-wrap items-center gap-2">
-            <h3 className="text-xl font-black text-slate-950">{config.title}</h3>
-            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-black text-[#2563EB]">{config.badge}</span>
+            <h3 className="text-xl font-bold text-slate-950">{config.title}</h3>
+            <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-[#2563EB]">{config.badge}</span>
           </div>
           <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">{config.description}</p>
         </div>
@@ -676,26 +676,26 @@ function PlanCard({ billingCycle, copy, currentCycle, currentPlan, expired, lang
 
       <div>
         <div className="flex flex-wrap items-end gap-2">
-          <span className={["text-4xl font-black", recommended ? "text-[#2563EB]" : "text-blue-700"].join(" ")}>{formatMoney(monthlyEquivalent, language)}</span>
-          <span className="pb-2 text-lg font-black text-slate-950">{copy.monthlyUnit}</span>
+          <span className={["text-4xl font-bold", recommended ? "text-[#2563EB]" : "text-blue-700"].join(" ")}>{formatMoney(monthlyEquivalent, language)}</span>
+          <span className="pb-2 text-lg font-bold text-slate-950">{copy.monthlyUnit}</span>
         </div>
         {billingCycle === "yearly" ? (
-          <p className="mt-2 text-sm font-black text-emerald-600">{copy.yearlyChargePrefix} {formatMoney(yearlyAmount, language)}</p>
+          <p className="mt-2 text-sm font-bold text-emerald-600">{copy.yearlyChargePrefix} {formatMoney(yearlyAmount, language)}</p>
         ) : (
-          <p className="mt-2 text-sm font-bold text-slate-500">{copy.cancelAnytime}</p>
+          <p className="mt-2 text-sm font-semibold text-slate-500">{copy.cancelAnytime}</p>
         )}
       </div>
 
       <ul className="mt-4 flex-1 space-y-2.5">
         {config.features.map((feature) => (
-          <li className="flex items-center gap-3 text-sm font-bold text-slate-800" key={feature}>
+          <li className="flex items-center gap-3 text-sm font-semibold text-slate-800" key={feature}>
             <CheckCircle2 className={recommended ? "text-[#2563EB]" : "text-blue-700"} size={18} fill="currentColor" strokeWidth={3} />
             {feature}
           </li>
         ))}
       </ul>
 
-      <button className={["mt-5 grid h-12 min-h-12 place-items-center rounded-xl px-4 py-3 text-base font-black transition", isCurrent ? "cursor-default border-2 border-emerald-500 bg-emerald-50 text-emerald-700" : recommended ? "hover:-translate-y-0.5 bg-gradient-to-r from-[#2563EB] to-blue-500 text-white shadow-lg shadow-blue-100 hover:from-blue-700 hover:to-[#2563EB]" : "hover:-translate-y-0.5 border-2 border-[#2563EB] bg-white text-[#2563EB] hover:bg-blue-50"].join(" ")} disabled={isCurrent} onClick={() => onSelect(plan)} type="button">
+      <button className={["mt-5 grid h-12 min-h-12 place-items-center rounded-xl px-4 py-3 text-base font-bold transition", isCurrent ? "cursor-default border-2 border-emerald-500 bg-emerald-50 text-emerald-700" : recommended ? "hover:-translate-y-0.5 bg-gradient-to-r from-[#2563EB] to-blue-500 text-white shadow-lg shadow-blue-100 hover:from-blue-700 hover:to-[#2563EB]" : "hover:-translate-y-0.5 border-2 border-[#2563EB] bg-white text-[#2563EB] hover:bg-blue-50"].join(" ")} disabled={isCurrent} onClick={() => onSelect(plan)} type="button">
         {isCurrent ? copy.currentPlanBadge : <>{copy.selectPlanCta} {expired ? config.title : ""}</>}
       </button>
     </article>
@@ -715,7 +715,7 @@ function HiddenCheckoutFields({ billingCycle, language, plan, promoCode }: { bil
 
 function Benefit({ children, tone = "emerald" }: { children: React.ReactNode; tone?: "emerald" | "slate" }) {
   return (
-    <span className={["inline-flex min-h-7 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-black", tone === "emerald" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"].join(" ")}>
+    <span className={["inline-flex min-h-7 items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-bold", tone === "emerald" ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"].join(" ")}>
       <CheckCircle2 size={14} strokeWidth={3} />
       {children}
     </span>
@@ -831,18 +831,18 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
       <div className="flex flex-wrap items-center justify-between gap-3 pr-12">
         <BrandLockup copy={copy} />
         <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-2 rounded-full bg-blue-50 px-3 py-2 text-xs font-black text-blue-700 sm:inline-flex">
+          <div className="hidden items-center gap-2 rounded-full bg-blue-50 px-3 py-2 text-xs font-bold text-blue-700 sm:inline-flex">
             <ShieldCheck size={16} />
             {copy.paymentSecure}
           </div>
-          <button className="grid h-11 min-w-20 place-items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700 transition hover:bg-slate-100" onClick={onBack} type="button">
+          <button className="grid h-11 min-w-20 place-items-center rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 transition hover:bg-slate-100" onClick={onBack} type="button">
             {copy.back}
           </button>
         </div>
       </div>
 
       <div className="border-y border-slate-100 py-3">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{copy.choosePaymentTitlePrefix} <span className="text-[#2563EB]">{planCopy.title}</span></h2>
+        <h2 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{copy.choosePaymentTitlePrefix} <span className="text-[#2563EB]">{planCopy.title}</span></h2>
         <p className="mt-1 text-sm font-semibold text-slate-500">{copy.choosePaymentSubtitle}</p>
       </div>
 
@@ -853,48 +853,48 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
               <Crown size={26} />
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-black uppercase tracking-wide text-blue-700">{copy.selectedPlan}</p>
-              <h3 className="mt-0.5 text-xl font-black text-slate-950">{planCopy.title}</h3>
-              <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{billingCycle === "yearly" ? copy.billingYearly : copy.billingMonthly}</p>
+              <p className="text-xs font-bold uppercase tracking-wide text-blue-700">{copy.selectedPlan}</p>
+              <h3 className="mt-0.5 text-xl font-bold text-slate-950">{planCopy.title}</h3>
+              <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">{billingCycle === "yearly" ? copy.billingYearly : copy.billingMonthly}</p>
             </div>
           </div>
 
           <div className="rounded-2xl bg-gradient-to-br from-blue-50 to-white p-4 ring-1 ring-blue-100">
-            <p className="text-xs font-black text-slate-500">{copy.priceLabel}</p>
+            <p className="text-xs font-bold text-slate-500">{copy.priceLabel}</p>
             <p className="mt-1 flex items-end gap-1">
-              <span className="text-4xl font-black text-[#2563EB]">{formatMoney(displayAmountDue, language)}</span>
-              <span className="pb-1 text-sm font-black text-slate-500">{billingCycle === "yearly" ? copy.yearlyUnit : copy.monthlyUnit}</span>
+              <span className="text-4xl font-bold text-[#2563EB]">{formatMoney(displayAmountDue, language)}</span>
+              <span className="pb-1 text-sm font-bold text-slate-500">{billingCycle === "yearly" ? copy.yearlyUnit : copy.monthlyUnit}</span>
             </p>
-            {!usd ? <p className="mt-1 text-xs font-bold text-slate-400">{copy.vatIncluded}</p> : null}
-            {!usd && discount > 0 ? <p className="mt-1 text-xs font-black text-emerald-700">{copy.promoDiscount}: -{formatCurrency(discount, language)}</p> : null}
+            {!usd ? <p className="mt-1 text-xs font-semibold text-slate-400">{copy.vatIncluded}</p> : null}
+            {!usd && discount > 0 ? <p className="mt-1 text-xs font-bold text-emerald-700">{copy.promoDiscount}: -{formatCurrency(discount, language)}</p> : null}
           </div>
 
           {!usd ? (
           <div className="rounded-2xl border border-slate-200 bg-white p-3">
-            <label className="text-xs font-black text-slate-950" htmlFor="promo-code">{copy.promoQuestion}</label>
+            <label className="text-xs font-bold text-slate-950" htmlFor="promo-code">{copy.promoQuestion}</label>
             <div className="mt-2 grid gap-2 sm:grid-cols-[1fr_auto] lg:grid-cols-1 xl:grid-cols-[1fr_auto]">
               <div className="relative">
                 <Tag className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                <input className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-bold text-slate-900 outline-none transition focus:border-[#2563EB] focus:bg-white" id="promo-code" onChange={(event) => updatePromoCode(event.target.value)} placeholder={copy.promoPlaceholder} value={promoCode} />
+                <input className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 text-sm font-semibold text-slate-900 outline-none transition focus:border-[#2563EB] focus:bg-white" id="promo-code" onChange={(event) => updatePromoCode(event.target.value)} placeholder={copy.promoPlaceholder} value={promoCode} />
               </div>
-              <button className="h-11 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={promoState.status === "loading"} onClick={applyPromo} type="button">
+              <button className="h-11 rounded-xl bg-slate-950 px-4 text-sm font-bold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={promoState.status === "loading"} onClick={applyPromo} type="button">
                 {copy.applyPromo}
               </button>
             </div>
             {promoState.status === "valid" ? (
-              <p className="mt-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700">
+              <p className="mt-2 rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700">
                 {promoState.type === "access" ? copy.accessCodeReady : copy.promoDiscount + ": -" + formatCurrency(promoState.discountAmount, language)}
               </p>
             ) : null}
-            {promoState.status === "invalid" ? <p className="mt-2 rounded-xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700">{copy.promoInvalid}</p> : null}
+            {promoState.status === "invalid" ? <p className="mt-2 rounded-xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700">{copy.promoInvalid}</p> : null}
           </div>
           ) : null}
 
-          <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold leading-5 text-slate-500">{copy.checkoutDataSafe}</p>
+          <p className="rounded-xl bg-slate-50 px-3 py-2 text-xs font-semibold leading-5 text-slate-500">{copy.checkoutDataSafe}</p>
         </aside>
 
         <section className="space-y-3">
-          <p className="text-sm font-black text-slate-700">{copy.paymentMethodHeading}</p>
+          <p className="text-sm font-bold text-slate-700">{copy.paymentMethodHeading}</p>
 
           <form action="/api/stripe/checkout" className="hidden" method="POST" ref={cardFormRef}>
             <HiddenCheckoutFields billingCycle={billingCycle} language={language} plan={plan} promoCode={hiddenPromoCode} />
@@ -917,10 +917,10 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="min-w-0">
-                    <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.cardTitle}</h3>
-                    <p className="text-xs font-bold text-slate-500">{copy.cardWallets}</p>
+                    <h3 className="text-base font-bold text-slate-950 sm:text-lg">{copy.cardTitle}</h3>
+                    <p className="text-xs font-semibold text-slate-500">{copy.cardWallets}</p>
                   </div>
-                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-black text-blue-700">{copy.recommended}</span>
+                  <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700">{copy.recommended}</span>
                 </div>
                 <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.cardSubtitle}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -940,7 +940,7 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
                 <QrCode size={25} />
               </div>
               <div className="min-w-0 flex-1">
-                <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.promptPayTitle}</h3>
+                <h3 className="text-base font-bold text-slate-950 sm:text-lg">{copy.promptPayTitle}</h3>
                 <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.promptPaySubtitle}</p>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Benefit>{copy.qrPayment}</Benefit>
@@ -962,20 +962,20 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="text-base font-black text-slate-950 sm:text-lg">{copy.walletTitle}</h3>
+                    <h3 className="text-base font-bold text-slate-950 sm:text-lg">{copy.walletTitle}</h3>
                     <p className="mt-1 text-xs font-semibold leading-5 text-slate-500 sm:text-sm">{copy.walletSubtitle}</p>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right">
-                      <p className="text-[11px] font-black text-slate-500">{copy.currentBalance}</p>
-                      <p className="text-lg font-black text-slate-950">{walletBalance === null ? "..." : formatCurrency(walletBalance, language)}</p>
+                      <p className="text-[11px] font-bold text-slate-500">{copy.currentBalance}</p>
+                      <p className="text-lg font-bold text-slate-950">{walletBalance === null ? "..." : formatCurrency(walletBalance, language)}</p>
                     </div>
-                    <button className="h-10 shrink-0 rounded-xl border border-violet-200 bg-violet-50 px-3 text-xs font-black text-violet-700 transition hover:bg-violet-100" onClick={(event) => { event.stopPropagation(); setMethod("wallet"); setShowTopUp((value) => !value); }} type="button">
+                    <button className="h-10 shrink-0 rounded-xl border border-violet-200 bg-violet-50 px-3 text-xs font-bold text-violet-700 transition hover:bg-violet-100" onClick={(event) => { event.stopPropagation(); setMethod("wallet"); setShowTopUp((value) => !value); }} type="button">
                       {copy.topUp}
                     </button>
                   </div>
                 </div>
-                {!canPayWithWallet || walletUnavailable ? <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold leading-5 text-amber-800">{copy.lowBalance}</p> : null}
+                {!canPayWithWallet || walletUnavailable ? <p className="mt-2 rounded-xl bg-amber-50 px-3 py-2 text-xs font-semibold leading-5 text-amber-800">{copy.lowBalance}</p> : null}
 
                 {showTopUp ? (
                   <form action="/api/stripe/wallet-topup" className="mt-3 rounded-2xl bg-violet-50/70 p-3 ring-1 ring-violet-100" method="POST" onClick={(event) => event.stopPropagation()}>
@@ -983,30 +983,30 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
                     <input name="paymentMode" type="hidden" value="wallet_topup" />
                     <input name="language" type="hidden" value={language} />
                     <input name="amount" type="hidden" value={topUpReady ? selectedTopUpAmount : ""} />
-                    <p className="text-[11px] font-black text-violet-700">{copy.topUpAmountLabel}</p>
+                    <p className="text-[11px] font-bold text-violet-700">{copy.topUpAmountLabel}</p>
                     <div className="mt-2 grid grid-cols-3 gap-2">
                       {topUpAmounts.map((amountOption) => {
                         const selected = selectedTopUpAmount === amountOption;
                         return (
-                          <button className={["h-9 rounded-xl border text-[11px] font-black transition", selected ? "border-violet-600 bg-violet-600 text-white" : "border-violet-100 bg-white text-violet-700 hover:bg-violet-100"].join(" ")} key={amountOption} onClick={() => setTopUpAmount(String(amountOption))} type="button">
+                          <button className={["h-9 rounded-xl border text-[11px] font-bold transition", selected ? "border-violet-600 bg-violet-600 text-white" : "border-violet-100 bg-white text-violet-700 hover:bg-violet-100"].join(" ")} key={amountOption} onClick={() => setTopUpAmount(String(amountOption))} type="button">
                             {formatCurrency(amountOption, language)}
                           </button>
                         );
                       })}
                     </div>
-                    <input className="mt-2 h-10 w-full rounded-xl border border-violet-100 bg-white px-3 text-sm font-bold outline-none focus:border-violet-500" min="50" onChange={(event) => setTopUpAmount(event.target.value)} placeholder={copy.topUpCustom} type="number" value={topUpAmounts.includes(selectedTopUpAmount) ? "" : topUpAmount} />
+                    <input className="mt-2 h-10 w-full rounded-xl border border-violet-100 bg-white px-3 text-sm font-semibold outline-none focus:border-violet-500" min="50" onChange={(event) => setTopUpAmount(event.target.value)} placeholder={copy.topUpCustom} type="number" value={topUpAmounts.includes(selectedTopUpAmount) ? "" : topUpAmount} />
 
-                    <p className="mt-3 text-[11px] font-black text-violet-700">{copy.topUpMethodLabel}</p>
+                    <p className="mt-3 text-[11px] font-bold text-violet-700">{copy.topUpMethodLabel}</p>
                     <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "auto" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("auto")} type="button">
+                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-bold transition", topUpMethod === "auto" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("auto")} type="button">
                         {copy.topUpMethodAuto}
                       </button>
-                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-black transition", topUpMethod === "promptpay" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("promptpay")} type="button">
+                      <button className={["min-h-9 rounded-xl border px-2 py-1.5 text-[11px] font-bold transition", topUpMethod === "promptpay" ? "border-violet-600 bg-white text-violet-800 shadow-sm" : "border-violet-100 bg-white/70 text-violet-600 hover:bg-white"].join(" ")} onClick={() => setTopUpMethod("promptpay")} type="button">
                         {copy.topUpMethodPromptPay}
                       </button>
                     </div>
 
-                    <button className="mt-3 h-10 w-full rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={!topUpReady} type="submit">
+                    <button className="mt-3 h-10 w-full rounded-xl bg-violet-600 px-4 text-sm font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={!topUpReady} type="submit">
                       {copy.topUp}
                     </button>
                   </form>
@@ -1016,12 +1016,12 @@ function PaymentSelection({ billingCycle, copy, language, onBack, plan }: { bill
           </div>
           ) : null}
 
-          <button className="mt-1 flex h-14 w-full flex-col items-center justify-center rounded-2xl bg-[#2563EB] px-4 font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={ctaDisabled} onClick={submitSelected} type="button">
+          <button className="mt-1 flex h-14 w-full flex-col items-center justify-center rounded-2xl bg-[#2563EB] px-4 font-bold text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-slate-300" disabled={ctaDisabled} onClick={submitSelected} type="button">
             <span className="flex items-center gap-2 text-base"><Lock size={16} /> {copy.proceedPayment}</span>
-            {method !== "wallet" ? <span className="text-[11px] font-bold text-blue-100">{copy.redirectSecureNote}</span> : null}
+            {method !== "wallet" ? <span className="text-[11px] font-semibold text-blue-100">{copy.redirectSecureNote}</span> : null}
           </button>
 
-          <p className="text-center text-xs font-bold text-slate-400">{copy.instantAccessNote} • {copy.cancelAnytime}</p>
+          <p className="text-center text-xs font-semibold text-slate-400">{copy.instantAccessNote} • {copy.cancelAnytime}</p>
         </section>
       </div>
     </div>
@@ -1059,7 +1059,7 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
           <>
             <div className="flex flex-wrap items-start justify-between gap-4 pr-12">
               <BrandLockup copy={copy} />
-              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-black text-blue-700">
+              <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700">
                 <ShieldCheck size={18} />
                 {copy.paymentSecure}
               </div>
@@ -1069,17 +1069,17 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
               <div className="mx-auto mb-2 grid h-10 w-10 place-items-center rounded-xl bg-blue-50 text-[#2563EB]">
                 <ShieldCheck size={24} strokeWidth={2.5} />
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">{expired ? copy.expiredTitle : copy.title}</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-slate-950 sm:text-3xl">{expired ? copy.expiredTitle : copy.title}</h2>
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">{expired ? copy.expiredSubtitle : copy.subtitle}</p>
-              {expired ? <p className="mt-2 text-sm font-bold text-emerald-700">{copy.expiredDataSafe}</p> : null}
+              {expired ? <p className="mt-2 text-sm font-semibold text-emerald-700">{copy.expiredDataSafe}</p> : null}
 
               <div className="mx-auto mt-4 grid h-16 max-w-[380px] grid-cols-2 rounded-full bg-slate-100 p-1.5 shadow-inner">
-                <button className={["rounded-full text-xl font-black transition", billingCycle === "monthly" ? "bg-white text-slate-950 shadow" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("monthly")} type="button">
+                <button className={["rounded-full text-xl font-bold transition", billingCycle === "monthly" ? "bg-white text-slate-950 shadow" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("monthly")} type="button">
                   {copy.billingMonthly}
                 </button>
-                <button className={["relative flex items-center justify-center rounded-full text-xl font-black transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
+                <button className={["relative flex items-center justify-center rounded-full text-xl font-bold transition", billingCycle === "yearly" ? "bg-[#2563EB] text-white shadow-md shadow-blue-100" : "text-slate-500"].join(" ")} onClick={() => setBillingCycle("yearly")} type="button">
                   {copy.billingYearly}
-                  <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-100 px-3.5 py-1 text-sm font-black leading-none text-emerald-700 shadow-sm">{copy.saveYearly}</span>
+                  <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-emerald-100 px-3.5 py-1 text-sm font-bold leading-none text-emerald-700 shadow-sm">{copy.saveYearly}</span>
                 </button>
               </div>
             </div>
@@ -1089,7 +1089,7 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
               <PlanCard billingCycle={billingCycle} copy={copy} currentCycle={currentCycle} currentPlan={currentPlan} expired={expired} language={language} onSelect={setCheckoutPlan} plan="studio" />
             </div>
 
-            <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm font-bold leading-6 text-slate-500">{copy.footer}</div>
+            <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm font-semibold leading-6 text-slate-500">{copy.footer}</div>
           </>
         )}
       </div>
@@ -1172,8 +1172,8 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
     <>
       {!hideTrigger && status === "trialing" && daysLeft === 1 && canUseApp ? (
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950">
-          <span className="text-sm font-black">{copy.trialOneDayText}</span>
-          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-black text-white hover:bg-amber-700" onClick={() => setPricingOpen(true)} type="button">
+          <span className="text-sm font-bold">{copy.trialOneDayText}</span>
+          <button className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-bold text-white hover:bg-amber-700" onClick={() => setPricingOpen(true)} type="button">
             {copy.trialOneDayCta}
           </button>
         </div>
@@ -1182,7 +1182,7 @@ export function TrialSubscriptionControl({ canUseApp, daysLeft, hideTrigger = fa
       {!hideTrigger ? (
         <div className="mb-4 flex justify-end">
           {badgeText ? (
-            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-black text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50" onClick={() => setCenterOpen(true)} type="button">
+            <button className="rounded-full border border-blue-100 bg-white px-4 py-2 text-sm font-bold text-blue-700 shadow-sm transition hover:border-blue-200 hover:bg-blue-50" onClick={() => setCenterOpen(true)} type="button">
               {badgeText}
             </button>
           ) : null}

@@ -36,7 +36,7 @@ export function PricingPageClient({ language }: { language: PricingLanguage }) {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(37,99,235,0.35),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(124,58,237,0.32),transparent_30%),linear-gradient(135deg,#071533,#111827)]" />
       <div className="relative z-10 mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl place-items-center text-center text-white">
         <div>
-          <h1 className="text-4xl font-black">3D PrintCost Studio</h1>
+          <h1 className="text-4xl font-bold">3D PrintCost Studio</h1>
           <p className="mt-3 text-lg font-semibold text-blue-100">{pageCopy[language].subtitle}</p>
         </div>
       </div>
