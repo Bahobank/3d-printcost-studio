@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
-import { getPlanAmount } from "@/lib/billing-plans";
+import { PLAN_CONFIGS, USD_PLAN_PRICES, getPlanAmount } from "@/lib/billing-plans";
 import { SubscriptionCenter } from "@/components/subscription-center";
 import type { UserProfile } from "@/lib/subscription";
 
@@ -144,18 +144,16 @@ function formatCurrency(amount: number, language: PricingLanguage) {
 }
 
 // Thai customers are billed in THB; every other language is shown and charged in USD.
-const USD_PRICES: Record<PlanKey, Record<BillingCycle, number>> = {
-  maker: { monthly: 5.99, yearly: 53.9 },
-  studio: { monthly: 8.99, yearly: 83.9 },
-};
-const USD_MONTHLY_EQUIVALENT: Record<PlanKey, number> = { maker: 4.49, studio: 6.99 };
+// Both price tables live in billing-plans.ts, which is also what checkout charges.
 
 function usesUsd(language: PricingLanguage) {
   return language !== "th";
 }
 
 function planDisplayAmount(plan: PlanKey, billingCycle: BillingCycle, language: PricingLanguage) {
-  return usesUsd(language) ? USD_PRICES[plan][billingCycle] : getPlanAmount(plan, billingCycle);
+  return usesUsd(language)
+    ? USD_PLAN_PRICES[plan][billingCycle].amount
+    : getPlanAmount(plan, billingCycle);
 }
 
 function formatMoney(amount: number, language: PricingLanguage) {
@@ -642,8 +640,8 @@ function PlanCard({ billingCycle, copy, currentCycle, currentPlan, expired, lang
   const isCurrent = currentPlan === plan && currentCycle === billingCycle;
   const usd = usesUsd(language);
   const monthlyEquivalent = usd
-    ? (billingCycle === "yearly" ? USD_MONTHLY_EQUIVALENT[plan] : USD_PRICES[plan].monthly)
-    : (billingCycle === "yearly" ? (plan === "maker" ? 149 : 233) : getPlanAmount(plan, "monthly"));
+    ? USD_PLAN_PRICES[plan][billingCycle === "yearly" ? "yearly" : "monthly"].monthlyEquivalent
+    : (billingCycle === "yearly" ? PLAN_CONFIGS[plan].prices.yearly.monthlyEquivalent : getPlanAmount(plan, "monthly"));
   const yearlyAmount = planDisplayAmount(plan, "yearly", language);
 
   return (

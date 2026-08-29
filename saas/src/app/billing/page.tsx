@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { AlertTriangle, CheckCircle2, CreditCard, QrCode, ShieldCheck, Wallet } from "lucide-react";
 import { AppShell } from "@/components/app-shell";
+import { PLAN_CONFIGS, formatThb } from "@/lib/billing-plans";
 import { getSessionAndProfile } from "@/lib/subscription";
 
 type BillingPageProps = {
@@ -15,18 +16,19 @@ type BillingPageProps = {
   }>;
 };
 
+// Prices come from PLAN_CONFIGS so this page can never drift from what is charged.
 const planDetails = {
   maker: {
     title: "Maker",
     description: "สำหรับผู้ใช้งานเครื่องพิมพ์ FDM",
-    monthly: "฿199 / เดือน",
-    yearly: "฿1,790 / ปี",
+    monthly: `${formatThb(PLAN_CONFIGS.maker.prices.monthly.amount)} / เดือน`,
+    yearly: `${formatThb(PLAN_CONFIGS.maker.prices.yearly.amount)} / ปี`,
   },
   studio: {
     title: "Studio",
     description: "สำหรับธุรกิจที่ใช้งานทั้ง FDM และ Resin",
-    monthly: "฿299 / เดือน",
-    yearly: "฿2,790 / ปี",
+    monthly: `${formatThb(PLAN_CONFIGS.studio.prices.monthly.amount)} / เดือน`,
+    yearly: `${formatThb(PLAN_CONFIGS.studio.prices.yearly.amount)} / ปี`,
   },
 };
 

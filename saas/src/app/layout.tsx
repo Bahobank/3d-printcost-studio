@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import { Analytics } from "@vercel/analytics/next";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
@@ -18,9 +19,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // The middleware resolves the language (?lang= wins, then Accept-Language) and
+  // passes it down here, so <html lang> matches the text actually on the page.
+  const requestHeaders = await headers();
+  const language = requestHeaders.get("x-app-lang") ?? "th";
+
   return (
-    <html lang="th">
+    <html lang={language}>
       <head>
         <meta charSet="UTF-8" />
       </head>

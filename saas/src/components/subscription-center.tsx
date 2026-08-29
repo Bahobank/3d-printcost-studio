@@ -345,7 +345,8 @@ const localeTags: Record<PricingLanguage, string> = { th: "th-TH", en: "en-US", 
 
 // Wallet/credit is stored in THB internally. It is displayed in the user's chosen
 // currency (from the calculator's currency picker), converted at these display rates
-// (THB per 1 unit). USD mirrors the plan price mapping where ฿199 ≈ $5.99.
+// (THB per 1 unit). These are display rates for the wallet balance only — plan
+// prices are set independently in billing-plans.ts (THB) and pricing-modal (USD).
 const CURRENCY_THB_RATE: Record<string, number> = {
   THB: 1, USD: 33.2, EUR: 36, GBP: 42, JPY: 0.22, CNY: 4.6, KRW: 0.025,
   AUD: 22, CAD: 24, SGD: 25, HKD: 4.3, TWD: 1.05, INR: 0.4, MYR: 7.4,

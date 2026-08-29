@@ -1,6 +1,14 @@
 import { NextResponse } from "next/server";
 import { localDevAuthEnabled } from "@/lib/auth-config";
-import { getPlanAmount, isBillingCycle, isPlan, type BillingCycle, type SubscriptionPlan } from "@/lib/billing-plans";
+import {
+  getPlanAmount,
+  getPlanPrice,
+  isBillingCycle,
+  isPlan,
+  toStripeMinorUnits,
+  type BillingCycle,
+  type SubscriptionPlan,
+} from "@/lib/billing-plans";
 import { normalizePromoCode, recordPromoRedemption, validatePromoCode } from "@/lib/promo";
 import { updateUserProfileByUserId } from "@/lib/profile-update";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -177,12 +185,17 @@ export async function POST(request: Request) {
     return NextResponse.redirect(setupRequiredUrl(request, planValue, billingCycleValue, "invalid-amount"), 303);
   }
 
-  let priceId: string;
+  // The amount charged comes from billing-plans.ts, not from a Stripe Price object,
+  // so the price on screen and the price on the card can never drift apart. The
+  // configured Price is still looked up, but only to reuse its Stripe Product, so
+  // subscriptions keep reporting under the existing product instead of a fresh one.
+  let productId: string | undefined;
   try {
-    priceId = getPriceId(planValue, billingCycleValue);
+    const configuredPrice = await stripe.prices.retrieve(getPriceId(planValue, billingCycleValue));
+    productId =
+      typeof configuredPrice.product === "string" ? configuredPrice.product : configuredPrice.product?.id;
   } catch (error) {
-    console.error("Missing Stripe price id", error);
-    return NextResponse.redirect(setupRequiredUrl(request, planValue, billingCycleValue, "stripe-price"), 303);
+    console.warn("Could not resolve a Stripe product from the configured price", error);
   }
 
   const discounts = promo?.valid && promo.code.stripe_coupon_id
@@ -211,7 +224,7 @@ export async function POST(request: Request) {
               product_data: {
                 name: `3D PrintCost Studio ${planValue === "maker" ? "Maker" : "Studio"} ${billingCycleValue === "monthly" ? "Monthly" : "Yearly"}`,
               },
-              unit_amount: finalAmount * 100,
+              unit_amount: toStripeMinorUnits(finalAmount),
             },
             quantity: 1,
           },
@@ -253,12 +266,25 @@ export async function POST(request: Request) {
     }
   }
 
+  const planName = `3D PrintCost Studio ${planValue === "maker" ? "Maker" : "Studio"}`;
+  const subscriptionAmount = getPlanPrice(planValue, billingCycleValue, presentmentCurrency).amount;
+
   const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     customer: customerId,
     client_reference_id: userData.user.id,
     currency: presentmentCurrency,
-    line_items: [{ price: priceId, quantity: 1 }],
+    line_items: [
+      {
+        price_data: {
+          currency: presentmentCurrency,
+          recurring: { interval: billingCycleValue === "yearly" ? "year" : "month" },
+          unit_amount: toStripeMinorUnits(subscriptionAmount),
+          ...(productId ? { product: productId } : { product_data: { name: planName } }),
+        },
+        quantity: 1,
+      },
+    ],
     discounts: presentmentCurrency === "thb" ? discounts : undefined,
     metadata: {
       billing_cycle: billingCycleValue,

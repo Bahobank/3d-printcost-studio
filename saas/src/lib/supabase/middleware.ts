@@ -7,7 +7,23 @@ import {
   supabaseConfig,
 } from "@/lib/auth-config";
 
-const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password", "/reset-password", "/auth/callback", "/api/stripe/webhook"];
+// "/" is the marketing landing page — anonymous visitors must be able to read it.
+// It is deliberately NOT an AUTH_ROUTE: a signed-in visitor still sees the landing
+// page, and its "sign in" link lands on /login, which bounces them to /dashboard.
+const PUBLIC_ROUTES = [
+  "/",
+  "/login",
+  "/signup",
+  "/forgot-password",
+  "/reset-password",
+  "/auth/callback",
+  "/privacy",
+  "/terms",
+  // Referral landing: /r/CODE must reach an anonymous visitor, or the referral
+  // cookie is never set and every shared link is dead.
+  "/r",
+  "/api/stripe/webhook",
+];
 const AUTH_ROUTES = ["/login", "/signup"];
 // The legacy SPA document itself — gate it so an expired trial can't open it
 // directly (bypassing the /dashboard paywall). Sub-assets are not gated.
