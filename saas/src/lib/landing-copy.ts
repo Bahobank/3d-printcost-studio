@@ -7,7 +7,7 @@ export function getLandingLanguage(value: string | undefined): LandingLanguage {
 type Item = { title: string; description: string };
 
 export type LandingCopy = {
-  nav: { features: string; how: string; pricing: string; faq: string; signIn: string; openApp: string; start: string };
+  nav: { features: string; how: string; pricing: string; faq: string; signIn: string; start: string };
   hero: {
     badge: string;
     title: string;
@@ -55,7 +55,6 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       pricing: "ราคา",
       faq: "คำถามที่พบบ่อย",
       signIn: "เข้าสู่ระบบ",
-      openApp: "เปิดแอป",
       start: "เริ่มใช้ฟรี",
     },
     hero: {
@@ -259,7 +258,6 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       pricing: "Pricing",
       faq: "FAQ",
       signIn: "Sign in",
-      openApp: "Open the app",
       start: "Start free",
     },
     hero: {
@@ -469,7 +467,6 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       pricing: "价格",
       faq: "常见问题",
       signIn: "登录",
-      openApp: "打开应用",
       start: "免费开始",
     },
     hero: {
@@ -634,7 +631,6 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       pricing: "料金",
       faq: "よくある質問",
       signIn: "ログイン",
-      openApp: "アプリを開く",
       start: "無料で始める",
     },
     hero: {
@@ -840,7 +836,6 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       pricing: "요금",
       faq: "자주 묻는 질문",
       signIn: "로그인",
-      openApp: "앱 열기",
       start: "무료로 시작",
     },
     hero: {

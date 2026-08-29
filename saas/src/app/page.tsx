@@ -126,7 +126,8 @@ export default async function HomePage({
 
   const signedIn = await viewerIsSignedIn();
   const appHref = signedIn ? "/dashboard" : loginHref;
-  const appLabel = signedIn ? copy.nav.openApp : copy.nav.signIn;
+  // Always labelled "sign in" - it just skips the form when a session exists.
+  const appLabel = copy.nav.signIn;
   const ctaHref = signedIn ? "/dashboard" : signupHref;
   const planCtaHref = signedIn ? "/pricing" : signupHref;
 
@@ -229,7 +230,7 @@ export default async function HomePage({
                   className="inline-flex items-center gap-2 rounded-2xl bg-blue-600 px-7 py-4 text-base font-semibold text-white shadow-[0_20px_45px_rgba(37,99,235,0.32)] transition hover:bg-blue-700"
                   href={ctaHref}
                 >
-                  {signedIn ? copy.nav.openApp : copy.hero.primaryCta}
+                  {signedIn ? copy.nav.signIn : copy.hero.primaryCta}
                   <ArrowRight className="h-5 w-5" />
                 </a>
                 {signedIn ? null : (
@@ -516,7 +517,7 @@ export default async function HomePage({
                   className="inline-flex items-center gap-2 rounded-2xl bg-white px-7 py-4 text-base font-semibold text-blue-700 shadow-[0_18px_45px_rgba(15,23,42,0.25)] transition hover:bg-blue-50"
                   href={ctaHref}
                 >
-                  {signedIn ? copy.nav.openApp : copy.finalCta.primary}
+                  {signedIn ? copy.nav.signIn : copy.finalCta.primary}
                   <ArrowRight className="h-5 w-5" />
                 </a>
                 {signedIn ? null : (
