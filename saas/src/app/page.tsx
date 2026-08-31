@@ -21,6 +21,8 @@ import { formatPlanPrice, getPlanPrice, type PlanCurrency } from "@/lib/billing-
 import { detectAcceptLanguage } from "@/lib/detect-language";
 import { getLandingLanguage, landingCopy } from "@/lib/landing-copy";
 import {
+  DEMO_JOB,
+  DEMO_MARGIN_PERCENT,
   ILLUSTRATION_HEIGHT,
   ILLUSTRATION_WIDTH,
   problemIllustrations,
@@ -142,6 +144,7 @@ export default async function HomePage({
   // Thai visitors are shown and charged in THB, everyone else in USD — the same
   // split that checkout uses, so the landing price matches what the card is billed.
   const currency: PlanCurrency = language === "th" ? "thb" : "usd";
+  const demo = DEMO_JOB[currency];
 
   const plans = (["maker", "studio"] as const).map((key) => ({
     key,
@@ -259,10 +262,12 @@ export default async function HomePage({
                 </div>
 
                 <dl className="mt-6 space-y-3">
-                  {copy.demo.rows.map((row) => (
-                    <div className="flex items-center justify-between gap-4" key={row.label}>
-                      <dt className="text-sm font-semibold text-slate-600">{row.label}</dt>
-                      <dd className="text-sm font-semibold tabular-nums text-slate-900">{row.value}</dd>
+                  {copy.demo.rowLabels.map((label, index) => (
+                    <div className="flex items-center justify-between gap-4" key={label}>
+                      <dt className="text-sm font-semibold text-slate-600">{label}</dt>
+                      <dd className="text-sm font-semibold tabular-nums text-slate-900">
+                        {formatPlanPrice(demo.rows[index], currency)}
+                      </dd>
                     </div>
                   ))}
                 </dl>
@@ -270,18 +275,28 @@ export default async function HomePage({
                 <div className="mt-5 border-t border-dashed border-slate-200 pt-5">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm font-semibold text-slate-700">{copy.demo.costLabel}</span>
-                    <span className="text-lg font-semibold tabular-nums text-slate-950">{copy.demo.costValue}</span>
+                    <span className="text-lg font-semibold tabular-nums text-slate-950">
+                      {formatPlanPrice(demo.cost, currency)}
+                    </span>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-4">
                     <span className="text-sm font-semibold text-slate-700">{copy.demo.priceLabel}</span>
-                    <span className="text-lg font-semibold tabular-nums text-slate-950">{copy.demo.priceValue}</span>
+                    <span className="text-lg font-semibold tabular-nums text-slate-950">
+                      {formatPlanPrice(demo.price, currency)}
+                    </span>
                   </div>
                 </div>
 
                 {/* cost vs profit as a share of the sale price */}
                 <div className="mt-5 flex h-3 overflow-hidden rounded-full bg-slate-100">
-                  <span className="h-full w-[53%] bg-gradient-to-r from-slate-300 to-slate-400" />
-                  <span className="h-full w-[47%] bg-gradient-to-r from-emerald-400 to-emerald-500" />
+                  <span
+                    className="h-full bg-gradient-to-r from-slate-300 to-slate-400"
+                    style={{ width: `${100 - DEMO_MARGIN_PERCENT}%` }}
+                  />
+                  <span
+                    className="h-full bg-gradient-to-r from-emerald-400 to-emerald-500"
+                    style={{ width: `${DEMO_MARGIN_PERCENT}%` }}
+                  />
                 </div>
 
                 <div className="mt-5 flex items-center justify-between gap-4 rounded-2xl bg-emerald-50 px-5 py-4">
@@ -289,7 +304,9 @@ export default async function HomePage({
                     <TrendingUp className="h-5 w-5" />
                     {copy.demo.profitLabel}
                   </span>
-                  <span className="text-xl font-semibold tabular-nums text-emerald-700">{copy.demo.profitValue}</span>
+                  <span className="text-xl font-semibold tabular-nums text-emerald-700">
+                    {formatPlanPrice(demo.profit, currency)} ({DEMO_MARGIN_PERCENT}%)
+                  </span>
                 </div>
               </div>
             </div>

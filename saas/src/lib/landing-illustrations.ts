@@ -17,3 +17,15 @@ export const problemIllustrations = [
 
 export const ILLUSTRATION_WIDTH = 1400;
 export const ILLUSTRATION_HEIGHT = 1000;
+
+/**
+ * The worked example in the hero, in the currency the visitor is quoted in.
+ * Both sets are chosen to land on the same 47% margin so the bar under them
+ * reads the same either way.
+ */
+export const DEMO_JOB = {
+  thb: { rows: [34, 9, 12, 40], cost: 95, price: 180, profit: 85 },
+  usd: { rows: [1.1, 0.3, 0.4, 1.2], cost: 3, price: 5.7, profit: 2.7 },
+} as const;
+
+export const DEMO_MARGIN_PERCENT = 47;

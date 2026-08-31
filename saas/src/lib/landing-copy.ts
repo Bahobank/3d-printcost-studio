@@ -21,13 +21,11 @@ export type LandingCopy = {
     caption: string;
     jobName: string;
     jobMeta: string;
-    rows: Array<{ label: string; value: string }>;
+    /** Four cost lines, in the order the page renders them. Amounts live in page.tsx. */
+    rowLabels: string[];
     costLabel: string;
-    costValue: string;
     priceLabel: string;
-    priceValue: string;
     profitLabel: string;
-    profitValue: string;
   };
   problem: { title: string; subtitle: string; solutionLabel: string; items: Item[] };
   features: { title: string; subtitle: string; items: Item[] };
@@ -71,18 +69,10 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       caption: "ตัวอย่างการคำนวณ",
       jobName: "ที่วางโทรศัพท์ · PLA",
       jobMeta: "FDM · 68 g · 6.5 ชม.",
-      rows: [
-        { label: "ค่าฟิลาเมนต์", value: "฿34" },
-        { label: "ค่าไฟฟ้า", value: "฿9" },
-        { label: "ค่าเสื่อมเครื่องพิมพ์", value: "฿12" },
-        { label: "ค่าแรง / งานเก็บผิว", value: "฿40" },
-      ],
+      rowLabels: ["ค่าฟิลาเมนต์", "ค่าไฟฟ้า", "ค่าเสื่อมเครื่องพิมพ์", "ค่าแรง / งานเก็บผิว"],
       costLabel: "ต้นทุนรวม",
-      costValue: "฿95",
       priceLabel: "ราคาขาย",
-      priceValue: "฿180",
       profitLabel: "กำไร",
-      profitValue: "฿85 (47%)",
     },
     problem: {
       title: "ตั้งราคาด้วยความรู้สึก = กำไรหายโดยไม่รู้ตัว",
@@ -274,18 +264,10 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       caption: "Sample calculation",
       jobName: "Phone stand · PLA",
       jobMeta: "FDM · 68 g · 6.5 h",
-      rows: [
-        { label: "Filament", value: "฿34" },
-        { label: "Electricity", value: "฿9" },
-        { label: "Printer depreciation", value: "฿12" },
-        { label: "Labour / post-processing", value: "฿40" },
-      ],
+      rowLabels: ["Filament", "Electricity", "Printer depreciation", "Labour / post-processing"],
       costLabel: "Total cost",
-      costValue: "฿95",
       priceLabel: "Sale price",
-      priceValue: "฿180",
       profitLabel: "Profit",
-      profitValue: "฿85 (47%)",
     },
     problem: {
       title: "Pricing on instinct quietly eats your margin",
@@ -483,18 +465,10 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       caption: "计算示例",
       jobName: "手机支架 · PLA",
       jobMeta: "FDM · 68 g · 6.5 小时",
-      rows: [
-        { label: "耗材费用", value: "฿34" },
-        { label: "电费", value: "฿9" },
-        { label: "设备折旧", value: "฿12" },
-        { label: "人工 / 后处理", value: "฿40" },
-      ],
+      rowLabels: ["耗材费用", "电费", "设备折旧", "人工 / 后处理"],
       costLabel: "总成本",
-      costValue: "฿95",
       priceLabel: "售价",
-      priceValue: "฿180",
       profitLabel: "利润",
-      profitValue: "฿85 (47%)",
     },
     problem: {
       title: "凭感觉定价，利润在不知不觉中流失",
@@ -647,18 +621,10 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       caption: "計算例",
       jobName: "スマホスタンド · PLA",
       jobMeta: "FDM · 68 g · 6.5 時間",
-      rows: [
-        { label: "フィラメント費", value: "฿34" },
-        { label: "電気代", value: "฿9" },
-        { label: "プリンターの減価償却", value: "฿12" },
-        { label: "人件費 / 後処理", value: "฿40" },
-      ],
+      rowLabels: ["フィラメント費", "電気代", "プリンターの減価償却", "人件費 / 後処理"],
       costLabel: "原価合計",
-      costValue: "฿95",
       priceLabel: "販売価格",
-      priceValue: "฿180",
       profitLabel: "利益",
-      profitValue: "฿85 (47%)",
     },
     problem: {
       title: "感覚で値付けすると、利益は静かに消えていく",
@@ -852,18 +818,10 @@ export const landingCopy: Record<LandingLanguage, LandingCopy> = {
       caption: "계산 예시",
       jobName: "휴대폰 거치대 · PLA",
       jobMeta: "FDM · 68 g · 6.5시간",
-      rows: [
-        { label: "필라멘트 비용", value: "฿34" },
-        { label: "전기료", value: "฿9" },
-        { label: "프린터 감가상각", value: "฿12" },
-        { label: "인건비 / 후가공", value: "฿40" },
-      ],
+      rowLabels: ["필라멘트 비용", "전기료", "프린터 감가상각", "인건비 / 후가공"],
       costLabel: "총 원가",
-      costValue: "฿95",
       priceLabel: "판매가",
-      priceValue: "฿180",
       profitLabel: "수익",
-      profitValue: "฿85 (47%)",
     },
     problem: {
       title: "감으로 가격을 정하면 수익은 조용히 사라집니다",
