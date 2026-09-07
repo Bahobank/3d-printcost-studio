@@ -26,30 +26,47 @@ export async function GET() {
     if (!data.user) return NextResponse.json({ announcement: null });
     userId = data.user.id;
     email = data.user.email?.toLowerCase() ?? null;
-  } catch {
+  } catch (error) {
+    console.error("[announcements] could not resolve the signed-in user", error);
     return NextResponse.json({ announcement: null });
   }
 
   try {
     const admin = createAdminClient();
 
-    const { data: rows } = await admin
+    const { data: rows, error: rowsError } = await admin
       .from("announcements")
       .select("id, title, body, image_url, cta_label, cta_url, target_email, translations")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
+
+    // Without this the route answers "nothing to show" for a failed read exactly as
+    // it does for an empty table, which is impossible to tell apart from outside.
+    if (rowsError) {
+      console.error("[announcements] read failed", rowsError);
+    }
 
     const candidates = (rows ?? []).filter((row) => {
       const target = (row.target_email as string | null)?.toLowerCase() ?? null;
       return target === null || (email !== null && target === email);
     });
 
+    console.info("[announcements] lookup", {
+      email,
+      activeRows: rows?.length ?? 0,
+      candidates: candidates.length,
+    });
+
     if (candidates.length === 0) return NextResponse.json({ announcement: null });
 
-    const { data: dismissed } = await admin
+    const { data: dismissed, error: dismissedError } = await admin
       .from("announcement_dismissals")
       .select("announcement_id")
       .eq("user_id", userId);
+
+    if (dismissedError) {
+      console.error("[announcements] dismissals read failed", dismissedError);
+    }
     const seen = new Set((dismissed ?? []).map((d) => String(d.announcement_id)));
 
     const next = candidates.find((row) => !seen.has(String(row.id)));
@@ -66,7 +83,8 @@ export async function GET() {
     };
     return NextResponse.json({ announcement: payload });
   } catch (error) {
-    // tables may not exist yet — fail silently so the app keeps working
+    // The app keeps working without announcements, but the reason must be visible.
+    console.error("[announcements] lookup threw", error);
     return NextResponse.json({ announcement: null });
   }
 }
