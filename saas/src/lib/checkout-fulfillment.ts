@@ -34,7 +34,7 @@ function paidAmountFromSession(session: Stripe.Checkout.Session) {
   return Math.round(Number(session.amount_total ?? 0) / 100);
 }
 
-/** Returns false when another path already claimed this session. */
+/** Returns false only when another path genuinely claimed this session first. */
 async function claimSession(sessionId: string) {
   const supabase = createAdminClient();
   const { error } = await supabase.from("stripe_webhook_events").insert({
@@ -43,7 +43,17 @@ async function claimSession(sessionId: string) {
     payload: {},
   });
 
-  return !error;
+  if (!error) return true;
+
+  // 23505 is the unique violation, and the only error that means "someone else
+  // got here first".
+  if (error.code === "23505") return false;
+
+  // Any other failure means the claim never happened. Treating it as "already
+  // done" would skip fulfilment for a payment that really went through — the
+  // exact silent loss this module exists to prevent — so make it loud and let
+  // the caller retry.
+  throw new Error(`Could not claim checkout session ${sessionId}: ${error.message} (${error.code})`);
 }
 
 async function releaseSession(sessionId: string) {
