@@ -1,10 +1,9 @@
 import { headers } from "next/headers";
 import Stripe from "stripe";
-import { getPlanPeriodEnd, isBillingCycle, isPlan } from "@/lib/billing-plans";
+import { fulfillCheckoutSession } from "@/lib/checkout-fulfillment";
 import { updateUserProfileByCustomerId, updateUserProfileByUserId } from "@/lib/profile-update";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizeStripeStatus, planFromPriceId } from "@/lib/stripe";
-import { adjustWalletBalance } from "@/lib/wallet";
 
 export async function POST(request: Request) {
   const { getStripe } = await import("@/lib/stripe");
@@ -42,7 +41,12 @@ export async function POST(request: Request) {
   });
 
   try {
-    if (event.type === "checkout.session.completed") {
+    // PromptPay can complete a session before the money settles and then send
+    // async_payment_succeeded; subscribing to only the first event loses those.
+    if (
+      event.type === "checkout.session.completed" ||
+      event.type === "checkout.session.async_payment_succeeded"
+    ) {
       const session = event.data.object as Stripe.Checkout.Session;
       await handleCheckoutSession(session);
     }
@@ -88,31 +92,16 @@ function timestampToIso(value?: number | null) {
   return value ? new Date(value * 1000).toISOString() : null;
 }
 
-function paidAmountFromSession(session: Stripe.Checkout.Session) {
-  return Math.round(Number(session.amount_total ?? 0) / 100);
-}
-
 async function handleCheckoutSession(session: Stripe.Checkout.Session) {
-  const paymentMode = session.metadata?.payment_mode ?? "subscription";
-
-  if (paymentMode === "wallet_topup") {
-    await creditWalletFromCheckoutSession(session);
-    return;
-  }
-
-  if (paymentMode === "promptpay_period") {
-    await activatePromptPayPeriod(session);
-    return;
-  }
-
-  await updateProfileFromCheckoutSession(session);
+  const outcome = await fulfillCheckoutSession(session);
+  console.info("[stripe-webhook] checkout session handled", { id: session.id, outcome });
 }
 
 async function handlePaymentIntentSucceeded(paymentIntent: Stripe.PaymentIntent) {
   const paymentMode = paymentIntent.metadata?.payment_mode;
 
   if (paymentMode === "wallet_topup" || paymentMode === "promptpay_period") {
-    console.info("[stripe-webhook] PaymentIntent succeeded; Checkout Session completion handles fulfillment", {
+    console.info("[stripe-webhook] PaymentIntent succeeded; the Checkout Session events fulfil it", {
       id: paymentIntent.id,
       paymentMode,
     });
@@ -128,136 +117,6 @@ async function handlePaymentIntentFailed(paymentIntent: Stripe.PaymentIntent) {
       paymentMode,
     });
   }
-}
-
-async function updateProfileFromCheckoutSession(session: Stripe.Checkout.Session) {
-  const userId = session.client_reference_id;
-  if (!userId) return;
-
-  const supabase = createAdminClient();
-  await updateUserProfileByUserId(supabase, userId, {
-    stripe_customer_id: String(session.customer),
-    stripe_subscription_id: session.subscription ? String(session.subscription) : null,
-    subscription_status: "active",
-    subscription_plan: session.metadata?.plan ?? null,
-    billing_cycle: session.metadata?.billing_cycle ?? null,
-    subscription_started_at: new Date().toISOString(),
-    subscription_payment_source: "stripe_subscription",
-    updated_at: new Date().toISOString(),
-  });
-
-  await recordPromoFromSession(session, userId, String(session.subscription ?? ""), null, null);
-  await creditReferrer(userId, paidAmountFromSession(session));
-}
-
-async function activatePromptPayPeriod(session: Stripe.Checkout.Session) {
-  const userId = session.client_reference_id ?? session.metadata?.user_id;
-  const plan = session.metadata?.plan ?? "";
-  const billingCycle = session.metadata?.billing_cycle ?? "";
-  if (!userId || !isPlan(plan) || !isBillingCycle(billingCycle)) return;
-
-  const now = new Date();
-  const endsAt = getPlanPeriodEnd(billingCycle, now).toISOString();
-  const supabase = createAdminClient();
-
-  await updateUserProfileByUserId(supabase, userId, {
-    billing_cycle: billingCycle,
-    stripe_customer_id: session.customer ? String(session.customer) : null,
-    stripe_subscription_id: null,
-    subscription_ends_at: endsAt,
-    subscription_plan: plan,
-    subscription_started_at: now.toISOString(),
-    subscription_status: "active",
-    subscription_payment_source: "stripe_promptpay",
-    updated_at: new Date().toISOString(),
-  });
-
-  await recordPromoFromSession(session, userId, null, now.toISOString(), endsAt);
-  await creditReferrer(userId, paidAmountFromSession(session));
-}
-
-// Single-tier referral: when a referred user makes their first successful payment,
-// credit the referrer 5% of the paid amount to their Wallet. Credited once, and any
-// failure here is swallowed so it can never break payment processing.
-const REFERRAL_RATE = 0.05;
-
-async function creditReferrer(userId: string, amountThb: number) {
-  try {
-    if (!userId || amountThb <= 0) return;
-    const supabase = createAdminClient();
-    const { data: profile } = await supabase
-      .from("user_profiles")
-      .select("referred_by, referral_credited")
-      .eq("user_id", userId)
-      .maybeSingle();
-
-    if (!profile?.referred_by || profile.referral_credited) return;
-
-    const credit = Math.round(amountThb * REFERRAL_RATE);
-    if (credit > 0) {
-      await adjustWalletBalance({
-        amount: credit,
-        description: "Referral reward",
-        supabase,
-        type: "adjustment",
-        userId: String(profile.referred_by),
-      });
-    }
-    await supabase.from("user_profiles").update({ referral_credited: true }).eq("user_id", userId);
-  } catch (error) {
-    console.error("[referral] credit failed", error);
-  }
-}
-
-async function creditWalletFromCheckoutSession(session: Stripe.Checkout.Session) {
-  const userId = session.client_reference_id ?? session.metadata?.user_id;
-  if (!userId) return;
-
-  const amount = paidAmountFromSession(session);
-  if (amount <= 0) return;
-
-  const supabase = createAdminClient();
-  await adjustWalletBalance({
-    amount,
-    description: "Wallet top-up via Stripe Checkout",
-    stripePaymentIntent: session.payment_intent ? String(session.payment_intent) : null,
-    supabase,
-    type: "topup",
-    userId,
-  });
-}
-
-async function recordPromoFromSession(
-  session: Stripe.Checkout.Session,
-  userId: string,
-  subscriptionId: string | null,
-  accessStartsAt: string | null,
-  accessEndsAt: string | null,
-) {
-  const codeId = session.metadata?.promo_code_id;
-  if (!codeId) return;
-
-  const supabase = createAdminClient();
-  const { data: code } = await supabase
-    .from("promo_codes")
-    .select("id,redemption_count")
-    .eq("id", codeId)
-    .maybeSingle();
-
-  if (!code) return;
-
-  await supabase.from("promo_redemptions").insert({
-    access_ends_at: accessEndsAt,
-    access_starts_at: accessStartsAt,
-    code_id: codeId,
-    subscription_id: subscriptionId,
-    user_id: userId,
-  });
-
-  await supabase
-    .from("promo_codes")
-    .update({ redemption_count: Number(code.redemption_count ?? 0) + 1 })
-    .eq("id", codeId);
 }
 
 async function updateProfileFromSubscription(subscription: Stripe.Subscription, deleted = false) {

@@ -4,16 +4,31 @@ import { CheckoutSuccessPopup } from "@/components/checkout-success-popup";
 import { LegacyDashboardShell } from "@/components/legacy-dashboard-shell";
 import { ReferralCapture } from "@/components/referral-capture";
 import { localDevAuthEnabled } from "@/lib/auth-config";
+import { confirmCheckoutSessionFromReturn } from "@/lib/checkout-fulfillment";
 import { getSessionAndProfile } from "@/lib/subscription";
 
 type DashboardPageProps = {
-  searchParams?: Promise<{ preview?: string | string[] }>;
+  searchParams?: Promise<{ preview?: string | string[]; session_id?: string | string[] }>;
 };
 
+function firstParam(value?: string | string[]) {
+  return Array.isArray(value) ? value[0] : value;
+}
+
 export default async function DashboardPage({ searchParams }: DashboardPageProps) {
-  const { profile } = await getSessionAndProfile();
   const params = await searchParams;
-  const preview = Array.isArray(params?.preview) ? params?.preview[0] : params?.preview;
+
+  // Stripe sends the customer back here with the session id. Unlocking the plan
+  // right now means a webhook that is slow, misconfigured, or never delivered can
+  // no longer leave someone who has paid staring at the paywall. Runs before the
+  // profile is read so the page renders the plan they just bought.
+  const sessionId = firstParam(params?.session_id);
+  if (sessionId) {
+    await confirmCheckoutSessionFromReturn(sessionId);
+  }
+
+  const { profile } = await getSessionAndProfile();
+  const preview = firstParam(params?.preview);
 
   const previewProfile =
     localDevAuthEnabled() && preview === "expired"
