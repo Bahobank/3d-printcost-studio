@@ -393,31 +393,39 @@
     .sales-badge.is-rejected, .sales-badge.is-cancelled { background: rgba(184, 64, 64, .12); color: var(--red); }
     .sales-badge.is-waiting { background: rgba(240, 170, 40, .18); color: #9a6b04; }
     .sales-empty { color: var(--muted); padding: 26px 4px; text-align: center; }
-    .sales-head { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-head); margin-bottom: 18px; }
-    .sales-head > summary { cursor: pointer; list-style: none; padding: 9px 14px; display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
-    .sales-head > summary::-webkit-details-marker { display: none; }
-    .sales-head > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin-left: 2px; transition: transform .15s; }
-    .sales-head[open] > summary::before { transform: rotate(45deg); }
-    .sales-head[open] > summary { border-bottom: 1px solid var(--line); }
-    .sales-head-digest strong { color: var(--ink); font-weight: 600; }
     .sales-editor-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .sales-editor-head h2 { margin: 0; }
     .sales-editor-no { color: var(--muted); font-weight: 600; }
-    .sales-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; list-style: none; margin: 0 0 8px; padding: 0; }
-    .sales-step { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; font-size: 13px; font-weight: 600; color: var(--muted); background: var(--panel); }
-    .sales-step .sales-step-no { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--control); color: var(--control-ink); font-size: 11px; }
-    .sales-step.is-done { border-color: color-mix(in srgb, var(--green) 45%, var(--line)); color: var(--green); }
+    .sales-topline { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 10px; }
+    .sales-topline-meta { text-align: right; margin-left: auto; }
+    .sales-updated { margin: 0; font-size: 12px; color: var(--muted); }
+    .sales-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 0; list-style: none; margin: 0; padding: 0; }
+    .sales-step { display: flex; align-items: center; gap: 9px; font-size: 15px; font-weight: 600; color: var(--muted); background: none; border: 0; padding: 0; }
+    .sales-step .sales-step-no { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--control); color: var(--control-ink); font-size: 13px; font-weight: 700; flex: 0 0 auto; }
+    .sales-step.is-done { color: var(--green); }
     .sales-step.is-done .sales-step-no { background: var(--green); color: #fff; }
-    .sales-step.is-current { border-color: var(--accent); background: var(--accent); color: #fff; }
-    .sales-step.is-current .sales-step-no { background: rgba(255,255,255,.28); color: #fff; }
+    .sales-step.is-current { color: var(--accent); }
+    .sales-step.is-current .sales-step-no { background: var(--accent); color: #fff; box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
     .sales-step[data-sales-step-go] { cursor: pointer; }
-    .sales-step[data-sales-step-go]:hover { border-color: var(--accent); }
-    .sales-step-arrow { color: var(--muted); font-size: 12px; }
+    .sales-step[data-sales-step-go]:hover { text-decoration: underline; }
+    .sales-step-arrow { flex: 1 1 26px; min-width: 26px; max-width: 64px; height: 2px; background: var(--line); margin: 0 12px; border-radius: 2px; }
+    .sales-step-arrow.is-done { background: color-mix(in srgb, var(--green) 55%, var(--line)); }
     .sales-next { margin: 0 0 12px; font-size: 13px; color: var(--ink); }
     .sales-next::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
     .sales-next.is-done::before { background: var(--green); }
     .sales-next.is-stopped::before { background: var(--red); }
     .sales-head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sales-shopcard { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--panel-head); margin-bottom: 18px; }
+    .sales-shopcard-logo { width: 120px; height: 74px; border-radius: 10px; background: var(--soft) center/contain no-repeat; border: 1px solid var(--line); flex: 0 0 auto; display: grid; place-items: center; color: var(--muted); font-size: 12px; text-align: center; padding: 6px; }
+    .sales-shopcard-logo.has-logo { background-color: #fff; }
+    .sales-shopcard-body { flex: 1 1 240px; min-width: 0; display: grid; gap: 3px; }
+    .sales-shopcard-body strong { font-size: 19px; }
+    .sales-shopcard-tagline { color: var(--muted); font-size: 13px; }
+    .sales-shopcard-meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 5px; font-size: 13px; color: var(--muted); }
+    .sales-shopcard-meta span { display: inline-flex; align-items: center; gap: 6px; }
+    .sales-logo-row { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .sales-logo-preview { width: 132px; height: 82px; border: 1px dashed var(--line); border-radius: 10px; background: #fff center/contain no-repeat; display: grid; place-items: center; color: var(--muted); font-size: 12px; }
+    .sales-logo-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .sales-bank-box { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; margin-top: 12px; background: var(--panel-head); font-size: 13px; }
     .sales-bank-box .btn-ghost { min-height: 26px; padding: 0 8px; font-size: 12px; }
     .sales-bank-line { display: flex; justify-content: space-between; gap: 14px; padding: 2px 0; }
@@ -431,20 +439,27 @@
     .sales-image-box img { display: block; width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; background: var(--soft); }
     .sales-ref { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
     .sales-ref button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
-    .sales-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; padding: 14px; }
-    .sales-col h3 { margin: 0 0 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .sales-cols { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 18px; align-items: start; margin-bottom: 18px; }
+    .sales-col { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--panel); }
+    .sales-col h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--ink); }
     .sales-col-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; align-items: end; }
     .sales-col-fields .field.wide { grid-column: 1 / -1; }
     .sales-col .field { margin: 0; gap: 3px; }
-    .sales-col .field label { font-size: 11px; font-weight: 500; color: var(--muted); }
-    .sales-col .field input, .sales-col .field select { min-height: 32px; padding: 5px 9px; font-size: 13px; }
+    .sales-col .field label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .sales-col .field input, .sales-col .field select { min-height: 36px; padding: 6px 10px; font-size: 13px; }
     .sales-col .field textarea { min-height: 32px; padding: 5px 9px; font-size: 13px; resize: vertical; }
     .sales-items-panel { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
     .sales-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--soft); border-bottom: 1px solid var(--line); }
     .sales-section-head h3 { margin: 0; font-size: 17px; }
     .sales-items-hint { margin: 0; padding: 0 14px 12px; }
     .sales-items-wrap { overflow-x: auto; padding: 6px 12px 0; }
-    .sales-items { width: 100%; border-collapse: collapse; min-width: 720px; }
+    .sales-items { width: 100%; border-collapse: collapse; min-width: 900px; }
+    .sales-items .sales-col-no { width: 34px; text-align: center; color: var(--muted); }
+    .sales-items td.sales-col-no { font-weight: 700; }
+    .sales-item-main { display: flex; align-items: center; gap: 10px; min-width: 220px; }
+    .sales-item-thumb { width: 46px; height: 46px; border-radius: 8px; border: 1px solid var(--line); background: var(--soft) center/cover no-repeat; flex: 0 0 auto; }
+    .sales-item-text { display: grid; gap: 3px; min-width: 0; flex: 1 1 auto; }
+    .sales-item-from { font-size: 11px; color: var(--muted); }
     .sales-items th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 8px 8px; }
     .sales-items th.num, .sales-items td.num { text-align: right; }
     .sales-items th.mid, .sales-items td.mid { text-align: center; }
@@ -455,13 +470,20 @@
     .sales-items .sales-line-total { font-weight: 700; white-space: nowrap; }
     .sales-items tr.is-hidden-line { background: rgba(184, 64, 64, .05); }
     .sales-items tr.is-hidden-line td:first-child::after { content: attr(data-hidden-tag); display: block; font-size: 11px; color: var(--red); margin-top: 3px; }
-    .sales-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); gap: 18px; margin-top: 18px; align-items: start; }
-    .sales-totals { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--panel-head); }
+    .sales-body-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(272px, 330px); gap: 18px; align-items: start; }
+    .sales-summary { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+    .sales-summary-body { padding: 12px 14px; }
+    .sales-summary-input { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; font-size: 13px; color: var(--muted); }
+    .sales-summary-input input { width: 132px; text-align: right; border: 1px solid var(--input-border); background: var(--input-bg); border-radius: 6px; min-height: 34px; padding: 6px 10px; color: var(--ink); outline: none; }
+    .sales-summary-input input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(22,115,122,.13); }
+    .sales-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(272px, 330px); gap: 18px; margin-top: 18px; align-items: start; }
+    .sales-totals { border-top: 1px solid var(--line); padding-top: 10px; margin-top: 4px; }
     .sales-total-row { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; font-size: 14px; }
-    .sales-total-row.is-grand { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 10px; font-size: 17px; font-weight: 700; color: var(--ink); }
+    .sales-total-row.is-grand { border-top: 1px solid var(--line); margin-top: 8px; padding-top: 11px; font-size: 16px; font-weight: 700; color: var(--ink); align-items: baseline; }
+    .sales-total-row.is-grand strong { font-size: 23px; color: var(--green); }
     .sales-internal { border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px 16px; margin-top: 12px; background: transparent; }
     .sales-internal-title { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
-    .sales-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .sales-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); align-items: center; }
     .sales-actions .spacer { flex: 1 1 auto; }
     .sales-pick-list { display: grid; gap: 8px; max-height: 46vh; overflow-y: auto; }
     .sales-pick-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--radius); padding: 11px 14px; cursor: pointer; background: var(--panel); text-align: left; font: inherit; color: inherit; width: 100%; }
@@ -475,9 +497,16 @@
     .sales-preview-scroll { overflow: auto; padding: 18px; background: #5b6472; display: flex; justify-content: center; }
     .sales-preview-stage { position: relative; flex: 0 0 auto; }
     .sales-preview-page { width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; background: #fff; box-shadow: 0 10px 32px rgba(0,0,0,.35); transform-origin: top left; position: absolute; inset: 0 auto auto 0; }
+    @media (max-width: 1100px) {
+      .sales-body-grid { grid-template-columns: 1fr; }
+      .sales-foot { grid-template-columns: 1fr; }
+    }
     @media (max-width: 900px) {
       .sales-cols { grid-template-columns: 1fr; }
-      .sales-foot { grid-template-columns: 1fr; }
+      .sales-topline { flex-direction: column; }
+      .sales-topline-meta { text-align: left; margin-left: 0; }
+      .sales-step-arrow { max-width: 20px; margin: 0 7px; }
+      .sales-step { font-size: 13px; }
     }
     @media (max-width: 720px) {
       .sales-table thead { display: none; }
@@ -492,7 +521,10 @@
     .sales-paper { background: #fff; color: #111; font-size: 13px; line-height: 1.55; }
     .sales-paper h1 { font-size: 22px; margin: 0 0 2px; letter-spacing: .02em; }
     .sales-paper .sales-paper-head { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 14px; }
+    .sales-paper .sales-paper-logo { max-width: 46mm; max-height: 22mm; display: block; margin-bottom: 8px; object-fit: contain; }
+    .sales-paper .sales-paper-tagline { color: #666; }
     .sales-paper .sales-paper-parties { display: flex; justify-content: space-between; gap: 28px; margin-bottom: 16px; }
+    .sales-paper .sales-paper-detail { display: block; color: #666; font-size: 12px; margin-top: 2px; }
     .sales-paper .sales-paper-photo { margin: 0 0 16px; border: 1px solid #ddd; border-radius: 4px; padding: 6px; }
     .sales-paper .sales-paper-photo img { display: block; width: 100%; max-height: 95mm; object-fit: contain; }
     .sales-paper .sales-paper-block { flex: 1 1 0; min-width: 0; }
@@ -2978,24 +3010,31 @@
               </button>
             </div>
             <div class="panel-body">
-              <ol class="sales-steps" id="salesSteps"></ol>
+              <div class="sales-topline">
+                <ol class="sales-steps" id="salesSteps"></ol>
+                <div class="sales-topline-meta">
+                  <p class="sales-ref" id="salesRefLine" hidden></p>
+                  <p class="sales-updated" id="salesUpdated"></p>
+                </div>
+              </div>
               <p class="sales-next" id="salesNext"></p>
-              <p class="sales-ref" id="salesRefLine" hidden></p>
               <p class="hint" id="salesLockedHint" hidden></p>
 
-              <details class="sales-head" id="salesHeadBox" open>
-                <summary><span class="sales-head-digest" id="salesHeadDigest"></span></summary>
-                <div class="sales-cols">
-                <div class="sales-col">
-                  <h3 id="salesShopTitle">Your shop</h3>
-                  <div class="sales-col-fields">
-                    <div class="field"><label for="salesSellerName" id="salesSellerNameLabel">Name</label><input id="salesSellerName" type="text"></div>
-                    <div class="field"><label for="salesSellerPhone" id="salesSellerPhoneLabel">Phone</label><input id="salesSellerPhone" type="text"></div>
-                    <div class="field wide"><label for="salesSellerAddress" id="salesSellerAddressLabel">Address</label><textarea id="salesSellerAddress" rows="2"></textarea></div>
-                    <div class="field wide"><label for="salesSellerTaxId" id="salesSellerTaxIdLabel">Tax ID</label><input id="salesSellerTaxId" type="text"></div>
-                  </div>
+              <div class="sales-shopcard">
+                <div class="sales-shopcard-logo" id="salesShopLogo"></div>
+                <div class="sales-shopcard-body">
+                  <strong id="salesShopName"></strong>
+                  <span class="sales-shopcard-tagline" id="salesShopTagline"></span>
+                  <div class="sales-shopcard-meta" id="salesShopMeta"></div>
                 </div>
-                <div class="sales-col">
+                <button class="btn-secondary" type="button" id="salesShopEditBtn">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                  <span id="salesShopEditText">Edit business details</span>
+                </button>
+              </div>
+
+              <div class="sales-cols">
+                <div class="sales-col sales-col-customer">
                   <h3 id="salesCustomerTitle">Customer</h3>
                   <div class="sales-col-fields">
                     <div class="field"><label for="salesCustomerName" id="salesCustomerNameLabel">Name</label><input id="salesCustomerName" type="text"></div>
@@ -3009,53 +3048,69 @@
                   <div class="sales-col-fields">
                     <div class="field"><label for="salesDocNo" id="salesDocNoLabel">Number</label><input id="salesDocNo" type="text"></div>
                     <div class="field"><label for="salesDocDate" id="salesDocDateLabel">Date</label><input id="salesDocDate" type="date"></div>
-                    <div class="field" id="salesValidUntilField"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
+                    <div class="field wide" id="salesValidUntilField"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
                     <div class="field" id="salesDueDateField" hidden><label for="salesDueDate" id="salesDueDateLabel">Due date</label><input id="salesDueDate" type="date"></div>
-                    <div class="field wide" id="salesPayMethodField" hidden><label for="salesPayMethod" id="salesPayMethodLabel">Payment method</label><select id="salesPayMethod"></select></div>
+                    <div class="field" id="salesPayMethodField" hidden><label for="salesPayMethod" id="salesPayMethodLabel">Payment method</label><select id="salesPayMethod"></select></div>
                   </div>
                 </div>
-                </div>
-              </details>
+              </div>
 
-              <div class="sales-items-panel">
-              <div class="sales-section-head">
-                <h3 id="salesItemsTitle">Items</h3>
-                <button class="btn-primary" type="button" id="salesAddItemBtn">
-                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-                  <span id="salesAddItemText">Add item</span>
-                </button>
-              </div>
-              <div class="sales-items-wrap">
-                <table class="sales-items">
-                  <thead>
-                    <tr>
-                      <th id="salesThName">Item</th>
-                      <th class="num" id="salesThQty">Qty</th>
-                      <th class="num" id="salesThPrice">Unit price</th>
-                      <th class="num" id="salesThCost">Cost</th>
-                      <th class="num" id="salesThTotal">Amount</th>
-                      <th class="mid" id="salesThFree">Free</th>
-                      <th class="mid" id="salesThVisible">Customer sees</th>
-                      <th></th>
-                    </tr>
-                  </thead>
-                  <tbody id="salesItemRows"></tbody>
-                </table>
-              </div>
-              <p class="sales-empty" id="salesItemsEmpty" hidden></p>
-              <p class="hint sales-items-hint" id="salesHiddenHint"></p>
+              <div class="sales-body-grid">
+                <div class="sales-items-panel">
+                  <div class="sales-section-head">
+                    <h3 id="salesItemsTitle">Items</h3>
+                    <button class="btn-primary" type="button" id="salesAddItemBtn">
+                      <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                      <span id="salesAddItemText">Add item</span>
+                    </button>
+                  </div>
+                  <div class="sales-items-wrap">
+                    <table class="sales-items">
+                      <thead>
+                        <tr>
+                          <th class="sales-col-no">#</th>
+                          <th id="salesThName">Item</th>
+                          <th class="num" id="salesThQty">Qty</th>
+                          <th class="num" id="salesThPrice">Unit price</th>
+                          <th class="num" id="salesThCost">Cost</th>
+                          <th class="num" id="salesThTotal">Amount</th>
+                          <th id="salesThNote">Note</th>
+                          <th class="mid" id="salesThFree">Free</th>
+                          <th class="mid" id="salesThVisible">Customer sees</th>
+                          <th></th>
+                        </tr>
+                      </thead>
+                      <tbody id="salesItemRows"></tbody>
+                    </table>
+                  </div>
+                  <p class="sales-empty" id="salesItemsEmpty" hidden></p>
+                  <p class="hint sales-items-hint" id="salesHiddenHint"></p>
+                </div>
+
+                <div class="sales-summary">
+                  <div class="sales-section-head">
+                    <h3 id="salesSummaryTitle">Summary</h3>
+                  </div>
+                  <div class="sales-summary-body">
+                    <div class="sales-summary-input"><label for="salesShipping" id="salesShippingLabel">Shipping</label><input id="salesShipping" type="number" min="0" step="0.01" value="0"></div>
+                    <div class="sales-summary-input"><label for="salesDiscount" id="salesDiscountLabel">Discount</label><input id="salesDiscount" type="number" min="0" step="0.01" value="0"></div>
+                    <label class="sales-check"><input id="salesVat" type="checkbox"><span id="salesVatLabel">VAT 7%</span></label>
+                    <div class="sales-totals" id="salesTotals"></div>
+                    <div class="sales-internal" id="salesInternal"></div>
+                  </div>
+                </div>
               </div>
 
               <div class="sales-foot">
+                <div class="field">
+                  <label for="salesNote" id="salesNoteLabel">Notes</label>
+                  <textarea id="salesNote" rows="4"></textarea>
+                </div>
                 <div>
-                  <div class="field">
-                    <label for="salesNote" id="salesNoteLabel">Notes</label>
-                    <textarea id="salesNote" rows="5"></textarea>
-                  </div>
                   <div class="sales-image-box" id="salesImageBox" hidden>
                     <div class="sales-image-head">
                       <span id="salesImageTitle">Order photo</span>
-                      <label class="sales-check"><input type="checkbox" id="salesShowImage" checked><span id="salesShowImageLabel">Show on the document</span></label>
+                      <label class="sales-check"><input id="salesShowImage" type="checkbox" checked><span id="salesShowImageLabel">Show on the document</span></label>
                     </div>
                     <img id="salesImagePreview" alt="">
                   </div>
@@ -3067,15 +3122,6 @@
                     <div id="salesBankSummary"></div>
                   </div>
                 </div>
-                <div>
-                  <div class="grid-2">
-                    <div class="field"><label for="salesShipping" id="salesShippingLabel">Shipping</label><input id="salesShipping" type="number" min="0" step="0.01" value="0"></div>
-                    <div class="field"><label for="salesDiscount" id="salesDiscountLabel">Discount</label><input id="salesDiscount" type="number" min="0" step="0.01" value="0"></div>
-                  </div>
-                  <label class="sales-check"><input id="salesVat" type="checkbox"><span id="salesVatLabel">VAT 7%</span></label>
-                  <div class="sales-totals" id="salesTotals"></div>
-                  <div class="sales-internal" id="salesInternal"></div>
-                </div>
               </div>
 
               <div class="sales-actions">
@@ -3084,8 +3130,8 @@
                 <button class="btn-secondary" type="button" id="salesPrintBtn">Print / PDF</button>
                 <span class="spacer"></span>
                 <button class="btn-secondary" type="button" id="salesMarkSentBtn">Mark as sent</button>
+                <button class="btn-secondary" type="button" id="salesMarkRejectedBtn">Rejected</button>
                 <button class="btn-primary" type="button" id="salesMarkAcceptedBtn">Customer accepted</button>
-                <button class="btn-ghost" type="button" id="salesMarkRejectedBtn">Rejected</button>
                 <button class="btn-primary" type="button" id="salesCreatePaymentBtn">Create payment request</button>
                 <button class="btn-ghost" type="button" id="salesCancelDocBtn">Cancel document</button>
               </div>
@@ -3137,9 +3183,21 @@
       <div class="panel-body stack">
         <h3 id="salesSettingsShopTitle">Your shop</h3>
         <p class="hint" id="salesSettingsShopHint"></p>
+        <div class="sales-logo-row">
+          <div class="sales-logo-preview" id="salesSetLogoPreview"></div>
+          <div class="sales-logo-actions">
+            <input id="salesSetLogoInput" class="native-file" type="file" accept="image/*">
+            <button class="btn-secondary" type="button" id="salesSetLogoPick">Choose a logo</button>
+            <button class="btn-ghost" type="button" id="salesSetLogoClear">Remove</button>
+          </div>
+        </div>
         <div class="grid-2">
           <div class="field"><label for="salesSetName" id="salesSetNameLabel">Name</label><input id="salesSetName" type="text"></div>
           <div class="field"><label for="salesSetPhone" id="salesSetPhoneLabel">Phone</label><input id="salesSetPhone" type="text"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label for="salesSetTagline" id="salesSetTaglineLabel">Tagline</label><input id="salesSetTagline" type="text"></div>
+          <div class="field"><label for="salesSetEmail" id="salesSetEmailLabel">Email</label><input id="salesSetEmail" type="text"></div>
         </div>
         <div class="field"><label for="salesSetAddress" id="salesSetAddressLabel">Address</label><textarea id="salesSetAddress" rows="2"></textarea></div>
         <div class="field"><label for="salesSetTaxId" id="salesSetTaxIdLabel">Tax ID</label><input id="salesSetTaxId" type="text"></div>
@@ -4733,6 +4791,11 @@
     Object.assign(salesI18n.zh, { settings: "单据设置", settingsShop: "本店信息", settingsBank: "银行账户", bankName: "银行", bankAccountName: "户名", bankAccountNo: "账号", bankHint: "当付款方式为银行转账时显示在单据上", shopHint: "自动填入每份新单据的本店信息", settingsSaved: "设置已保存", editInSettings: "在设置中修改", bankEmpty: "尚未设置银行账户" });
     Object.assign(salesI18n.ja, { settings: "書類設定", settingsShop: "自社情報", settingsBank: "銀行口座", bankName: "銀行", bankAccountName: "口座名義", bankAccountNo: "口座番号", bankHint: "支払方法が銀行振込のとき書類に表示されます", shopHint: "新しい書類の自社情報を自動で埋めます", settingsSaved: "設定を保存しました", editInSettings: "設定で編集", bankEmpty: "銀行口座がまだ登録されていません" });
     Object.assign(salesI18n.ko, { settings: "문서 설정", settingsShop: "내 정보", settingsBank: "은행 계좌", bankName: "은행", bankAccountName: "예금주", bankAccountNo: "계좌번호", bankHint: "결제 방법이 계좌이체일 때 문서에 표시됩니다", shopHint: "새 문서의 상점 정보를 자동으로 채웁니다", settingsSaved: "설정을 저장했습니다", editInSettings: "설정에서 수정", bankEmpty: "등록된 은행 계좌가 없습니다" });
+    Object.assign(salesI18n.th, { logo: "โลโก้ร้าน", logoPick: "เลือกโลโก้", logoClear: "เอาออก", logoEmpty: "ยังไม่มีโลโก้", tagline: "คำโปรยใต้ชื่อร้าน", email: "อีเมล", editShop: "แก้ไขข้อมูลกิจการ", summary: "สรุปยอด", itemsTotal: "รวมสินค้า", itemNote: "หมายเหตุ", updatedAt: "อัปเดตล่าสุด", logoTooBig: "รูปโลโก้ใหญ่เกินไป" });
+    Object.assign(salesI18n.en, { logo: "Shop logo", logoPick: "Choose a logo", logoClear: "Remove", logoEmpty: "No logo yet", tagline: "Tagline", email: "Email", editShop: "Edit business details", summary: "Summary", itemsTotal: "Items", itemNote: "Note", updatedAt: "Last saved", logoTooBig: "That logo is too large" });
+    Object.assign(salesI18n.zh, { logo: "店铺标志", logoPick: "选择标志", logoClear: "移除", logoEmpty: "尚无标志", tagline: "标语", email: "邮箱", editShop: "编辑店铺信息", summary: "金额汇总", itemsTotal: "商品合计", itemNote: "备注", updatedAt: "最后保存", logoTooBig: "标志图片太大" });
+    Object.assign(salesI18n.ja, { logo: "ショップロゴ", logoPick: "ロゴを選ぶ", logoClear: "削除", logoEmpty: "ロゴ未設定", tagline: "キャッチコピー", email: "メール", editShop: "事業者情報を編集", summary: "金額サマリー", itemsTotal: "商品計", itemNote: "備考", updatedAt: "最終保存", logoTooBig: "ロゴ画像が大きすぎます" });
+    Object.assign(salesI18n.ko, { logo: "상점 로고", logoPick: "로고 선택", logoClear: "제거", logoEmpty: "로고 없음", tagline: "슬로건", email: "이메일", editShop: "사업자 정보 수정", summary: "금액 요약", itemsTotal: "상품 합계", itemNote: "비고", updatedAt: "마지막 저장", logoTooBig: "로고 이미지가 너무 큽니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -6493,6 +6556,7 @@
       setText('[data-tab="salesView"] .side-label', salesText("salesTab"));
       renderSalesLabels();
       renderSales();
+      loadSalesLogo().then(() => { renderSalesLogoPreview(); renderSalesShopCard(); });
       setText('.tab[data-tab="dashboardView"]:not(.side-nav .tab)', sidebarText("dashboard"));
       setText('.tab[data-tab="ordersView"]:not(.side-nav .tab)', orderText("ordersTab"));
       setText("#catalogBadge", t("catalogTab"));
@@ -8717,17 +8781,20 @@
       draft: "stDraft", sent: "stSent", accepted: "stAccepted", rejected: "stRejected",
       waiting: "stWaiting", paid: "stPaid", cancelled: "stCancelled"
     };
-    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "", headOpen: null };
+    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
 
     function salesItem(patch) {
-      return { name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
+      return { name: "", note: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
     }
 
     function salesSettings() {
       if (!state.salesSettings) state.salesSettings = {};
       const settings = state.salesSettings;
       settings.seller = { name: "", phone: "", address: "", taxId: "", ...(settings.seller || {}) };
+      settings.seller.tagline = settings.seller.tagline || "";
+      settings.seller.email = settings.seller.email || "";
       settings.bank = { bankName: "", accountName: "", accountNo: "", ...(settings.bank || {}) };
+      settings.logoKey = settings.logoKey || "";
       return settings;
     }
 
@@ -8874,6 +8941,49 @@
 
     const salesImageCache = new Map();
 
+    const SALES_LOGO_KEY = "sales-shop-logo";
+    let salesLogoData = null;
+
+    async function loadSalesLogo() {
+      if (salesLogoData !== null) return salesLogoData;
+      const key = salesSettings().logoKey;
+      if (!key) { salesLogoData = ""; return ""; }
+      try { salesLogoData = (await getJobImage(key)) || ""; }
+      catch (error) { salesLogoData = ""; }
+      return salesLogoData;
+    }
+
+    function renderSalesLogoPreview() {
+      const box = $("salesSetLogoPreview");
+      if (!box) return;
+      const data = salesLogoData || "";
+      box.style.backgroundImage = data ? `url("${data}")` : "";
+      box.textContent = data ? "" : salesText("logoEmpty");
+    }
+
+    async function saveSalesLogoFile(file) {
+      if (!file) return;
+      try {
+        const dataUrl = await readJobImageFile(file);
+        await putJobImage(SALES_LOGO_KEY, dataUrl);
+        salesSettings().logoKey = SALES_LOGO_KEY;
+        salesLogoData = dataUrl;
+        persist({ skipRender: true });
+        renderSalesLogoPreview();
+        renderSalesShopCard();
+      } catch (error) {
+        showToast(salesText("logoTooBig"));
+      }
+    }
+
+    function clearSalesLogo() {
+      salesSettings().logoKey = "";
+      salesLogoData = "";
+      persist({ skipRender: true });
+      renderSalesLogoPreview();
+      renderSalesShopCard();
+    }
+
     function salesImageCacheKey(doc) {
       if (!doc) return "";
       if (doc.imageKey) return doc.imageKey;
@@ -8950,8 +9060,11 @@
         const state = index === current ? "is-current" : (reached ? "is-done" : "");
         const target = index === 0 && doc.orderId ? ` data-sales-step-go="order"`
           : (index === 1 && doc.type !== "QT" && doc.sourceId ? ` data-sales-step-go="${doc.sourceId}"` : "");
-        const arrow = index < SALES_STEPS.length - 1 ? `<li class="sales-step-arrow" aria-hidden="true">&#8250;</li>` : "";
-        return `<li class="sales-step ${state}"${target}><span class="sales-step-no">${index + 1}</span>${escapeHtml(salesText(step.label))}</li>${arrow}`;
+        const arrow = index < SALES_STEPS.length - 1
+          ? `<li class="sales-step-arrow ${index < current ? "is-done" : ""}" aria-hidden="true"></li>`
+          : "";
+        const mark = index === current ? index + 1 : (reached ? "&#10003;" : index + 1);
+        return `<li class="sales-step ${state}"${target}><span class="sales-step-no">${mark}</span>${escapeHtml(salesText(step.label))}</li>${arrow}`;
       }).join("");
 
       if (next) {
@@ -8959,6 +9072,38 @@
         const prefix = hint.tone ? "" : `${escapeHtml(salesText("nextLabel"))}: `;
         next.className = `sales-next ${hint.tone}`;
         next.innerHTML = `${prefix}${escapeHtml(salesText(hint.key))}`;
+      }
+    }
+
+    function renderSalesShopCard() {
+      const doc = salesUi.draft;
+      if (!doc || !$("salesShopName")) return;
+      const settings = salesSettings();
+      // The card shows what this document was issued under, with the shop's
+      // current logo and tagline for identity.
+      const seller = doc.seller || {};
+      setText("#salesShopName", seller.name || settings.seller.name || "-");
+      setText("#salesShopTagline", settings.seller.tagline || "");
+
+      const logo = $("salesShopLogo");
+      if (logo) {
+        const data = salesLogoData || "";
+        logo.style.backgroundImage = data ? `url("${data}")` : "";
+        logo.classList.toggle("has-logo", Boolean(data));
+        logo.textContent = data ? "" : salesText("logoEmpty");
+      }
+
+      const meta = $("salesShopMeta");
+      if (meta) {
+        const bits = [
+          [seller.phone, "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.2 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.32 1.85.55 2.81.68A2 2 0 0 1 22 16.92z"],
+          [seller.address, "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"],
+          [settings.seller.email, "M4 4h16v16H4z M22 6l-10 7L2 6"]
+        ];
+        meta.innerHTML = bits
+          .filter(([value]) => value)
+          .map(([value, icon]) => `<span><svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px"><path d="${icon}"/></svg>${escapeHtml(String(value).replace(/\s*\n\s*/g, ", "))}</span>`)
+          .join("");
       }
     }
 
@@ -9063,7 +9208,9 @@
       const pending = salesUi.draft;
       if (salesImageCacheKey(pending) && !salesImageData(pending)) {
         loadSalesImage(pending).then(() => {
-          if (salesUi.draft === pending) renderSalesImage();
+          if (salesUi.draft !== pending) return;
+          renderSalesImage();
+          refreshSalesThumbs();
         });
       }
       salesUi.isNew = Boolean(isNew);
@@ -9085,12 +9232,37 @@
       renderSalesList();
     }
 
+    function salesItemThumb(item, doc) {
+      // Only the line that came from the order has a picture to show.
+      const data = item.fromOrder ? salesImageData(doc) : "";
+      return data ? `<span class="sales-item-thumb" style="background-image:url(&quot;${data}&quot;)"></span>` : "";
+    }
+
+    function refreshSalesThumbs() {
+      const doc = salesUi.draft;
+      const body = $("salesItemRows");
+      if (!doc || !body) return;
+      const data = salesImageData(doc);
+      body.querySelectorAll("[data-sales-index]").forEach((row) => {
+        const item = (doc.items || [])[Number(row.dataset.salesIndex)];
+        const main = row.querySelector(".sales-item-main");
+        if (!main || !item) return;
+        const existing = main.querySelector(".sales-item-thumb");
+        if (item.fromOrder && data) {
+          if (existing) existing.style.backgroundImage = `url("${data}")`;
+          else main.insertAdjacentHTML("afterbegin", `<span class="sales-item-thumb" style="background-image:url(&quot;${data}&quot;)"></span>`);
+        } else if (existing) {
+          existing.remove();
+        }
+      });
+    }
+
     function renderSalesItems() {
       const body = $("salesItemRows");
       const empty = $("salesItemsEmpty");
       if (!body) return;
-      const doc = salesUi.draft;
-      const items = (doc && doc.items) || [];
+      const doc = salesUi.draft || {};
+      const items = doc.items || [];
 
       if (empty) {
         empty.hidden = items.length > 0;
@@ -9099,13 +9271,21 @@
 
       body.innerHTML = items.map((item, index) => `
         <tr data-sales-index="${index}" class="${item.visible === false ? "is-hidden-line" : ""}" data-hidden-tag="${escapeHtml(salesText("visible"))}: ✕">
+          <td class="sales-col-no">${index + 1}</td>
           <td>
-            <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
+            <div class="sales-item-main">
+              ${salesItemThumb(item, doc)}
+              <div class="sales-item-text">
+                <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
+                ${item.fromOrder && doc.orderName ? `<span class="sales-item-from">${escapeHtml(salesText("refOrder"))} ${escapeHtml(doc.orderName)}</span>` : ""}
+              </div>
+            </div>
           </td>
           <td class="num" style="width:88px"><input type="number" min="0" step="1" data-sales-field="qty" value="${Number(item.qty) || 0}"></td>
           <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="unitPrice" value="${Number(item.unitPrice) || 0}" ${item.freebie ? "disabled" : ""}></td>
           <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="cost" value="${Number(item.cost) || 0}"></td>
           <td class="num sales-line-total" data-sales-line-total>${money.format(salesLineTotal(item))}</td>
+          <td><input type="text" data-sales-field="note" value="${escapeHtml(item.note || "")}" placeholder="${escapeHtml(salesText("itemNote"))}"></td>
           <td class="mid"><input type="checkbox" data-sales-field="freebie" ${item.freebie ? "checked" : ""} title="${escapeHtml(salesText("freebie"))}"></td>
           <td class="mid"><input type="checkbox" data-sales-field="visible" ${item.visible === false ? "" : "checked"} title="${escapeHtml(salesText("visible"))}"></td>
           <td class="num"><button class="btn-ghost" type="button" data-sales-remove="${index}" title="${escapeHtml(salesText("removeItem"))}">
@@ -9121,7 +9301,7 @@
       const box = $("salesTotals");
       if (box) {
         box.innerHTML = `
-          <div class="sales-total-row"><span>${escapeHtml(salesText("subtotal"))}</span><strong>${money.format(totals.subtotal)}</strong></div>
+          <div class="sales-total-row"><span>${escapeHtml(salesText("itemsTotal"))}</span><strong>${money.format(totals.subtotal)}</strong></div>
           ${totals.discount ? `<div class="sales-total-row"><span>${escapeHtml(salesText("discount"))}</span><strong>-${money.format(totals.discount)}</strong></div>` : ""}
           ${totals.shipping ? `<div class="sales-total-row"><span>${escapeHtml(salesText("shipping"))}</span><strong>${money.format(totals.shipping)}</strong></div>` : ""}
           ${doc.vat ? `<div class="sales-total-row"><span>${escapeHtml(salesText("vat"))}</span><strong>${money.format(totals.vat)}</strong></div>` : ""}
@@ -9134,18 +9314,6 @@
           <div class="sales-total-row"><span>${escapeHtml(salesText("costTotal"))}</span><strong>${money.format(totals.cost)}</strong></div>
           <div class="sales-total-row"><span>${escapeHtml(salesText("profit"))}</span><strong>${money.format(totals.profit)}</strong></div>`;
       }
-    }
-
-    function renderSalesDigest() {
-      const digest = $("salesHeadDigest");
-      const doc = salesUi.draft;
-      if (!digest || !doc) return;
-      const dash = "-";
-      digest.innerHTML = [
-        `${escapeHtml(salesText("customerInfo"))}: <strong>${escapeHtml(doc.customer.name || dash)}</strong>`,
-        `${escapeHtml(salesText("shopInfo"))}: <strong>${escapeHtml(doc.seller.name || dash)}</strong>`,
-        escapeHtml(doc.date || "")
-      ].filter(Boolean).join(" · ");
     }
 
     function renderSalesEditor() {
@@ -9170,6 +9338,13 @@
         ref.innerHTML = parts.length ? `${escapeHtml(salesText("refLabel"))}: ${parts.join(" · ")}` : "";
       }
 
+      const updated = $("salesUpdated");
+      if (updated) {
+        updated.textContent = doc.updatedAt
+          ? `${salesText("updatedAt")} ${formatLocalizedDateTime(doc.updatedAt)}`
+          : "";
+      }
+
       const locked = $("salesLockedHint");
       if (locked) {
         // A bill that is merely awaiting payment is still being prepared.
@@ -9177,10 +9352,6 @@
         locked.textContent = salesText("lockedHint");
       }
 
-      set("salesSellerName", doc.seller.name);
-      set("salesSellerPhone", doc.seller.phone);
-      set("salesSellerAddress", doc.seller.address);
-      set("salesSellerTaxId", doc.seller.taxId);
       set("salesCustomerName", doc.customer.name);
       set("salesCustomerPhone", doc.customer.phone);
       set("salesCustomerAddress", doc.customer.address);
@@ -9212,12 +9383,10 @@
       show("salesCreatePaymentBtn", isQuote && doc.status === "accepted");
       show("salesCancelDocBtn", doc.type === "PAY" && doc.status === "waiting");
 
-      const head = $("salesHeadBox");
-      if (head) head.open = salesUi.headOpen === null ? !doc.customer.name : salesUi.headOpen;
       renderSalesSteps();
+      renderSalesShopCard();
       renderSalesBank();
       renderSalesImage();
-      renderSalesDigest();
       renderSalesItems();
       renderSalesTotals();
     }
@@ -9229,7 +9398,6 @@
       doc.number = get("salesDocNo").trim() || doc.number;
       doc.date = get("salesDocDate");
       doc.validUntil = get("salesValidUntil");
-      doc.seller = { name: get("salesSellerName"), phone: get("salesSellerPhone"), address: get("salesSellerAddress"), taxId: get("salesSellerTaxId") };
       doc.customer = { name: get("salesCustomerName"), phone: get("salesCustomerPhone"), address: get("salesCustomerAddress"), taxId: get("salesCustomerTaxId") };
       doc.shipping = Number(get("salesShipping")) || 0;
       doc.discount = Number(get("salesDiscount")) || 0;
@@ -9277,6 +9445,8 @@
       // an invisible line is filtered out here, never merely hidden with CSS.
       const visible = (doc.items || []).filter((item) => item.visible !== false);
       const photo = doc.showImage === false ? "" : salesImageData(doc);
+      const settings = salesSettings();
+      const logo = salesLogoData || "";
       // Account details belong on the paper only when the customer is transferring.
       const bankSource = hasBankDetails(doc.bank) ? doc.bank : salesSettings().bank;
       const bank = normalizedPayMethod(doc.payMethod) === "transfer" && hasBankDetails(bankSource) ? bankSource : null;
@@ -9284,7 +9454,7 @@
 
       const rows = visible.map((item) => `
         <tr>
-          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}</td>
+          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}${item.note ? `<span class="sales-paper-detail">${escapeHtml(item.note)}</span>` : ""}</td>
           <td class="num">${Number(item.qty) || 0}</td>
           <td class="num">${item.freebie ? "-" : money.format(Number(item.unitPrice) || 0)}</td>
           <td class="num">${money.format(salesLineTotal(item))}</td>
@@ -9293,11 +9463,14 @@
       return `
         <div class="sales-paper-head">
           <div>
+            ${logo ? `<img class="sales-paper-logo" src="${logo}" alt="">` : ""}
             <h1>${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}</h1>
             <div class="sales-paper-name">${escapeHtml(doc.seller.name || "")}</div>
+            ${settings.seller.tagline ? `<div class="sales-paper-tagline">${escapeHtml(settings.seller.tagline)}</div>` : ""}
             ${line(salesText("fPhone"), doc.seller.phone)}
             ${line(salesText("fAddress"), doc.seller.address)}
             ${line(salesText("fTaxId"), doc.seller.taxId)}
+            ${line(salesText("email"), settings.seller.email)}
           </div>
           <div style="text-align:right;white-space:nowrap">
             ${line(salesText("docNo"), doc.number)}
@@ -9469,6 +9642,9 @@
       set("salesSetPhone", settings.seller.phone);
       set("salesSetAddress", settings.seller.address);
       set("salesSetTaxId", settings.seller.taxId);
+      set("salesSetTagline", settings.seller.tagline);
+      set("salesSetEmail", settings.seller.email);
+      renderSalesLogoPreview();
       set("salesSetBankName", settings.bank.bankName);
       set("salesSetBankAccountName", settings.bank.accountName);
       set("salesSetBankAccountNo", settings.bank.accountNo);
@@ -9477,12 +9653,22 @@
     function saveSalesSettings() {
       const get = (id) => ($(id) ? $(id).value.trim() : "");
       const settings = salesSettings();
-      settings.seller = { name: get("salesSetName"), phone: get("salesSetPhone"), address: get("salesSetAddress"), taxId: get("salesSetTaxId") };
+      settings.seller = {
+        name: get("salesSetName"), phone: get("salesSetPhone"), address: get("salesSetAddress"),
+        taxId: get("salesSetTaxId"), tagline: get("salesSetTagline"), email: get("salesSetEmail")
+      };
       settings.bank = { bankName: get("salesSetBankName"), accountName: get("salesSetBankAccountName"), accountNo: get("salesSetBankAccountNo") };
       persist({ skipRender: true });
       closeSalesModal("salesSettingsModal");
-      // A document already open should pick the new account up straight away.
-      if (salesUi.draft) renderSalesBank();
+      // A document still being prepared should pick the new details up at once;
+      // one already sent keeps the snapshot it was sent with.
+      if (salesUi.draft) {
+        if (salesUi.draft.status === "draft" || salesUi.draft.status === "waiting") {
+          salesUi.draft.seller = { ...settings.seller };
+        }
+        renderSalesBank();
+        renderSalesShopCard();
+      }
       showToast(salesText("settingsSaved"));
     }
 
@@ -9507,7 +9693,8 @@
         name: order.name || "",
         qty: 1,
         unitPrice: Number(order.salePrice) || 0,
-        cost: orderCostTotal(order.id)
+        cost: orderCostTotal(order.id),
+        fromOrder: true
       })];
       openSalesEditor(doc, true);
     }
@@ -9523,10 +9710,6 @@
       label("#salesShopTitle", "shopInfo");
       label("#salesCustomerTitle", "customerInfo");
       label("#salesDocTitle", "docInfo");
-      label("#salesSellerNameLabel", "fName");
-      label("#salesSellerPhoneLabel", "fPhone");
-      label("#salesSellerAddressLabel", "fAddress");
-      label("#salesSellerTaxIdLabel", "fTaxId");
       label("#salesCustomerNameLabel", "fName");
       label("#salesCustomerPhoneLabel", "fPhone");
       label("#salesCustomerAddressLabel", "fAddress");
@@ -9577,6 +9760,13 @@
       label("#salesBankTitle", "settingsBank");
       label("#salesBankEditBtn", "editInSettings");
       label("#salesShowImageLabel", "showImage");
+      label("#salesShopEditText", "editShop");
+      label("#salesSummaryTitle", "summary");
+      label("#salesThNote", "itemNote");
+      label("#salesSetTaglineLabel", "tagline");
+      label("#salesSetEmailLabel", "email");
+      label("#salesSetLogoPick", "logoPick");
+      label("#salesSetLogoClear", "logoClear");
       const payMethod = $("salesPayMethod");
       if (payMethod) {
         const chosen = payMethod.value;
@@ -9609,13 +9799,10 @@
       const close = event.target.closest("[data-sales-close]");
       if (close) { closeSalesModal(close.dataset.salesClose); return; }
 
-      if (event.target.closest("#salesHeadBox > summary")) {
-        // This runs before <details> flips itself, so the choice is the opposite.
-        salesUi.headOpen = !$("salesHeadBox").open;
-        return;
-      }
+      if (event.target.closest("#salesSetLogoPick")) { $("salesSetLogoInput").click(); return; }
+      if (event.target.closest("#salesSetLogoClear")) { clearSalesLogo(); return; }
 
-      if (event.target.closest("#salesSettingsBtn") || event.target.closest("#salesBankEditBtn")) {
+      if (event.target.closest("#salesSettingsBtn") || event.target.closest("#salesBankEditBtn") || event.target.closest("#salesShopEditBtn")) {
         fillSalesSettings();
         openSalesModal("salesSettingsModal");
         return;
@@ -9757,6 +9944,13 @@
       }
     });
 
+    document.addEventListener("change", (event) => {
+      if (event.target.id !== "salesSetLogoInput") return;
+      const file = event.target.files && event.target.files[0];
+      event.target.value = "";
+      if (file) saveSalesLogoFile(file);
+    });
+
     document.addEventListener("input", (event) => {
       if (event.target.id === "salesSearch") { salesUi.search = event.target.value; renderSalesList(); return; }
       if (event.target.id === "salesOrderSearch") { renderSalesOrderList(); return; }
@@ -9796,10 +9990,7 @@
         return;
       }
 
-      if (event.target.closest(".sales-cols")) {
-        readSalesForm();
-        renderSalesDigest();
-      }
+      if (event.target.closest(".sales-cols")) readSalesForm();
     });
 
     function orderJobs(orderId) {
