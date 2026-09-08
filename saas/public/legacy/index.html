@@ -393,24 +393,38 @@
     .sales-badge.is-rejected, .sales-badge.is-cancelled { background: rgba(184, 64, 64, .12); color: var(--red); }
     .sales-badge.is-waiting { background: rgba(240, 170, 40, .18); color: #9a6b04; }
     .sales-empty { color: var(--muted); padding: 26px 4px; text-align: center; }
+    .sales-head { border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-head); margin-bottom: 18px; }
+    .sales-head > summary { cursor: pointer; list-style: none; padding: 9px 14px; display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--muted); }
+    .sales-head > summary::-webkit-details-marker { display: none; }
+    .sales-head > summary::before { content: ""; width: 7px; height: 7px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); margin-left: 2px; transition: transform .15s; }
+    .sales-head[open] > summary::before { transform: rotate(45deg); }
+    .sales-head[open] > summary { border-bottom: 1px solid var(--line); }
+    .sales-head-digest strong { color: var(--ink); font-weight: 600; }
     .sales-editor-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .sales-editor-head h2 { margin: 0; }
     .sales-editor-no { color: var(--muted); font-weight: 600; }
     .sales-ref { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
     .sales-ref button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
-    .sales-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
-    .sales-col { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; background: var(--panel-head); }
-    .sales-col h3 { margin: 0 0 10px; font-size: 14px; }
-    .sales-col .field { margin: 0 0 10px; }
-    .sales-col .field:last-child { margin-bottom: 0; }
-    .sales-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 10px; }
-    .sales-section-head h3 { margin: 0; font-size: 15px; }
-    .sales-items-wrap { overflow-x: auto; }
+    .sales-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; padding: 14px; }
+    .sales-col h3 { margin: 0 0 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .sales-col-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 10px; align-items: end; }
+    .sales-col-fields .field.wide { grid-column: 1 / -1; }
+    .sales-col .field { margin: 0; gap: 3px; }
+    .sales-col .field label { font-size: 11px; font-weight: 500; color: var(--muted); }
+    .sales-col .field input, .sales-col .field select { min-height: 32px; padding: 5px 9px; font-size: 13px; }
+    .sales-col .field textarea { min-height: 32px; padding: 5px 9px; font-size: 13px; resize: vertical; }
+    .sales-items-panel { border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; background: var(--panel); }
+    .sales-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; background: var(--soft); border-bottom: 1px solid var(--line); }
+    .sales-section-head h3 { margin: 0; font-size: 17px; }
+    .sales-items-hint { margin: 0; padding: 0 14px 12px; }
+    .sales-items-wrap { overflow-x: auto; padding: 6px 12px 0; }
     .sales-items { width: 100%; border-collapse: collapse; min-width: 720px; }
     .sales-items th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 8px 8px; }
     .sales-items th.num, .sales-items td.num { text-align: right; }
     .sales-items th.mid, .sales-items td.mid { text-align: center; }
-    .sales-items td { padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+    .sales-items td { padding: 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+    .sales-items tbody tr:first-child td { border-top: 0; }
+    .sales-items td [data-sales-field="name"] { font-weight: 600; }
     .sales-items input[type="text"], .sales-items input[type="number"] { width: 100%; }
     .sales-items .sales-line-total { font-weight: 700; white-space: nowrap; }
     .sales-items tr.is-hidden-line { background: rgba(184, 64, 64, .05); }
@@ -2933,39 +2947,48 @@
               <p class="sales-ref" id="salesRefLine" hidden></p>
               <p class="hint" id="salesLockedHint" hidden></p>
 
-              <div class="sales-cols">
+              <details class="sales-head" id="salesHeadBox" open>
+                <summary><span class="sales-head-digest" id="salesHeadDigest"></span></summary>
+                <div class="sales-cols">
                 <div class="sales-col">
                   <h3 id="salesShopTitle">Your shop</h3>
-                  <div class="field"><label for="salesSellerName" id="salesSellerNameLabel">Name</label><input id="salesSellerName" type="text"></div>
-                  <div class="field"><label for="salesSellerPhone" id="salesSellerPhoneLabel">Phone</label><input id="salesSellerPhone" type="text"></div>
-                  <div class="field"><label for="salesSellerAddress" id="salesSellerAddressLabel">Address</label><textarea id="salesSellerAddress" rows="2"></textarea></div>
-                  <div class="field"><label for="salesSellerTaxId" id="salesSellerTaxIdLabel">Tax ID</label><input id="salesSellerTaxId" type="text"></div>
+                  <div class="sales-col-fields">
+                    <div class="field"><label for="salesSellerName" id="salesSellerNameLabel">Name</label><input id="salesSellerName" type="text"></div>
+                    <div class="field"><label for="salesSellerPhone" id="salesSellerPhoneLabel">Phone</label><input id="salesSellerPhone" type="text"></div>
+                    <div class="field wide"><label for="salesSellerAddress" id="salesSellerAddressLabel">Address</label><textarea id="salesSellerAddress" rows="2"></textarea></div>
+                    <div class="field wide"><label for="salesSellerTaxId" id="salesSellerTaxIdLabel">Tax ID</label><input id="salesSellerTaxId" type="text"></div>
+                  </div>
                 </div>
                 <div class="sales-col">
                   <h3 id="salesCustomerTitle">Customer</h3>
-                  <div class="field"><label for="salesCustomerName" id="salesCustomerNameLabel">Name</label><input id="salesCustomerName" type="text"></div>
-                  <div class="field"><label for="salesCustomerPhone" id="salesCustomerPhoneLabel">Phone</label><input id="salesCustomerPhone" type="text"></div>
-                  <div class="field"><label for="salesCustomerAddress" id="salesCustomerAddressLabel">Address</label><textarea id="salesCustomerAddress" rows="2"></textarea></div>
-                  <div class="field"><label for="salesCustomerTaxId" id="salesCustomerTaxIdLabel">Tax ID</label><input id="salesCustomerTaxId" type="text"></div>
+                  <div class="sales-col-fields">
+                    <div class="field"><label for="salesCustomerName" id="salesCustomerNameLabel">Name</label><input id="salesCustomerName" type="text"></div>
+                    <div class="field"><label for="salesCustomerPhone" id="salesCustomerPhoneLabel">Phone</label><input id="salesCustomerPhone" type="text"></div>
+                    <div class="field wide"><label for="salesCustomerAddress" id="salesCustomerAddressLabel">Address</label><textarea id="salesCustomerAddress" rows="2"></textarea></div>
+                    <div class="field wide"><label for="salesCustomerTaxId" id="salesCustomerTaxIdLabel">Tax ID</label><input id="salesCustomerTaxId" type="text"></div>
+                  </div>
                 </div>
                 <div class="sales-col">
                   <h3 id="salesDocTitle">Document</h3>
-                  <div class="field"><label for="salesDocNo" id="salesDocNoLabel">Number</label><input id="salesDocNo" type="text"></div>
-                  <div class="field"><label for="salesDocDate" id="salesDocDateLabel">Date</label><input id="salesDocDate" type="date"></div>
-                  <div class="field" id="salesValidUntilField"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
-                  <div class="field" id="salesDueDateField" hidden><label for="salesDueDate" id="salesDueDateLabel">Due date</label><input id="salesDueDate" type="date"></div>
-                  <div class="field" id="salesPayMethodField" hidden><label for="salesPayMethod" id="salesPayMethodLabel">Payment method</label><select id="salesPayMethod"></select></div>
+                  <div class="sales-col-fields">
+                    <div class="field"><label for="salesDocNo" id="salesDocNoLabel">Number</label><input id="salesDocNo" type="text"></div>
+                    <div class="field"><label for="salesDocDate" id="salesDocDateLabel">Date</label><input id="salesDocDate" type="date"></div>
+                    <div class="field" id="salesValidUntilField"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
+                    <div class="field" id="salesDueDateField" hidden><label for="salesDueDate" id="salesDueDateLabel">Due date</label><input id="salesDueDate" type="date"></div>
+                    <div class="field wide" id="salesPayMethodField" hidden><label for="salesPayMethod" id="salesPayMethodLabel">Payment method</label><select id="salesPayMethod"></select></div>
+                  </div>
                 </div>
-              </div>
+                </div>
+              </details>
 
+              <div class="sales-items-panel">
               <div class="sales-section-head">
                 <h3 id="salesItemsTitle">Items</h3>
-                <button class="btn-secondary" type="button" id="salesAddItemBtn">
+                <button class="btn-primary" type="button" id="salesAddItemBtn">
                   <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                   <span id="salesAddItemText">Add item</span>
                 </button>
               </div>
-              <p class="hint" id="salesHiddenHint"></p>
               <div class="sales-items-wrap">
                 <table class="sales-items">
                   <thead>
@@ -2984,6 +3007,8 @@
                 </table>
               </div>
               <p class="sales-empty" id="salesItemsEmpty" hidden></p>
+              <p class="hint sales-items-hint" id="salesHiddenHint"></p>
+              </div>
 
               <div class="sales-foot">
                 <div>
@@ -8602,7 +8627,7 @@
       draft: "stDraft", sent: "stSent", accepted: "stAccepted", rejected: "stRejected",
       waiting: "stWaiting", paid: "stPaid", cancelled: "stCancelled"
     };
-    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
+    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "", headOpen: null };
 
     function salesItem(patch) {
       return { name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
@@ -8881,6 +8906,18 @@
       }
     }
 
+    function renderSalesDigest() {
+      const digest = $("salesHeadDigest");
+      const doc = salesUi.draft;
+      if (!digest || !doc) return;
+      const dash = "-";
+      digest.innerHTML = [
+        `${escapeHtml(salesText("customerInfo"))}: <strong>${escapeHtml(doc.customer.name || dash)}</strong>`,
+        `${escapeHtml(salesText("shopInfo"))}: <strong>${escapeHtml(doc.seller.name || dash)}</strong>`,
+        escapeHtml(doc.date || "")
+      ].filter(Boolean).join(" · ");
+    }
+
     function renderSalesEditor() {
       const doc = salesUi.draft;
       if (!doc || !$("salesEditor")) return;
@@ -8946,6 +8983,9 @@
       show("salesCreatePaymentBtn", isQuote && doc.status === "accepted");
       show("salesCancelDocBtn", doc.type === "PAY" && doc.status === "waiting");
 
+      const head = $("salesHeadBox");
+      if (head) head.open = salesUi.headOpen === null ? !doc.customer.name : salesUi.headOpen;
+      renderSalesDigest();
       renderSalesItems();
       renderSalesTotals();
     }
@@ -9277,6 +9317,12 @@
       const close = event.target.closest("[data-sales-close]");
       if (close) { closeSalesModal(close.dataset.salesClose); return; }
 
+      if (event.target.closest("#salesHeadBox > summary")) {
+        // This runs before <details> flips itself, so the choice is the opposite.
+        salesUi.headOpen = !$("salesHeadBox").open;
+        return;
+      }
+
       if (event.target.closest("#salesNewBtn")) {
         salesUi.pickedOrderId = "";
         openSalesModal("salesChoiceModal");
@@ -9430,6 +9476,12 @@
       if (event.target.closest("#salesShipping, #salesDiscount, #salesVat")) {
         readSalesForm();
         renderSalesTotals();
+        return;
+      }
+
+      if (event.target.closest(".sales-cols")) {
+        readSalesForm();
+        renderSalesDigest();
       }
     });
 
