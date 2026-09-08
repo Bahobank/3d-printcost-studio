@@ -8,6 +8,7 @@ export type SupportLanguage = "th" | "en" | "zh" | "ja" | "ko";
 type SupportCopy = {
   title: string;
   intro: string;
+  nameLabel: string;
   subjectLabel: string;
   bodyLabel: string;
   send: string;
@@ -24,6 +25,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
   th: {
     title: "ติดต่อทีมงาน",
     intro: "เล่าปัญหาที่เจอให้เราฟังได้เลย เราจะรีบตรวจสอบและติดต่อกลับ",
+    nameLabel: "ชื่อผู้ส่ง",
     subjectLabel: "หัวข้อ",
     bodyLabel: "รายละเอียด",
     send: "ส่งข้อความ",
@@ -38,6 +40,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
   en: {
     title: "Contact us",
     intro: "Tell us what went wrong and we will look into it and get back to you.",
+    nameLabel: "Your name",
     subjectLabel: "Subject",
     bodyLabel: "Details",
     send: "Send message",
@@ -52,6 +55,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
   zh: {
     title: "联系我们",
     intro: "请告诉我们遇到的问题，我们会尽快核实并回复您。",
+    nameLabel: "您的姓名",
     subjectLabel: "主题",
     bodyLabel: "详细说明",
     send: "发送",
@@ -66,6 +70,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
   ja: {
     title: "お問い合わせ",
     intro: "困っている内容をお知らせください。確認のうえご連絡します。",
+    nameLabel: "お名前",
     subjectLabel: "件名",
     bodyLabel: "詳細",
     send: "送信する",
@@ -80,6 +85,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
   ko: {
     title: "문의하기",
     intro: "어떤 문제가 있었는지 알려주시면 확인 후 연락드리겠습니다.",
+    nameLabel: "보내는 분",
     subjectLabel: "제목",
     bodyLabel: "상세 내용",
     send: "보내기",
@@ -101,6 +107,7 @@ type SupportDialogProps = {
 
 export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
   const copy = supportCopy[language] ?? supportCopy.th;
+  const [name, setName] = useState("");
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
   const [state, setState] = useState<"editing" | "sending" | "sent">("editing");
@@ -108,6 +115,7 @@ export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
 
   useEffect(() => {
     if (!open) return;
+    setName("");
     setSubject("");
     setBody("");
     setState("editing");
@@ -126,7 +134,7 @@ export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
   if (!open) return null;
 
   async function send() {
-    if (!subject.trim() || !body.trim()) {
+    if (!name.trim() || !subject.trim() || !body.trim()) {
       setError(copy.errorEmpty);
       return;
     }
@@ -138,7 +146,7 @@ export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
       const res = await fetch("/api/support", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subject, body }),
+        body: JSON.stringify({ name, subject, body }),
       });
       if (!res.ok) throw new Error(String(res.status));
       setState("sent");
@@ -187,7 +195,20 @@ export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
               </div>
             </div>
 
-            <label className="mt-5 block text-sm font-bold text-slate-700" htmlFor="support-subject">
+            <label className="mt-5 block text-sm font-bold text-slate-700" htmlFor="support-name">
+              {copy.nameLabel}
+            </label>
+            <input
+              className="mt-1.5 w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-900 outline-none transition focus:border-blue-500"
+              disabled={state === "sending"}
+              id="support-name"
+              maxLength={120}
+              onChange={(event) => setName(event.target.value)}
+              type="text"
+              value={name}
+            />
+
+            <label className="mt-4 block text-sm font-bold text-slate-700" htmlFor="support-subject">
               {copy.subjectLabel}
             </label>
             <input
