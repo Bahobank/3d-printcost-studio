@@ -4852,6 +4852,11 @@
     Object.assign(salesI18n.zh, { paidNote: "收款备注", paidTitle: "登记收款", receiptCreated: "已开具收据", openReceipt: "打开收据", receiptExists: "此付款通知单已有收据，为你打开", refPayment: "付款通知单", paidOn: "收款日期", paidBy: "收款方式", subRC2: "款项已全额收讫，谢谢惠顾", noteRC1: "本单据为正式收款凭证" });
     Object.assign(salesI18n.ja, { paidNote: "入金メモ", paidTitle: "入金の記録", receiptCreated: "領収書を発行しました", openReceipt: "領収書を開く", receiptExists: "この請求書には既に領収書があります。開きます", refPayment: "請求書", paidOn: "入金日", paidBy: "入金方法", subRC2: "全額のご入金を確認しました。ありがとうございます", noteRC1: "本書は正式な受領証です" });
     Object.assign(salesI18n.ko, { paidNote: "입금 메모", paidTitle: "입금 기록", receiptCreated: "영수증을 발행했습니다", openReceipt: "영수증 열기", receiptExists: "이 청구서에는 이미 영수증이 있어 해당 문서를 엽니다", refPayment: "대금 청구서", paidOn: "입금일", paidBy: "입금 방법", subRC2: "전액 입금이 확인되었습니다. 감사합니다", noteRC1: "본 문서는 정식 입금 증빙입니다" });
+    Object.assign(salesI18n.th, { paidOrders: "ออเดอร์ที่รับเงินแล้ว", awaitingAmount: "รอรับเงิน", paidOnlyHint: "นับเฉพาะออเดอร์ที่ลูกค้าชำระเงินแล้ว" });
+    Object.assign(salesI18n.en, { paidOrders: "paid orders", awaitingAmount: "Awaiting", paidOnlyHint: "Counts only orders the customer has paid for" });
+    Object.assign(salesI18n.zh, { paidOrders: "已收款订单", awaitingAmount: "待收款", paidOnlyHint: "只统计客户已付款的订单" });
+    Object.assign(salesI18n.ja, { paidOrders: "入金済みの注文", awaitingAmount: "入金待ち", paidOnlyHint: "入金済みの注文のみを集計します" });
+    Object.assign(salesI18n.ko, { paidOrders: "입금된 주문", awaitingAmount: "입금 대기", paidOnlyHint: "고객이 결제한 주문만 집계합니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8366,6 +8371,7 @@
     function renderLineChart(buckets, jobs) {
       const zoom = Math.min(3, Math.max(1, num(state.settings.dashboardZoom || 1)));
       const seriesVisible = state.settings.dashboardSeries || defaultState.settings.dashboardSeries;
+      const paidIds = paidOrderIds();
       const activeSeries = ["cost", "loss", "revenue", "profit"].filter((key) => seriesVisible[key] !== false);
       const visibleSeriesKeys = activeSeries.length ? activeSeries : ["cost", "loss", "revenue", "profit"];
       let series = buckets.map((bucket) => {
@@ -8377,8 +8383,11 @@
           const status = normalizedJobStatus(job);
           return status === "failed" ? sum + num(job.lossCost || job.totalCost) : sum;
         }, 0) + bucketOrders.reduce((sum, order) => sum + orderSummary(order).lossCost, 0);
-        const revenue = bucketOrders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
-        const profit = bucketOrders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
+        // Cost and loss happen whether or not the customer pays; revenue and
+        // profit wait for the money.
+        const settled = bucketOrders.filter((order) => paidIds.has(order.id));
+        const revenue = settled.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
+        const profit = settled.reduce((sum, order) => sum + orderSummary(order).profit, 0);
         return { ...bucket, cost, loss, revenue, profit, hasRecords: bucketJobs.length > 0 || bucketOrders.length > 0 };
       });
       const values = series.flatMap((point) => [...visibleSeriesKeys.map((key) => point[key]), 0]);
@@ -8545,16 +8554,23 @@
       const jobs = state.jobs.filter((job) => (job.mode || "filament") === state.mode);
       const orders = visibleOrders();
       const totalCost = jobs.reduce((sum, job) => sum + num(job.totalCost), 0);
-      const totalRevenue = orders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
-      const totalProfit = orders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
+      const paidIds = paidOrderIds();
+      const paidOrders = orders.filter((order) => paidIds.has(order.id));
+      const awaitingOrders = orders.filter((order) => !paidIds.has(order.id) && orderSummary(order).hasSaleJobs);
+      const totalRevenue = paidOrders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
+      const totalProfit = paidOrders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
+      const awaitingRevenue = awaitingOrders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
+      const awaitingProfit = awaitingOrders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
       const margin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
+      // Nothing is hidden - what has not been collected is named as such.
+      const awaiting = (amount) => amount ? ` &middot; ${escapeHtml(salesText("awaitingAmount"))} ${money.format(amount)}` : "";
       const profitClass = totalProfit < 0 ? "profit-negative" : "profit-positive";
       $("dashboardModeLabel").textContent = state.mode === "resin" ? "Resin / SLA" : "Filament / FDM";
       $("dashboardStats").innerHTML = `
         <div class="metric-card"><span>${dt("totalCost")}</span><strong>${money.format(totalCost)}</strong><small>${jobs.length} ${t("jobsTracked")}</small></div>
-        <div class="metric-card"><span>${t("totalRevenue")}</span><strong>${money.format(totalRevenue)}</strong><small>${orders.length} ${orderText("ordersTab")}</small></div>
-        <div class="metric-card"><span>${t("totalProfit")}</span><strong class="${profitClass}">${money.format(totalProfit)}</strong><small>${totalProfit >= 0 ? t("positiveBalance") : t("lossBalance")}</small></div>
-        <div class="metric-card"><span>${t("profitMargin")}</span><strong>${Number.isFinite(margin) ? margin.toFixed(1) : "0.0"}%</strong><small>${t("savedHistory")}</small></div>`;
+        <div class="metric-card"><span>${t("totalRevenue")}</span><strong>${money.format(totalRevenue)}</strong><small>${paidOrders.length} ${escapeHtml(salesText("paidOrders"))}${awaiting(awaitingRevenue)}</small></div>
+        <div class="metric-card"><span>${t("totalProfit")}</span><strong class="${profitClass}">${money.format(totalProfit)}</strong><small>${totalProfit >= 0 ? t("positiveBalance") : t("lossBalance")}${awaiting(awaitingProfit)}</small></div>
+        <div class="metric-card"><span>${t("profitMargin")}</span><strong>${Number.isFinite(margin) ? margin.toFixed(1) : "0.0"}%</strong><small>${escapeHtml(salesText("paidOnlyHint"))}</small></div>`;
 
       const selectedRange = state.settings.dashboardRange || "month";
       if (fields.dashboardRange) fields.dashboardRange.value = selectedRange;
@@ -8990,6 +9006,18 @@
       // Every line counts towards cost, visible or not.
       const cost = items.reduce((sum, item) => sum + salesLineCost(item), 0);
       return { subtotal, shipping, discount, beforeVat, vat, total, cost, profit: total - cost };
+    }
+
+    // An order has been earned when its payment request is marked paid, or a
+    // receipt exists for it. A cancelled receipt does not count.
+    function paidOrderIds() {
+      const ids = new Set();
+      ensureSalesDocs().forEach((doc) => {
+        if (!doc.orderId) return;
+        const settled = (doc.type === "RC" && doc.status !== "cancelled") || (doc.type === "PAY" && doc.status === "paid");
+        if (settled) ids.add(doc.orderId);
+      });
+      return ids;
     }
 
     function orderCostTotal(orderId) {
