@@ -417,6 +417,14 @@
     .sales-next::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
     .sales-next.is-done::before { background: var(--green); }
     .sales-next.is-stopped::before { background: var(--red); }
+    .sales-head-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sales-bank-box { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 12px; margin-top: 12px; background: var(--panel-head); font-size: 13px; }
+    .sales-bank-box .btn-ghost { min-height: 26px; padding: 0 8px; font-size: 12px; }
+    .sales-bank-line { display: flex; justify-content: space-between; gap: 14px; padding: 2px 0; }
+    .sales-bank-line span:first-child { color: var(--muted); }
+    .sales-paper .sales-paper-bank { margin-top: 6px; }
+    .sales-paper .sales-paper-bank div { display: flex; gap: 8px; }
+    .sales-paper .sales-paper-bank div span:first-child { color: #666; min-width: 72px; }
     .sales-image-box { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; margin-top: 12px; background: var(--panel-head); }
     .sales-image-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
     .sales-image-head .sales-check { margin: 0; font-weight: 500; }
@@ -2926,10 +2934,16 @@
           <div class="panel" id="salesHome">
             <div class="panel-head">
               <h2 id="salesTitle">Sales documents</h2>
+              <div class="sales-head-actions">
+              <button class="btn-secondary" type="button" id="salesSettingsBtn">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.2.61.76 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.75 0-1.31.39-1.51 1z"/></svg>
+                <span id="salesSettingsText">Settings</span>
+              </button>
               <button class="btn-primary" type="button" id="salesNewBtn">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                 <span id="salesNewText">New quotation</span>
               </button>
+              </div>
             </div>
             <div class="panel-body">
               <div class="sales-toolbar">
@@ -3045,9 +3059,12 @@
                     </div>
                     <img id="salesImagePreview" alt="">
                   </div>
-                  <div class="field" id="salesPayDetailsField" hidden>
-                    <label for="salesPayDetails" id="salesPayDetailsLabel">Payment details</label>
-                    <textarea id="salesPayDetails" rows="3"></textarea>
+                  <div class="sales-bank-box" id="salesBankBox" hidden>
+                    <div class="sales-image-head">
+                      <span id="salesBankTitle">Bank account</span>
+                      <button class="btn-ghost" type="button" id="salesBankEditBtn">Edit in settings</button>
+                    </div>
+                    <div id="salesBankSummary"></div>
                   </div>
                 </div>
                 <div>
@@ -3109,6 +3126,40 @@
       </div>
     </div>
   </div>
+  <div class="feedback-modal" id="salesSettingsModal" role="dialog" aria-modal="true" aria-labelledby="salesSettingsTitle">
+    <div class="feedback-box">
+      <div class="panel-head">
+        <h2 id="salesSettingsTitle">Document settings</h2>
+        <button class="btn-ghost" type="button" data-sales-close="salesSettingsModal" title="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="panel-body stack">
+        <h3 id="salesSettingsShopTitle">Your shop</h3>
+        <p class="hint" id="salesSettingsShopHint"></p>
+        <div class="grid-2">
+          <div class="field"><label for="salesSetName" id="salesSetNameLabel">Name</label><input id="salesSetName" type="text"></div>
+          <div class="field"><label for="salesSetPhone" id="salesSetPhoneLabel">Phone</label><input id="salesSetPhone" type="text"></div>
+        </div>
+        <div class="field"><label for="salesSetAddress" id="salesSetAddressLabel">Address</label><textarea id="salesSetAddress" rows="2"></textarea></div>
+        <div class="field"><label for="salesSetTaxId" id="salesSetTaxIdLabel">Tax ID</label><input id="salesSetTaxId" type="text"></div>
+
+        <h3 id="salesSettingsBankTitle">Bank account</h3>
+        <p class="hint" id="salesSettingsBankHint"></p>
+        <div class="grid-2">
+          <div class="field"><label for="salesSetBankName" id="salesSetBankNameLabel">Bank</label><input id="salesSetBankName" type="text"></div>
+          <div class="field"><label for="salesSetBankAccountNo" id="salesSetBankAccountNoLabel">Account number</label><input id="salesSetBankAccountNo" type="text"></div>
+        </div>
+        <div class="field"><label for="salesSetBankAccountName" id="salesSetBankAccountNameLabel">Account name</label><input id="salesSetBankAccountName" type="text"></div>
+
+        <div class="feedback-actions">
+          <button class="btn-secondary" type="button" data-sales-close="salesSettingsModal" id="salesSettingsCancel">Close</button>
+          <button class="btn-primary" type="button" id="salesSettingsSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="feedback-modal" id="salesChoiceModal" role="dialog" aria-modal="true" aria-labelledby="salesChoiceTitle">
     <div class="feedback-box">
       <div class="panel-head">
@@ -4527,7 +4578,7 @@
         statusChanged: "อัปเดตสถานะแล้ว", refLabel: "อ้างอิง", refOrder: "ออเดอร์",
         freeLabel: "แถมฟรี", lockedHint: "เอกสารนี้ไม่ใช่ร่างแล้ว การแก้ไขจะเปลี่ยนเอกสารที่ส่งไปแล้ว",
         createPayment: "สร้างใบแจ้งชำระเงิน", createDelivery: "สร้างใบส่งของ", markPaid: "รับชำระเงินแล้ว",
-        dueDate: "กำหนดชำระ", payMethod: "ช่องทางการชำระ", payPromptPay: "พร้อมเพย์", payTransfer: "โอนธนาคาร", payCash: "เงินสด", payOther: "อื่น ๆ",
+        dueDate: "กำหนดชำระ", payMethod: "ช่องทางการชำระ", payTransfer: "โอนธนาคาร", payCash: "เงินสด", payOther: "อื่น ๆ",
         paidAt: "วันที่รับเงิน", confirmPaid: "ยืนยันการรับเงิน", showPrices: "แสดงราคาในใบส่งของ", deliveryDate: "วันที่ส่ง", shipAddress: "ที่อยู่จัดส่ง"
       },
       en: {
@@ -4561,7 +4612,7 @@
         statusChanged: "Status updated", refLabel: "Reference", refOrder: "Order",
         freeLabel: "Free", lockedHint: "This document is no longer a draft. Editing changes a copy the customer may already have.",
         createPayment: "Create payment request", createDelivery: "Create delivery note", markPaid: "Mark as paid",
-        dueDate: "Due date", payMethod: "Payment method", payPromptPay: "PromptPay", payTransfer: "Bank transfer", payCash: "Cash", payOther: "Other",
+        dueDate: "Due date", payMethod: "Payment method", payTransfer: "Bank transfer", payCash: "Cash", payOther: "Other",
         paidAt: "Date received", confirmPaid: "Confirm payment", showPrices: "Show prices on the delivery note", deliveryDate: "Delivery date", shipAddress: "Delivery address"
       },
       zh: {
@@ -4595,7 +4646,7 @@
         statusChanged: "状态已更新", refLabel: "关联", refOrder: "订单",
         freeLabel: "赠送", lockedHint: "此单据已不是草稿，修改会改动客户可能已收到的版本。",
         createPayment: "创建付款通知单", createDelivery: "创建送货单", markPaid: "标记已收款",
-        dueDate: "付款期限", payMethod: "付款方式", payPromptPay: "PromptPay", payTransfer: "银行转账", payCash: "现金", payOther: "其他",
+        dueDate: "付款期限", payMethod: "付款方式", payTransfer: "银行转账", payCash: "现金", payOther: "其他",
         paidAt: "收款日期", confirmPaid: "确认收款", showPrices: "在送货单上显示价格", deliveryDate: "送货日期", shipAddress: "送货地址"
       },
       ja: {
@@ -4629,7 +4680,7 @@
         statusChanged: "状態を更新しました", refLabel: "関連", refOrder: "注文",
         freeLabel: "サービス", lockedHint: "この書類は下書きではありません。編集するとお客様にお渡し済みの内容が変わります。",
         createPayment: "請求書を作成", createDelivery: "納品書を作成", markPaid: "入金済みにする",
-        dueDate: "支払期限", payMethod: "支払方法", payPromptPay: "PromptPay", payTransfer: "銀行振込", payCash: "現金", payOther: "その他",
+        dueDate: "支払期限", payMethod: "支払方法", payTransfer: "銀行振込", payCash: "現金", payOther: "その他",
         paidAt: "入金日", confirmPaid: "入金を確定", showPrices: "納品書に金額を表示", deliveryDate: "納品日", shipAddress: "納品先住所"
       },
       ko: {
@@ -4663,20 +4714,25 @@
         statusChanged: "상태를 변경했습니다", refLabel: "참조", refOrder: "주문",
         freeLabel: "무료", lockedHint: "이 문서는 임시저장 상태가 아닙니다. 수정하면 고객이 받은 내용과 달라집니다.",
         createPayment: "대금 청구서 만들기", createDelivery: "거래명세서 만들기", markPaid: "입금 처리",
-        dueDate: "결제 기한", payMethod: "결제 방법", payPromptPay: "PromptPay", payTransfer: "계좌이체", payCash: "현금", payOther: "기타",
+        dueDate: "결제 기한", payMethod: "결제 방법", payTransfer: "계좌이체", payCash: "현금", payOther: "기타",
         paidAt: "입금일", confirmPaid: "입금 확인", showPrices: "거래명세서에 금액 표시", deliveryDate: "출고일", shipAddress: "배송 주소"
       }
     };
-    Object.assign(salesI18n.th, { payDetails: "ข้อมูลการชำระเงิน", payDetailsPh: "เช่น พร้อมเพย์ 08x-xxx-xxxx / ธนาคาร ... เลขที่บัญชี ...", payTo: "ชำระเงินมาที่", cancelDoc: "ยกเลิกเอกสาร", cancelConfirm: "ยกเลิกใบแจ้งชำระเงินนี้?", refQuotation: "ใบเสนอราคา", paymentCreated: "สร้างใบแจ้งชำระเงินแล้ว", paymentExists: "ใบเสนอราคานี้มีใบแจ้งชำระเงินอยู่แล้ว เปิดใบเดิมให้", saveFirst: "บันทึกเอกสารก่อน", issueDate: "วันที่ออก" });
-    Object.assign(salesI18n.en, { payDetails: "Payment details", payDetailsPh: "e.g. PromptPay 08x-xxx-xxxx / Bank ... account ...", payTo: "Pay to", cancelDoc: "Cancel document", cancelConfirm: "Cancel this payment request?", refQuotation: "Quotation", paymentCreated: "Payment request created", paymentExists: "This quotation already has a payment request - opening it", saveFirst: "Save the document first", issueDate: "Issue date" });
-    Object.assign(salesI18n.zh, { payDetails: "收款信息", payDetailsPh: "例如 PromptPay 08x-xxx-xxxx / 银行 ... 账号 ...", payTo: "付款至", cancelDoc: "取消单据", cancelConfirm: "确定取消这份付款通知单？", refQuotation: "报价单", paymentCreated: "已创建付款通知单", paymentExists: "此报价单已有付款通知单，为你打开", saveFirst: "请先保存单据", issueDate: "开具日期" });
-    Object.assign(salesI18n.ja, { payDetails: "振込先", payDetailsPh: "例: PromptPay 08x-xxx-xxxx / 銀行 ... 口座 ...", payTo: "お支払い先", cancelDoc: "書類を取消", cancelConfirm: "この請求書を取り消しますか？", refQuotation: "見積書", paymentCreated: "請求書を作成しました", paymentExists: "この見積書には既に請求書があります。開きます", saveFirst: "先に書類を保存してください", issueDate: "発行日" });
-    Object.assign(salesI18n.ko, { payDetails: "입금 정보", payDetailsPh: "예: PromptPay 08x-xxx-xxxx / 은행 ... 계좌 ...", payTo: "입금처", cancelDoc: "문서 취소", cancelConfirm: "이 대금 청구서를 취소할까요?", refQuotation: "견적서", paymentCreated: "대금 청구서를 만들었습니다", paymentExists: "이 견적서에는 이미 청구서가 있어 해당 문서를 엽니다", saveFirst: "문서를 먼저 저장하세요", issueDate: "발행일" });
+    Object.assign(salesI18n.th, { payTo: "ชำระเงินมาที่", cancelDoc: "ยกเลิกเอกสาร", cancelConfirm: "ยกเลิกใบแจ้งชำระเงินนี้?", refQuotation: "ใบเสนอราคา", paymentCreated: "สร้างใบแจ้งชำระเงินแล้ว", paymentExists: "ใบเสนอราคานี้มีใบแจ้งชำระเงินอยู่แล้ว เปิดใบเดิมให้", saveFirst: "บันทึกเอกสารก่อน", issueDate: "วันที่ออก" });
+    Object.assign(salesI18n.en, { payTo: "Pay to", cancelDoc: "Cancel document", cancelConfirm: "Cancel this payment request?", refQuotation: "Quotation", paymentCreated: "Payment request created", paymentExists: "This quotation already has a payment request - opening it", saveFirst: "Save the document first", issueDate: "Issue date" });
+    Object.assign(salesI18n.zh, { payTo: "付款至", cancelDoc: "取消单据", cancelConfirm: "确定取消这份付款通知单？", refQuotation: "报价单", paymentCreated: "已创建付款通知单", paymentExists: "此报价单已有付款通知单，为你打开", saveFirst: "请先保存单据", issueDate: "开具日期" });
+    Object.assign(salesI18n.ja, { payTo: "お支払い先", cancelDoc: "書類を取消", cancelConfirm: "この請求書を取り消しますか？", refQuotation: "見積書", paymentCreated: "請求書を作成しました", paymentExists: "この見積書には既に請求書があります。開きます", saveFirst: "先に書類を保存してください", issueDate: "発行日" });
+    Object.assign(salesI18n.ko, { payTo: "입금처", cancelDoc: "문서 취소", cancelConfirm: "이 대금 청구서를 취소할까요?", refQuotation: "견적서", paymentCreated: "대금 청구서를 만들었습니다", paymentExists: "이 견적서에는 이미 청구서가 있어 해당 문서를 엽니다", saveFirst: "문서를 먼저 저장하세요", issueDate: "발행일" });
     Object.assign(salesI18n.th, { stepOrder: "ออเดอร์", stepQuote: "ใบเสนอราคา", stepPayment: "ใบแจ้งชำระเงิน", stepReceipt: "ใบเสร็จรับเงิน", nextLabel: "ขั้นต่อไป", nextSend: "ส่งใบเสนอราคาให้ลูกค้า แล้วกด \u201cส่งแล้ว\u201d", nextAccept: "รอลูกค้าตอบ แล้วกด \u201cลูกค้าตกลง\u201d หรือ \u201cไม่ตกลง\u201d", nextPayment: "กด \u201cสร้างใบแจ้งชำระเงิน\u201d", nextReceive: "ส่งใบแจ้งชำระเงินให้ลูกค้า เมื่อได้รับเงินแล้วค่อยบันทึกรับชำระ", nextReceipt: "ออกใบเสร็จรับเงินให้ลูกค้า", doneRejected: "ลูกค้าไม่ตกลง จบขั้นตอนนี้", doneCancelled: "เอกสารนี้ถูกยกเลิกแล้ว", doneAll: "เสร็จสมบูรณ์", orderImage: "รูปออเดอร์", showImage: "แสดงรูปในเอกสาร" });
     Object.assign(salesI18n.en, { stepOrder: "Order", stepQuote: "Quotation", stepPayment: "Payment request", stepReceipt: "Receipt", nextLabel: "Next", nextSend: "Send the quotation to the customer, then mark it as sent", nextAccept: "Wait for the customer, then mark it accepted or rejected", nextPayment: "Create the payment request", nextReceive: "Send the payment request; record the payment once the money arrives", nextReceipt: "Issue the receipt to the customer", doneRejected: "The customer said no - this line ends here", doneCancelled: "This document was cancelled", doneAll: "All done", orderImage: "Order photo", showImage: "Show the photo on the document" });
     Object.assign(salesI18n.zh, { stepOrder: "订单", stepQuote: "报价单", stepPayment: "付款通知单", stepReceipt: "收据", nextLabel: "下一步", nextSend: "把报价单发给客户，然后标记为已发送", nextAccept: "等客户回复后，标记为已确认或未接受", nextPayment: "创建付款通知单", nextReceive: "把付款通知单发给客户，收到款后再记录", nextReceipt: "给客户开具收据", doneRejected: "客户未接受，流程到此结束", doneCancelled: "此单据已取消", doneAll: "已完成", orderImage: "订单图片", showImage: "在单据上显示图片" });
     Object.assign(salesI18n.ja, { stepOrder: "注文", stepQuote: "見積書", stepPayment: "請求書", stepReceipt: "領収書", nextLabel: "次の手順", nextSend: "見積書をお客様に送り、送信済みにします", nextAccept: "お客様の返事を待ち、受注または見送りにします", nextPayment: "請求書を作成します", nextReceive: "請求書を送り、入金を確認してから記録します", nextReceipt: "領収書を発行します", doneRejected: "見送りとなり、この流れはここで終わります", doneCancelled: "この書類は取り消されました", doneAll: "完了", orderImage: "注文の写真", showImage: "書類に写真を表示" });
     Object.assign(salesI18n.ko, { stepOrder: "주문", stepQuote: "견적서", stepPayment: "대금 청구서", stepReceipt: "영수증", nextLabel: "다음 단계", nextSend: "견적서를 고객에게 보낸 뒤 발송 처리하세요", nextAccept: "고객 회신을 기다린 뒤 승인 또는 미승인으로 표시하세요", nextPayment: "대금 청구서를 만드세요", nextReceive: "청구서를 보내고 입금이 확인되면 기록하세요", nextReceipt: "고객에게 영수증을 발행하세요", doneRejected: "고객이 승인하지 않아 여기서 끝납니다", doneCancelled: "이 문서는 취소되었습니다", doneAll: "완료", orderImage: "주문 사진", showImage: "문서에 사진 표시" });
+    Object.assign(salesI18n.th, { settings: "ตั้งค่าเอกสาร", settingsShop: "ข้อมูลร้านของเรา", settingsBank: "บัญชีธนาคาร", bankName: "ธนาคาร", bankAccountName: "ชื่อบัญชี", bankAccountNo: "เลขที่บัญชี", bankHint: "จะแสดงบนเอกสารเมื่อเลือกช่องทางชำระเป็น \u201cโอนธนาคาร\u201d", shopHint: "ใช้เติมข้อมูลร้านให้เอกสารใหม่อัตโนมัติ", settingsSaved: "บันทึกการตั้งค่าแล้ว", editInSettings: "แก้ในตั้งค่า", bankEmpty: "ยังไม่ได้ใส่บัญชีธนาคารในตั้งค่า" });
+    Object.assign(salesI18n.en, { settings: "Document settings", settingsShop: "Your shop", settingsBank: "Bank account", bankName: "Bank", bankAccountName: "Account name", bankAccountNo: "Account number", bankHint: "Shown on a document when the payment method is a bank transfer", shopHint: "Fills in the shop details on every new document", settingsSaved: "Settings saved", editInSettings: "Edit in settings", bankEmpty: "No bank account set yet" });
+    Object.assign(salesI18n.zh, { settings: "单据设置", settingsShop: "本店信息", settingsBank: "银行账户", bankName: "银行", bankAccountName: "户名", bankAccountNo: "账号", bankHint: "当付款方式为银行转账时显示在单据上", shopHint: "自动填入每份新单据的本店信息", settingsSaved: "设置已保存", editInSettings: "在设置中修改", bankEmpty: "尚未设置银行账户" });
+    Object.assign(salesI18n.ja, { settings: "書類設定", settingsShop: "自社情報", settingsBank: "銀行口座", bankName: "銀行", bankAccountName: "口座名義", bankAccountNo: "口座番号", bankHint: "支払方法が銀行振込のとき書類に表示されます", shopHint: "新しい書類の自社情報を自動で埋めます", settingsSaved: "設定を保存しました", editInSettings: "設定で編集", bankEmpty: "銀行口座がまだ登録されていません" });
+    Object.assign(salesI18n.ko, { settings: "문서 설정", settingsShop: "내 정보", settingsBank: "은행 계좌", bankName: "은행", bankAccountName: "예금주", bankAccountNo: "계좌번호", bankHint: "결제 방법이 계좌이체일 때 문서에 표시됩니다", shopHint: "새 문서의 상점 정보를 자동으로 채웁니다", settingsSaved: "설정을 저장했습니다", editInSettings: "설정에서 수정", bankEmpty: "등록된 은행 계좌가 없습니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8667,6 +8723,18 @@
       return { name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
     }
 
+    function salesSettings() {
+      if (!state.salesSettings) state.salesSettings = {};
+      const settings = state.salesSettings;
+      settings.seller = { name: "", phone: "", address: "", taxId: "", ...(settings.seller || {}) };
+      settings.bank = { bankName: "", accountName: "", accountNo: "", ...(settings.bank || {}) };
+      return settings;
+    }
+
+    function hasBankDetails(bank) {
+      return Boolean(bank && (bank.bankName || bank.accountName || bank.accountNo));
+    }
+
     function ensureSalesDocs() {
       if (!Array.isArray(state.salesDocs)) state.salesDocs = [];
       // Quotations from the first build lived in state.quotes. Carry them across
@@ -8729,8 +8797,9 @@
     }
 
     function lastSellerUsed() {
-      // The shop's own details rarely change, so carry them from the last
-      // document rather than making the user retype them every time.
+      // Settings win, then the last document, then whatever the account knows.
+      const saved = salesSettings().seller;
+      if (saved.name || saved.phone || saved.address || saved.taxId) return { ...saved };
       const previous = (state.salesDocs || []).find((doc) => doc.seller && doc.seller.name);
       return previous ? { ...previous.seller } : sellerDefaults();
     }
@@ -8738,8 +8807,8 @@
     // How the shop is paid changes even less often than its address, so the last
     // bill's setup is offered again rather than typed out every time.
     function lastPaymentSetup() {
-      const previous = (state.salesDocs || []).find((doc) => doc.type === "PAY" && doc.payDetails);
-      return previous ? { payMethod: previous.payMethod || "promptpay", payDetails: previous.payDetails } : { payMethod: "promptpay", payDetails: "" };
+      const previous = (state.salesDocs || []).find((doc) => doc.type === "PAY" && doc.payMethod);
+      return { payMethod: normalizedPayMethod(previous && previous.payMethod) };
     }
 
     function blankSalesDoc(type) {
@@ -8759,8 +8828,8 @@
         imageKey: "",
         showImage: true,
         dueDate: "",
-        payMethod: "promptpay",
-        payDetails: "",
+        payMethod: "transfer",
+        bank: { ...salesSettings().bank },
         seller: lastSellerUsed(),
         customer: { name: "", phone: "", address: "", taxId: "" },
         items: [],
@@ -8805,19 +8874,38 @@
 
     const salesImageCache = new Map();
 
-    async function loadSalesImage(key) {
-      if (!key) return "";
-      if (salesImageCache.has(key)) return salesImageCache.get(key);
+    function salesImageCacheKey(doc) {
+      if (!doc) return "";
+      if (doc.imageKey) return doc.imageKey;
+      return doc.orderId ? `order:${doc.orderId}` : "";
+    }
+
+    async function loadSalesImage(doc) {
+      const cacheKey = salesImageCacheKey(doc);
+      if (!cacheKey) return "";
+      if (salesImageCache.has(cacheKey)) return salesImageCache.get(cacheKey);
       let data = "";
-      try { data = (await getJobImage(key)) || ""; }
-      catch (error) { data = ""; }
-      salesImageCache.set(key, data);
+      try {
+        if (doc.imageKey) data = (await getJobImage(doc.imageKey)) || "";
+        if (!data && doc.orderId) {
+          const order = (state.orders || []).find((item) => item.id === doc.orderId);
+          if (order) {
+            data = (await orderImageSrc(order)) || "";
+            // Remember the key so this document keeps its own photo from now on.
+            if (data && order.imageKey && !doc.imageKey) {
+              doc.imageKey = order.imageKey;
+              salesImageCache.set(order.imageKey, data);
+            }
+          }
+        }
+      } catch (error) { data = ""; }
+      salesImageCache.set(cacheKey, data);
       return data;
     }
 
     function salesImageData(doc) {
-      if (!doc || !doc.imageKey) return "";
-      return salesImageCache.get(doc.imageKey) || "";
+      const cacheKey = salesImageCacheKey(doc);
+      return cacheKey ? (salesImageCache.get(cacheKey) || "") : "";
     }
 
     // Four steps, in the order the shop works through them. The order itself is
@@ -8872,6 +8960,23 @@
         next.className = `sales-next ${hint.tone}`;
         next.innerHTML = `${prefix}${escapeHtml(salesText(hint.key))}`;
       }
+    }
+
+    function renderSalesBank() {
+      const box = $("salesBankBox");
+      const summary = $("salesBankSummary");
+      const doc = salesUi.draft;
+      if (!box || !summary || !doc) return;
+      const transfer = doc.type !== "QT" && normalizedPayMethod(doc.payMethod) === "transfer";
+      box.hidden = !transfer;
+      if (!transfer) return;
+      const bank = hasBankDetails(doc.bank) ? doc.bank : salesSettings().bank;
+      summary.innerHTML = hasBankDetails(bank)
+        ? [["bankName", bank.bankName], ["bankAccountName", bank.accountName], ["bankAccountNo", bank.accountNo]]
+            .filter(([, value]) => value)
+            .map(([key, value]) => `<div class="sales-bank-line"><span>${escapeHtml(salesText(key))}</span><strong>${escapeHtml(value)}</strong></div>`)
+            .join("")
+        : `<p class="hint">${escapeHtml(salesText("bankEmpty"))}</p>`;
     }
 
     function renderSalesImage() {
@@ -8955,9 +9060,10 @@
 
     function openSalesEditor(doc, isNew) {
       salesUi.draft = structuredClone(doc);
-      if (doc.imageKey && !salesImageCache.has(doc.imageKey)) {
-        loadSalesImage(doc.imageKey).then(() => {
-          if (salesUi.draft && salesUi.draft.imageKey === doc.imageKey) renderSalesImage();
+      const pending = salesUi.draft;
+      if (salesImageCacheKey(pending) && !salesImageData(pending)) {
+        loadSalesImage(pending).then(() => {
+          if (salesUi.draft === pending) renderSalesImage();
         });
       }
       salesUi.isNew = Boolean(isNew);
@@ -9086,8 +9192,7 @@
       set("salesDiscount", doc.discount);
       set("salesNote", doc.note);
       set("salesDueDate", doc.dueDate);
-      set("salesPayMethod", doc.payMethod || "promptpay");
-      set("salesPayDetails", doc.payDetails);
+      set("salesPayMethod", normalizedPayMethod(doc.payMethod));
       const vat = $("salesVat");
       if (vat) vat.checked = Boolean(doc.vat);
 
@@ -9110,6 +9215,7 @@
       const head = $("salesHeadBox");
       if (head) head.open = salesUi.headOpen === null ? !doc.customer.name : salesUi.headOpen;
       renderSalesSteps();
+      renderSalesBank();
       renderSalesImage();
       renderSalesDigest();
       renderSalesItems();
@@ -9130,8 +9236,7 @@
       doc.note = get("salesNote");
       doc.vat = Boolean($("salesVat") && $("salesVat").checked);
       doc.dueDate = get("salesDueDate");
-      doc.payMethod = get("salesPayMethod") || doc.payMethod;
-      doc.payDetails = get("salesPayDetails");
+      doc.payMethod = normalizedPayMethod(get("salesPayMethod") || doc.payMethod);
       doc.showImage = !$("salesShowImage") || $("salesShowImage").checked;
     }
 
@@ -9172,6 +9277,9 @@
       // an invisible line is filtered out here, never merely hidden with CSS.
       const visible = (doc.items || []).filter((item) => item.visible !== false);
       const photo = doc.showImage === false ? "" : salesImageData(doc);
+      // Account details belong on the paper only when the customer is transferring.
+      const bankSource = hasBankDetails(doc.bank) ? doc.bank : salesSettings().bank;
+      const bank = normalizedPayMethod(doc.payMethod) === "transfer" && hasBankDetails(bankSource) ? bankSource : null;
       const line = (label, value) => value ? `<div>${escapeHtml(label)}: ${escapeHtml(value)}</div>` : "";
 
       const rows = visible.map((item) => `
@@ -9226,7 +9334,11 @@
         ${doc.type === "PAY" ? `<div class="sales-paper-pay">
           ${doc.dueDate ? `<div><strong>${escapeHtml(salesText("dueDate"))}:</strong> ${escapeHtml(doc.dueDate)}</div>` : ""}
           <div><strong>${escapeHtml(salesText("payMethod"))}:</strong> ${escapeHtml(salesPayMethodLabel(doc.payMethod))}</div>
-          ${doc.payDetails ? `<div class="sales-paper-note"><strong>${escapeHtml(salesText("payTo"))}:</strong>\n${escapeHtml(doc.payDetails)}</div>` : ""}
+          ${bank ? `<div class="sales-paper-bank"><strong>${escapeHtml(salesText("payTo"))}</strong>
+            ${bank.bankName ? `<div><span>${escapeHtml(salesText("bankName"))}</span><span>${escapeHtml(bank.bankName)}</span></div>` : ""}
+            ${bank.accountName ? `<div><span>${escapeHtml(salesText("bankAccountName"))}</span><span>${escapeHtml(bank.accountName)}</span></div>` : ""}
+            ${bank.accountNo ? `<div><span>${escapeHtml(salesText("bankAccountNo"))}</span><span>${escapeHtml(bank.accountNo)}</span></div>` : ""}
+          </div>` : ""}
         </div>` : ""}
         ${doc.note ? `<div class="sales-paper-note">${escapeHtml(doc.note)}</div>` : ""}
         <div class="sales-paper-sign">
@@ -9263,11 +9375,18 @@
       if (modal && modal.classList.contains("show")) fitSalesPreview();
     });
 
-    const SALES_PAY_METHODS = [["promptpay", "payPromptPay"], ["transfer", "payTransfer"], ["cash", "payCash"], ["other", "payOther"]];
+    const SALES_PAY_METHODS = [["transfer", "payTransfer"], ["cash", "payCash"], ["other", "payOther"]];
+
+    function normalizedPayMethod(value) {
+      // Older documents chose "promptpay", which is a transfer by another name.
+      if (value === "promptpay") return "transfer";
+      return SALES_PAY_METHODS.some(([key]) => key === value) ? value : "transfer";
+    }
 
     function salesPayMethodLabel(value) {
-      const found = SALES_PAY_METHODS.find(([key]) => key === value);
-      return salesText(found ? found[1] : "payOther");
+      const method = normalizedPayMethod(value);
+      const found = SALES_PAY_METHODS.find(([key]) => key === method);
+      return salesText(found ? found[1] : "payTransfer");
     }
 
     function createPaymentRequest() {
@@ -9302,7 +9421,8 @@
       bill.sourceNumber = source.number;
       bill.dueDate = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
       bill.payMethod = setup.payMethod;
-      bill.payDetails = setup.payDetails;
+      // The account is snapshotted, so changing it later leaves sent bills alone.
+      bill.bank = { ...salesSettings().bank };
 
       ensureSalesDocs().unshift(structuredClone(bill));
       persist({ skipRender: true });
@@ -9340,6 +9460,30 @@
               <strong>${money.format(Number(order.salePrice) || 0)}</strong>
             </button>`).join("")
         : `<p class="sales-empty">${escapeHtml(salesText("pickOrderEmpty"))}</p>`;
+    }
+
+    function fillSalesSettings() {
+      const settings = salesSettings();
+      const set = (id, value) => { const el = $(id); if (el) el.value = value || ""; };
+      set("salesSetName", settings.seller.name);
+      set("salesSetPhone", settings.seller.phone);
+      set("salesSetAddress", settings.seller.address);
+      set("salesSetTaxId", settings.seller.taxId);
+      set("salesSetBankName", settings.bank.bankName);
+      set("salesSetBankAccountName", settings.bank.accountName);
+      set("salesSetBankAccountNo", settings.bank.accountNo);
+    }
+
+    function saveSalesSettings() {
+      const get = (id) => ($(id) ? $(id).value.trim() : "");
+      const settings = salesSettings();
+      settings.seller = { name: get("salesSetName"), phone: get("salesSetPhone"), address: get("salesSetAddress"), taxId: get("salesSetTaxId") };
+      settings.bank = { bankName: get("salesSetBankName"), accountName: get("salesSetBankAccountName"), accountNo: get("salesSetBankAccountNo") };
+      persist({ skipRender: true });
+      closeSalesModal("salesSettingsModal");
+      // A document already open should pick the new account up straight away.
+      if (salesUi.draft) renderSalesBank();
+      showToast(salesText("settingsSaved"));
     }
 
     function openSalesModal(id) {
@@ -9414,11 +9558,25 @@
       label("#salesCancelDocBtn", "cancelDoc");
       label("#salesDueDateLabel", "dueDate");
       label("#salesPayMethodLabel", "payMethod");
-      label("#salesPayDetailsLabel", "payDetails");
       label("#salesImageTitle", "orderImage");
+      label("#salesSettingsText", "settings");
+      label("#salesSettingsTitle", "settings");
+      label("#salesSettingsShopTitle", "settingsShop");
+      label("#salesSettingsShopHint", "shopHint");
+      label("#salesSettingsBankTitle", "settingsBank");
+      label("#salesSettingsBankHint", "bankHint");
+      label("#salesSetNameLabel", "fName");
+      label("#salesSetPhoneLabel", "fPhone");
+      label("#salesSetAddressLabel", "fAddress");
+      label("#salesSetTaxIdLabel", "fTaxId");
+      label("#salesSetBankNameLabel", "bankName");
+      label("#salesSetBankAccountNameLabel", "bankAccountName");
+      label("#salesSetBankAccountNoLabel", "bankAccountNo");
+      label("#salesSettingsSave", "save");
+      label("#salesSettingsCancel", "close");
+      label("#salesBankTitle", "settingsBank");
+      label("#salesBankEditBtn", "editInSettings");
       label("#salesShowImageLabel", "showImage");
-      const payDetails = $("salesPayDetails");
-      if (payDetails) payDetails.placeholder = salesText("payDetailsPh");
       const payMethod = $("salesPayMethod");
       if (payMethod) {
         const chosen = payMethod.value;
@@ -9456,6 +9614,14 @@
         salesUi.headOpen = !$("salesHeadBox").open;
         return;
       }
+
+      if (event.target.closest("#salesSettingsBtn") || event.target.closest("#salesBankEditBtn")) {
+        fillSalesSettings();
+        openSalesModal("salesSettingsModal");
+        return;
+      }
+
+      if (event.target.closest("#salesSettingsSave")) { saveSalesSettings(); return; }
 
       if (event.target.closest("#salesNewBtn")) {
         salesUi.pickedOrderId = "";
@@ -9623,6 +9789,12 @@
       }
 
       if (event.target.id === "salesShowImage") { readSalesForm(); return; }
+
+      if (event.target.id === "salesPayMethod") {
+        readSalesForm();
+        renderSalesBank();
+        return;
+      }
 
       if (event.target.closest(".sales-cols")) {
         readSalesForm();
