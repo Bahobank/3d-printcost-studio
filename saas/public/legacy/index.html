@@ -464,6 +464,8 @@
     .sales-paper .sales-paper-totals div { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
     .sales-paper .sales-paper-totals div.is-grand { border-top: 1px solid #111; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: 700; }
     .sales-paper .sales-paper-note { margin-top: 18px; white-space: pre-wrap; }
+    .sales-paper .sales-paper-pay { margin-top: 18px; border: 1px solid #111; border-radius: 4px; padding: 10px 12px; }
+    .sales-paper .sales-paper-pay .sales-paper-note { margin-top: 6px; }
     .sales-paper .sales-paper-sign { display: flex; justify-content: space-between; gap: 40px; margin-top: 44px; }
     .sales-paper .sales-paper-sign div { flex: 1 1 0; border-top: 1px solid #999; padding-top: 6px; text-align: center; color: #666; font-size: 12px; }
     @page { size: A4; margin: 14mm; }
@@ -2950,7 +2952,9 @@
                   <h3 id="salesDocTitle">Document</h3>
                   <div class="field"><label for="salesDocNo" id="salesDocNoLabel">Number</label><input id="salesDocNo" type="text"></div>
                   <div class="field"><label for="salesDocDate" id="salesDocDateLabel">Date</label><input id="salesDocDate" type="date"></div>
-                  <div class="field"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
+                  <div class="field" id="salesValidUntilField"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
+                  <div class="field" id="salesDueDateField" hidden><label for="salesDueDate" id="salesDueDateLabel">Due date</label><input id="salesDueDate" type="date"></div>
+                  <div class="field" id="salesPayMethodField" hidden><label for="salesPayMethod" id="salesPayMethodLabel">Payment method</label><select id="salesPayMethod"></select></div>
                 </div>
               </div>
 
@@ -2982,9 +2986,15 @@
               <p class="sales-empty" id="salesItemsEmpty" hidden></p>
 
               <div class="sales-foot">
-                <div class="field">
-                  <label for="salesNote" id="salesNoteLabel">Notes</label>
-                  <textarea id="salesNote" rows="5"></textarea>
+                <div>
+                  <div class="field">
+                    <label for="salesNote" id="salesNoteLabel">Notes</label>
+                    <textarea id="salesNote" rows="5"></textarea>
+                  </div>
+                  <div class="field" id="salesPayDetailsField" hidden>
+                    <label for="salesPayDetails" id="salesPayDetailsLabel">Payment details</label>
+                    <textarea id="salesPayDetails" rows="3"></textarea>
+                  </div>
                 </div>
                 <div>
                   <div class="grid-2">
@@ -3005,6 +3015,8 @@
                 <button class="btn-secondary" type="button" id="salesMarkSentBtn">Mark as sent</button>
                 <button class="btn-primary" type="button" id="salesMarkAcceptedBtn">Customer accepted</button>
                 <button class="btn-ghost" type="button" id="salesMarkRejectedBtn">Rejected</button>
+                <button class="btn-primary" type="button" id="salesCreatePaymentBtn">Create payment request</button>
+                <button class="btn-ghost" type="button" id="salesCancelDocBtn">Cancel document</button>
               </div>
             </div>
           </div>
@@ -4601,6 +4613,11 @@
         paidAt: "입금일", confirmPaid: "입금 확인", showPrices: "거래명세서에 금액 표시", deliveryDate: "출고일", shipAddress: "배송 주소"
       }
     };
+    Object.assign(salesI18n.th, { payDetails: "ข้อมูลการชำระเงิน", payDetailsPh: "เช่น พร้อมเพย์ 08x-xxx-xxxx / ธนาคาร ... เลขที่บัญชี ...", payTo: "ชำระเงินมาที่", cancelDoc: "ยกเลิกเอกสาร", cancelConfirm: "ยกเลิกใบแจ้งชำระเงินนี้?", refQuotation: "ใบเสนอราคา", paymentCreated: "สร้างใบแจ้งชำระเงินแล้ว", paymentExists: "ใบเสนอราคานี้มีใบแจ้งชำระเงินอยู่แล้ว เปิดใบเดิมให้", saveFirst: "บันทึกเอกสารก่อน", issueDate: "วันที่ออก" });
+    Object.assign(salesI18n.en, { payDetails: "Payment details", payDetailsPh: "e.g. PromptPay 08x-xxx-xxxx / Bank ... account ...", payTo: "Pay to", cancelDoc: "Cancel document", cancelConfirm: "Cancel this payment request?", refQuotation: "Quotation", paymentCreated: "Payment request created", paymentExists: "This quotation already has a payment request - opening it", saveFirst: "Save the document first", issueDate: "Issue date" });
+    Object.assign(salesI18n.zh, { payDetails: "收款信息", payDetailsPh: "例如 PromptPay 08x-xxx-xxxx / 银行 ... 账号 ...", payTo: "付款至", cancelDoc: "取消单据", cancelConfirm: "确定取消这份付款通知单？", refQuotation: "报价单", paymentCreated: "已创建付款通知单", paymentExists: "此报价单已有付款通知单，为你打开", saveFirst: "请先保存单据", issueDate: "开具日期" });
+    Object.assign(salesI18n.ja, { payDetails: "振込先", payDetailsPh: "例: PromptPay 08x-xxx-xxxx / 銀行 ... 口座 ...", payTo: "お支払い先", cancelDoc: "書類を取消", cancelConfirm: "この請求書を取り消しますか？", refQuotation: "見積書", paymentCreated: "請求書を作成しました", paymentExists: "この見積書には既に請求書があります。開きます", saveFirst: "先に書類を保存してください", issueDate: "発行日" });
+    Object.assign(salesI18n.ko, { payDetails: "입금 정보", payDetailsPh: "예: PromptPay 08x-xxx-xxxx / 은행 ... 계좌 ...", payTo: "입금처", cancelDoc: "문서 취소", cancelConfirm: "이 대금 청구서를 취소할까요?", refQuotation: "견적서", paymentCreated: "대금 청구서를 만들었습니다", paymentExists: "이 견적서에는 이미 청구서가 있어 해당 문서를 엽니다", saveFirst: "문서를 먼저 저장하세요", issueDate: "발행일" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8659,6 +8676,13 @@
       return previous ? { ...previous.seller } : sellerDefaults();
     }
 
+    // How the shop is paid changes even less often than its address, so the last
+    // bill's setup is offered again rather than typed out every time.
+    function lastPaymentSetup() {
+      const previous = (state.salesDocs || []).find((doc) => doc.type === "PAY" && doc.payDetails);
+      return previous ? { payMethod: previous.payMethod || "promptpay", payDetails: previous.payDetails } : { payMethod: "promptpay", payDetails: "" };
+    }
+
     function blankSalesDoc(type) {
       const today = new Date().toISOString().slice(0, 10);
       const later = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
@@ -8666,12 +8690,16 @@
         id: crypto.randomUUID(),
         type: type || "QT",
         number: nextSalesNumber(type || "QT"),
-        status: "draft",
+        status: (type || "QT") === "QT" ? "draft" : "waiting",
         date: today,
         validUntil: later,
         orderId: "",
         orderName: "",
         sourceId: "",
+        sourceNumber: "",
+        dueDate: "",
+        payMethod: "promptpay",
+        payDetails: "",
         seller: lastSellerUsed(),
         customer: { name: "", phone: "", address: "", taxId: "" },
         items: [],
@@ -8868,18 +8896,17 @@
 
       const ref = $("salesRefLine");
       if (ref) {
-        if (doc.orderId) {
-          ref.hidden = false;
-          ref.innerHTML = `${escapeHtml(salesText("refLabel"))}: ${escapeHtml(salesText("refOrder"))} <button type="button" data-sales-goto-order="${doc.orderId}">${escapeHtml(doc.orderName || doc.orderId)}</button>`;
-        } else {
-          ref.hidden = true;
-          ref.innerHTML = "";
-        }
+        const parts = [];
+        if (doc.sourceId) parts.push(`${escapeHtml(salesText("refQuotation"))} <button type="button" data-sales-open-ref="${doc.sourceId}">${escapeHtml(doc.sourceNumber || doc.sourceId)}</button>`);
+        if (doc.orderId) parts.push(`${escapeHtml(salesText("refOrder"))} <button type="button" data-sales-goto-order="${doc.orderId}">${escapeHtml(doc.orderName || doc.orderId)}</button>`);
+        ref.hidden = !parts.length;
+        ref.innerHTML = parts.length ? `${escapeHtml(salesText("refLabel"))}: ${parts.join(" · ")}` : "";
       }
 
       const locked = $("salesLockedHint");
       if (locked) {
-        locked.hidden = doc.status === "draft";
+        // A bill that is merely awaiting payment is still being prepared.
+        locked.hidden = doc.status === "draft" || doc.status === "waiting";
         locked.textContent = salesText("lockedHint");
       }
 
@@ -8897,15 +8924,27 @@
       set("salesShipping", doc.shipping);
       set("salesDiscount", doc.discount);
       set("salesNote", doc.note);
+      set("salesDueDate", doc.dueDate);
+      set("salesPayMethod", doc.payMethod || "promptpay");
+      set("salesPayDetails", doc.payDetails);
       const vat = $("salesVat");
       if (vat) vat.checked = Boolean(doc.vat);
 
-      const sentBtn = $("salesMarkSentBtn");
-      const acceptBtn = $("salesMarkAcceptedBtn");
-      const rejectBtn = $("salesMarkRejectedBtn");
-      if (sentBtn) sentBtn.hidden = doc.status !== "draft";
-      if (acceptBtn) acceptBtn.hidden = !(doc.status === "draft" || doc.status === "sent");
-      if (rejectBtn) rejectBtn.hidden = !(doc.status === "draft" || doc.status === "sent");
+      // Each type shows only the boxes it uses.
+      const isQuote = doc.type === "QT";
+      const show = (id, on) => { const el = $(id); if (el) el.hidden = !on; };
+      show("salesValidUntilField", isQuote);
+      show("salesDueDateField", !isQuote);
+      show("salesPayMethodField", !isQuote);
+      show("salesPayDetailsField", !isQuote);
+      setText("#salesDocDateLabel", salesText(isQuote ? "docDate" : "issueDate"));
+
+      const openStage = isQuote ? (doc.status === "draft" || doc.status === "sent") : false;
+      show("salesMarkSentBtn", isQuote && doc.status === "draft");
+      show("salesMarkAcceptedBtn", openStage);
+      show("salesMarkRejectedBtn", openStage);
+      show("salesCreatePaymentBtn", isQuote && doc.status === "accepted");
+      show("salesCancelDocBtn", doc.type === "PAY" && doc.status === "waiting");
 
       renderSalesItems();
       renderSalesTotals();
@@ -8924,6 +8963,9 @@
       doc.discount = Number(get("salesDiscount")) || 0;
       doc.note = get("salesNote");
       doc.vat = Boolean($("salesVat") && $("salesVat").checked);
+      doc.dueDate = get("salesDueDate");
+      doc.payMethod = get("salesPayMethod") || doc.payMethod;
+      doc.payDetails = get("salesPayDetails");
     }
 
     function saveSalesDoc(options) {
@@ -8946,9 +8988,10 @@
 
     function setSalesStatus(status) {
       if (!salesUi.draft) return;
+      const previous = salesUi.draft.status;
       salesUi.draft.status = status;
       if (!saveSalesDoc({ quiet: true })) {
-        salesUi.draft.status = "draft";
+        salesUi.draft.status = previous;
         return;
       }
       renderSalesEditor();
@@ -9011,6 +9054,11 @@
           ${doc.vat ? `<div><span>${escapeHtml(salesText("vat"))}</span><span>${money.format(totals.vat)}</span></div>` : ""}
           <div class="is-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><span>${money.format(totals.total)}</span></div>
         </div>
+        ${doc.type === "PAY" ? `<div class="sales-paper-pay">
+          ${doc.dueDate ? `<div><strong>${escapeHtml(salesText("dueDate"))}:</strong> ${escapeHtml(doc.dueDate)}</div>` : ""}
+          <div><strong>${escapeHtml(salesText("payMethod"))}:</strong> ${escapeHtml(salesPayMethodLabel(doc.payMethod))}</div>
+          ${doc.payDetails ? `<div class="sales-paper-note"><strong>${escapeHtml(salesText("payTo"))}:</strong>\n${escapeHtml(doc.payDetails)}</div>` : ""}
+        </div>` : ""}
         ${doc.note ? `<div class="sales-paper-note">${escapeHtml(doc.note)}</div>` : ""}
         <div class="sales-paper-sign">
           <div>${escapeHtml(doc.seller.name || salesText("shopInfo"))}</div>
@@ -9045,6 +9093,51 @@
       const modal = $("salesPreviewModal");
       if (modal && modal.classList.contains("show")) fitSalesPreview();
     });
+
+    const SALES_PAY_METHODS = [["promptpay", "payPromptPay"], ["transfer", "payTransfer"], ["cash", "payCash"], ["other", "payOther"]];
+
+    function salesPayMethodLabel(value) {
+      const found = SALES_PAY_METHODS.find(([key]) => key === value);
+      return salesText(found ? found[1] : "payOther");
+    }
+
+    function createPaymentRequest() {
+      const source = salesUi.draft;
+      if (!source || source.type !== "QT") return;
+      // The quotation has to be stored before anything can point back at it.
+      if (!saveSalesDoc({ quiet: true })) return;
+
+      const existing = ensureSalesDocs().find((doc) => doc.type === "PAY" && doc.sourceId === source.id && doc.status !== "cancelled");
+      if (existing) {
+        showToast(salesText("paymentExists"));
+        openSalesEditor(existing, false);
+        return;
+      }
+
+      const setup = lastPaymentSetup();
+      const bill = blankSalesDoc("PAY");
+      // Everything the customer already agreed to is copied across, so the shop
+      // never retypes a line, and this bill keeps its own snapshot afterwards.
+      bill.seller = { ...source.seller };
+      bill.customer = { ...source.customer };
+      bill.items = structuredClone(source.items);
+      bill.shipping = source.shipping;
+      bill.discount = source.discount;
+      bill.vat = source.vat;
+      bill.note = source.note;
+      bill.orderId = source.orderId;
+      bill.orderName = source.orderName;
+      bill.sourceId = source.id;
+      bill.sourceNumber = source.number;
+      bill.dueDate = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+      bill.payMethod = setup.payMethod;
+      bill.payDetails = setup.payDetails;
+
+      ensureSalesDocs().unshift(structuredClone(bill));
+      persist({ skipRender: true });
+      openSalesEditor(bill, false);
+      showToast(salesText("paymentCreated"));
+    }
 
     function printSalesDoc() {
       if (!salesUi.draft) return;
@@ -9145,6 +9238,21 @@
       label("#salesMarkSentBtn", "markSent");
       label("#salesMarkAcceptedBtn", "markAccepted");
       label("#salesMarkRejectedBtn", "markRejected");
+      label("#salesCreatePaymentBtn", "createPayment");
+      label("#salesCancelDocBtn", "cancelDoc");
+      label("#salesDueDateLabel", "dueDate");
+      label("#salesPayMethodLabel", "payMethod");
+      label("#salesPayDetailsLabel", "payDetails");
+      const payDetails = $("salesPayDetails");
+      if (payDetails) payDetails.placeholder = salesText("payDetailsPh");
+      const payMethod = $("salesPayMethod");
+      if (payMethod) {
+        const chosen = payMethod.value;
+        payMethod.innerHTML = SALES_PAY_METHODS
+          .map(([value, key]) => `<option value="${value}">${escapeHtml(salesText(key))}</option>`)
+          .join("");
+        if (chosen) payMethod.value = chosen;
+      }
       label("#salesChoiceTitle", "createFrom");
       label("#salesChoiceOrder", "fromOrder");
       label("#salesChoiceBlank", "fromBlank");
@@ -9248,6 +9356,20 @@
       if (event.target.closest("#salesMarkSentBtn")) { setSalesStatus("sent"); return; }
       if (event.target.closest("#salesMarkAcceptedBtn")) { setSalesStatus("accepted"); return; }
       if (event.target.closest("#salesMarkRejectedBtn")) { setSalesStatus("rejected"); return; }
+      if (event.target.closest("#salesCreatePaymentBtn")) { createPaymentRequest(); return; }
+
+      if (event.target.closest("#salesCancelDocBtn")) {
+        if (!confirm(salesText("cancelConfirm"))) return;
+        setSalesStatus("cancelled");
+        return;
+      }
+
+      const openRef = event.target.closest("[data-sales-open-ref]");
+      if (openRef) {
+        const found = ensureSalesDocs().find((item) => item.id === openRef.dataset.salesOpenRef);
+        if (found) openSalesEditor(found, false);
+        return;
+      }
 
       if (event.target.closest("#salesDeleteBtn")) {
         if (!salesUi.draft || !confirm(salesText("deleteConfirm"))) return;
