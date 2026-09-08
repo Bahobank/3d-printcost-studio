@@ -430,9 +430,6 @@
     .sales-bank-box .btn-ghost { min-height: 26px; padding: 0 8px; font-size: 12px; }
     .sales-bank-line { display: flex; justify-content: space-between; gap: 14px; padding: 2px 0; }
     .sales-bank-line span:first-child { color: var(--muted); }
-    .sales-paper .sales-paper-bank { margin-top: 6px; }
-    .sales-paper .sales-paper-bank div { display: flex; gap: 8px; }
-    .sales-paper .sales-paper-bank div span:first-child { color: #666; min-width: 72px; }
     .sales-image-box { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; margin-top: 12px; background: var(--panel-head); }
     .sales-image-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
     .sales-image-head .sales-check { margin: 0; font-weight: 500; }
@@ -459,7 +456,9 @@
     .sales-item-main { display: flex; align-items: center; gap: 10px; min-width: 220px; }
     .sales-item-thumb { width: 46px; height: 46px; border-radius: 8px; border: 1px solid var(--line); background: var(--soft) center/cover no-repeat; flex: 0 0 auto; }
     .sales-item-text { display: grid; gap: 3px; min-width: 0; flex: 1 1 auto; }
-    .sales-item-from { font-size: 11px; color: var(--muted); }
+    .sales-item-sub { display: flex; align-items: center; gap: 8px; }
+    .sales-item-code { flex: 0 0 118px; min-height: 26px !important; padding: 3px 8px !important; font-size: 12px; }
+    .sales-item-from { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sales-items th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 8px 8px; }
     .sales-items th.num, .sales-items td.num { text-align: right; }
     .sales-items th.mid, .sales-items td.mid { text-align: center; }
@@ -521,30 +520,49 @@
     /* The customer's copy. Only #salesPrintDoc reaches paper, and it is rebuilt
        from a filtered item list, so an invisible line cannot leak into print. */
     .sales-doc { display: none; }
-    .sales-paper { background: #fff; color: #111; font-size: 13px; line-height: 1.55; }
-    .sales-paper h1 { font-size: 22px; margin: 0 0 2px; letter-spacing: .02em; }
-    .sales-paper .sales-paper-head { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 14px; }
-    .sales-paper .sales-paper-logo { max-width: 46mm; max-height: 22mm; display: block; margin-bottom: 8px; object-fit: contain; }
-    .sales-paper .sales-paper-tagline { color: #666; }
-    .sales-paper .sales-paper-parties { display: flex; justify-content: space-between; gap: 28px; margin-bottom: 16px; }
-    .sales-paper .sales-paper-detail { display: block; color: #666; font-size: 12px; margin-top: 2px; }
-    .sales-paper .sales-paper-photo { margin: 0 0 16px; border: 1px solid #ddd; border-radius: 4px; padding: 6px; }
-    .sales-paper .sales-paper-photo img { display: block; width: 100%; max-height: 95mm; object-fit: contain; }
-    .sales-paper .sales-paper-block { flex: 1 1 0; min-width: 0; }
-    .sales-paper .sales-paper-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #666; margin-bottom: 3px; }
-    .sales-paper .sales-paper-name { font-weight: 700; }
-    .sales-paper table { width: 100%; border-collapse: collapse; }
-    .sales-paper th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #444; border-bottom: 1px solid #111; padding: 6px 6px; }
-    .sales-paper td { border-bottom: 1px solid #e2e2e2; padding: 7px 6px; vertical-align: top; }
-    .sales-paper td.num, .sales-paper th.num { text-align: right; white-space: nowrap; }
-    .sales-paper .sales-paper-totals { margin-top: 14px; margin-left: auto; width: 62%; max-width: 320px; }
-    .sales-paper .sales-paper-totals div { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
-    .sales-paper .sales-paper-totals div.is-grand { border-top: 1px solid #111; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: 700; }
-    .sales-paper .sales-paper-note { margin-top: 18px; white-space: pre-wrap; }
-    .sales-paper .sales-paper-pay { margin-top: 18px; border: 1px solid #111; border-radius: 4px; padding: 10px 12px; }
-    .sales-paper .sales-paper-pay .sales-paper-note { margin-top: 6px; }
-    .sales-paper .sales-paper-sign { display: flex; justify-content: space-between; gap: 40px; margin-top: 44px; }
-    .sales-paper .sales-paper-sign div { flex: 1 1 0; border-top: 1px solid #999; padding-top: 6px; text-align: center; color: #666; font-size: 12px; }
+    .sales-paper { background: #fff; color: #1a1a1a; font-size: 13px; line-height: 1.55; }
+    .sales-paper .sp-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+    .sales-paper .sp-head-left { display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+    .sales-paper .sp-logo { width: 72px; height: 72px; object-fit: contain; flex: 0 0 auto; }
+    .sales-paper .sp-title { margin: 0; font-size: 26px; font-weight: 800; letter-spacing: -.01em; }
+    .sales-paper .sp-subtitle { color: #7a7a7a; font-size: 12.5px; margin-top: 2px; }
+    .sales-paper .sp-meta { display: grid; grid-template-columns: auto auto 1fr; gap: 5px 8px; font-size: 12.5px; white-space: nowrap; }
+    .sales-paper .sp-meta .k { color: #7a7a7a; }
+    .sales-paper .sp-meta .c { color: #bbb; }
+    .sales-paper .sp-meta .v { font-weight: 600; }
+    .sales-paper .sp-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 24px; }
+    .sales-paper .sp-parties > div + div { border-left: 1px solid #e6e6e6; padding-left: 30px; }
+    .sales-paper .sp-party-label { font-size: 12px; color: #7a7a7a; margin-bottom: 5px; }
+    .sales-paper .sp-party-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
+    .sales-paper .sp-kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 12.5px; align-items: start; }
+    .sales-paper .sp-kv .k { color: #7a7a7a; white-space: nowrap; }
+    .sales-paper .sp-kv .c { color: #bbb; }
+    .sales-paper .sp-rule { border-top: 1px solid #e6e6e6; margin: 20px 0; }
+    .sales-paper .sp-section-title { font-weight: 700; font-size: 15px; margin: 0 0 12px; }
+    .sales-paper .sp-highlight { display: flex; gap: 22px; align-items: flex-start; margin-bottom: 20px; }
+    .sales-paper .sp-highlight img { width: 46%; max-width: 88mm; border-radius: 8px; object-fit: cover; display: block; }
+    .sales-paper .sp-hl-text { flex: 1 1 0; min-width: 0; padding-top: 4px; }
+    .sales-paper .sp-hl-name { font-weight: 700; font-size: 16px; }
+    .sales-paper .sp-hl-desc { color: #7a7a7a; font-size: 13px; margin-top: 4px; }
+    .sales-paper .sp-chip { display: inline-block; margin-top: 10px; border: 1px solid #e2e2e2; border-radius: 6px; padding: 3px 10px; font-size: 12px; color: #555; background: #fafafa; }
+    .sales-paper .sp-table { width: 100%; border-collapse: collapse; border: 1px solid #e6e6e6; }
+    .sales-paper .sp-table th { background: #f5f6f7; font-weight: 600; font-size: 12.5px; color: #444; padding: 9px 12px; border: 1px solid #e6e6e6; text-align: left; }
+    .sales-paper .sp-table td { padding: 10px 12px; border: 1px solid #e6e6e6; font-size: 13px; }
+    .sales-paper .sp-table .num, .sales-paper .sp-table th.num { text-align: right; }
+    .sales-paper .sp-table .mid, .sales-paper .sp-table th.mid { text-align: center; }
+    .sales-paper .sp-totals { margin: 14px 0 0 auto; width: 64%; max-width: 310px; font-size: 13px; }
+    .sales-paper .sp-total-row { display: flex; justify-content: space-between; gap: 16px; padding: 4px 12px; }
+    .sales-paper .sp-total-grand { display: flex; justify-content: space-between; gap: 16px; align-items: center; padding: 11px 12px; margin-top: 7px; background: #e8f5ee; border-radius: 6px; font-weight: 700; }
+    .sales-paper .sp-total-grand strong { font-size: 17px; color: #147a4c; }
+    .sales-paper .sp-pay { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; border: 1px solid #cfe6d8; border-left: 3px solid #2a9d63; border-radius: 8px; padding: 12px 16px; margin-top: 22px; }
+    .sales-paper .sp-pay-title { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 13.5px; color: #1f6f47; margin-bottom: 8px; }
+    .sales-paper .sp-pay-title svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .sales-paper .sp-foot { display: flex; justify-content: space-between; gap: 32px; margin-top: 24px; }
+    .sales-paper .sp-notes { font-size: 12.5px; color: #555; flex: 1 1 auto; }
+    .sales-paper .sp-notes ul { margin: 6px 0 0; padding-left: 18px; }
+    .sales-paper .sp-notes li { margin-bottom: 3px; }
+    .sales-paper .sp-sign { min-width: 170px; align-self: flex-end; text-align: center; }
+    .sales-paper .sp-sign-line { border-top: 1px solid #bbb; padding-top: 7px; font-size: 12.5px; color: #555; }
     @page { size: A4; margin: 14mm; }
     @media print {
       html, body { height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; overflow: visible !important; }
@@ -553,7 +571,7 @@
       /* Keep a row whole and let long tables break between rows rather than through one. */
       .sales-paper tr { page-break-inside: avoid; }
       .sales-paper thead { display: table-header-group; }
-      .sales-paper .sales-paper-totals, .sales-paper .sales-paper-sign { page-break-inside: avoid; }
+      .sales-paper .sp-highlight, .sales-paper .sp-totals, .sales-paper .sp-pay, .sales-paper .sp-foot { page-break-inside: avoid; }
     }
     .view.active { display: grid; gap: 16px; }
     .dashboard-grid { display: grid; gap: 16px; }
@@ -4799,6 +4817,11 @@
     Object.assign(salesI18n.zh, { logo: "店铺标志", logoPick: "选择标志", logoClear: "移除", logoEmpty: "尚无标志", tagline: "标语", email: "邮箱", editShop: "编辑店铺信息", summary: "金额汇总", itemsTotal: "商品合计", itemNote: "备注", updatedAt: "最后保存", logoTooBig: "标志图片太大" });
     Object.assign(salesI18n.ja, { logo: "ショップロゴ", logoPick: "ロゴを選ぶ", logoClear: "削除", logoEmpty: "ロゴ未設定", tagline: "キャッチコピー", email: "メール", editShop: "事業者情報を編集", summary: "金額サマリー", itemsTotal: "商品計", itemNote: "備考", updatedAt: "最終保存", logoTooBig: "ロゴ画像が大きすぎます" });
     Object.assign(salesI18n.ko, { logo: "상점 로고", logoPick: "로고 선택", logoClear: "제거", logoEmpty: "로고 없음", tagline: "슬로건", email: "이메일", editShop: "사업자 정보 수정", summary: "금액 요약", itemsTotal: "상품 합계", itemNote: "비고", updatedAt: "마지막 저장", logoTooBig: "로고 이미지가 너무 큽니다" });
+    Object.assign(salesI18n.th, { issuer: "ผู้ออกเอกสาร", itemDetails: "รายละเอียดสินค้า", itemCode: "รหัสสินค้า", payChannel: "ช่องทางการชำระเงิน", thanksSign: "ขอบคุณที่ใช้บริการ", subQT: "ขอบคุณที่ให้ความสนใจในบริการของเรา", subPAY: "ขอบคุณที่ไว้วางใจใช้บริการกับเรา", subRC: "ขอบคุณสำหรับการชำระเงิน", subDN: "ขอบคุณที่ใช้บริการ", noteQT1: "ราคานี้ยืนราคาถึงวันที่ระบุไว้ด้านบน", noteQT2: "กรุณาแจ้งยืนยันเพื่อให้เราเริ่มงานได้ทันที", notePAY1: "กรุณาชำระเงินภายในวันที่กำหนด เพื่อให้การจัดส่งเป็นไปตามกำหนด", notePAY2: "หากชำระเงินแล้ว กรุณาแจ้งหลักฐานการโอนผ่านช่องทางที่สะดวก" });
+    Object.assign(salesI18n.en, { issuer: "Issued by", itemDetails: "Item details", itemCode: "Item code", payChannel: "How to pay", thanksSign: "Thank you for your business", subQT: "Thank you for considering us", subPAY: "Thank you for trusting us with your work", subRC: "Thank you for your payment", subDN: "Thank you for your business", noteQT1: "This price holds until the date shown above", noteQT2: "Let us know and we will start straight away", notePAY1: "Please pay by the due date so delivery stays on schedule", notePAY2: "Once paid, send us the transfer slip however suits you" });
+    Object.assign(salesI18n.zh, { issuer: "开单方", itemDetails: "商品明细", itemCode: "商品编号", payChannel: "付款方式", thanksSign: "感谢惠顾", subQT: "感谢您的关注", subPAY: "感谢您信任并选择我们", subRC: "感谢您的付款", subDN: "感谢惠顾", noteQT1: "此价格有效期至上方所示日期", noteQT2: "确认后我们即可安排开工", notePAY1: "请在到期日前付款，以便按时发货", notePAY2: "付款后请通过方便的渠道发送转账凭证" });
+    Object.assign(salesI18n.ja, { issuer: "発行者", itemDetails: "商品明細", itemCode: "商品コード", payChannel: "お支払い方法", thanksSign: "ご利用ありがとうございます", subQT: "ご検討いただきありがとうございます", subPAY: "ご用命いただきありがとうございます", subRC: "ご入金ありがとうございました", subDN: "ご利用ありがとうございます", noteQT1: "この価格は上記の期日まで有効です", noteQT2: "ご確認いただければすぐに着手いたします", notePAY1: "納期どおりの発送のため、期日までにお支払いください", notePAY2: "お支払い後、振込控えをご都合のよい方法でお知らせください" });
+    Object.assign(salesI18n.ko, { issuer: "발행자", itemDetails: "상품 상세", itemCode: "상품 코드", payChannel: "결제 방법", thanksSign: "이용해 주셔서 감사합니다", subQT: "관심 가져 주셔서 감사합니다", subPAY: "믿고 맡겨 주셔서 감사합니다", subRC: "결제해 주셔서 감사합니다", subDN: "이용해 주셔서 감사합니다", noteQT1: "이 가격은 위에 적힌 날짜까지 유효합니다", noteQT2: "확인해 주시면 바로 작업을 시작하겠습니다", notePAY1: "배송 일정을 지킬 수 있도록 기한 내에 결제해 주세요", notePAY2: "결제 후 편한 방법으로 이체 증빙을 보내주세요" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8787,7 +8810,7 @@
     const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
 
     function salesItem(patch) {
-      return { name: "", note: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
+      return { name: "", note: "", code: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
     }
 
     function salesSettings() {
@@ -9299,7 +9322,10 @@
               ${salesItemThumb(item, doc)}
               <div class="sales-item-text">
                 <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
-                ${item.fromOrder && doc.orderName ? `<span class="sales-item-from">${escapeHtml(salesText("refOrder"))} ${escapeHtml(doc.orderName)}</span>` : ""}
+                <div class="sales-item-sub">
+                  <input type="text" class="sales-item-code" data-sales-field="code" value="${escapeHtml(item.code || "")}" placeholder="${escapeHtml(salesText("itemCode"))}">
+                  ${item.fromOrder && doc.orderName ? `<span class="sales-item-from">${escapeHtml(salesText("refOrder"))} ${escapeHtml(doc.orderName)}</span>` : ""}
+                </div>
               </div>
             </div>
           </td>
@@ -9469,106 +9495,138 @@
       const photo = doc.showImage === false ? "" : salesImageData(doc);
       const settings = salesSettings();
       const logo = salesLogoData || "";
-      // Account details belong on the paper only when the customer is transferring.
-      const bankSource = hasBankDetails(doc.bank) ? doc.bank : salesSettings().bank;
+      const bankSource = hasBankDetails(doc.bank) ? doc.bank : settings.bank;
       const bank = normalizedPayMethod(doc.payMethod) === "transfer" && hasBankDetails(bankSource) ? bankSource : null;
-      const line = (label, value) => value ? `<div>${escapeHtml(label)}: ${escapeHtml(value)}</div>` : "";
+      const type = SALES_TYPE_KEYS[doc.type] ? doc.type : "QT";
+
+      const kv = (label, value) => value
+        ? `<div class="k">${escapeHtml(label)}</div><div class="v">${escapeHtml(String(value)).replace(/\n/g, "<br>")}</div>`
+        : "";
+      const meta = (label, value) => value
+        ? `<div class="k">${escapeHtml(label)}</div><div class="c">:</div><div class="v">${escapeHtml(value)}</div>`
+        : "";
+
+      const party = (label, name, rows) => `
+        <div>
+          <div class="sp-party-label">${escapeHtml(label)}</div>
+          <div class="sp-party-name">${escapeHtml(name || "-")}</div>
+          <div class="sp-kv">${rows}</div>
+        </div>`;
+
+      // The job itself, shown once and large, above the priced lines.
+      const lead = visible[0];
+      const showLead = lead && (photo || lead.note || lead.code);
+      const highlight = showLead ? `
+        <div class="sp-section-title">${escapeHtml(salesText("itemDetails"))}</div>
+        <div class="sp-highlight">
+          ${photo ? `<img src="${photo}" alt="">` : ""}
+          <div class="sp-hl-text">
+            <div class="sp-hl-name">${escapeHtml(lead.name || "")}</div>
+            ${lead.note ? `<div class="sp-hl-desc">${escapeHtml(lead.note)}</div>` : ""}
+            ${lead.code ? `<div class="sp-chip">${escapeHtml(salesText("itemCode"))}: ${escapeHtml(lead.code)}</div>` : ""}
+          </div>
+        </div>` : "";
 
       const rows = visible.map((item) => `
         <tr>
-          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}${item.note ? `<span class="sales-paper-detail">${escapeHtml(item.note)}</span>` : ""}</td>
-          <td class="num">${Number(item.qty) || 0}</td>
+          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}</td>
+          <td class="mid">${Number(item.qty) || 0}</td>
           <td class="num">${item.freebie ? "-" : money.format(Number(item.unitPrice) || 0)}</td>
           <td class="num">${money.format(salesLineTotal(item))}</td>
         </tr>`).join("");
 
+      // A blank row reads better than a missing one on a printed document.
+      const totalRow = (label, value, always) => (value || always)
+        ? `<div class="sp-total-row"><span>${escapeHtml(label)}</span><span>${value ? money.format(value) : "-"}</span></div>`
+        : "";
+
+      const noteLines = String(doc.note || "").split("\n").map((line) => line.trim()).filter(Boolean);
+      const fallback = type === "PAY"
+        ? [salesText("notePAY1"), salesText("notePAY2")]
+        : (type === "QT" ? [salesText("noteQT1"), salesText("noteQT2")] : []);
+      const notes = noteLines.length ? noteLines : fallback;
+
+      const bankIcon = '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg>';
+      const dateIcon = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4"/><path d="M8 3v4"/><path d="M3 11h18"/></svg>';
+
       return `
-        <div class="sales-paper-head">
-          <div>
-            ${logo ? `<img class="sales-paper-logo" src="${logo}" alt="">` : ""}
-            <h1>${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}</h1>
-            <div class="sales-paper-name">${escapeHtml(doc.seller.name || "")}</div>
-            ${settings.seller.tagline ? `<div class="sales-paper-tagline">${escapeHtml(settings.seller.tagline)}</div>` : ""}
-            ${line(salesText("fPhone"), doc.seller.phone)}
-            ${line(salesText("fAddress"), doc.seller.address)}
-            ${line(salesText("fTaxId"), doc.seller.taxId)}
-            ${line(salesText("email"), settings.seller.email)}
+        <div class="sp-head">
+          <div class="sp-head-left">
+            ${logo ? `<img class="sp-logo" src="${logo}" alt="">` : ""}
+            <div>
+              <h1 class="sp-title">${escapeHtml(salesText(SALES_TYPE_KEYS[type]))}</h1>
+              <div class="sp-subtitle">${escapeHtml(salesText("sub" + type))}</div>
+            </div>
           </div>
-          <div style="text-align:right;white-space:nowrap">
-            ${line(salesText("docNo"), doc.number)}
-            ${line(salesText("docDate"), doc.date)}
-            ${doc.type === "QT" ? line(salesText("validUntil"), doc.validUntil) : ""}
+          <div class="sp-meta">
+            ${meta(salesText("docNo"), doc.number)}
+            ${meta(salesText(type === "QT" ? "docDate" : "issueDate"), doc.date)}
+            ${type === "QT" ? meta(salesText("validUntil"), doc.validUntil) : meta(salesText("dueDate"), doc.dueDate)}
           </div>
         </div>
-        <div class="sales-paper-parties">
-          <div class="sales-paper-block">
-            <div class="sales-paper-label">${escapeHtml(salesText("customerInfo"))}</div>
-            <div class="sales-paper-name">${escapeHtml(doc.customer.name || "")}</div>
-            ${line(salesText("fPhone"), doc.customer.phone)}
-            ${line(salesText("fAddress"), doc.customer.address)}
-            ${line(salesText("fTaxId"), doc.customer.taxId)}
-          </div>
+
+        <div class="sp-parties">
+          ${party(salesText("issuer"), doc.seller.name, [
+            kv(salesText("fPhone"), doc.seller.phone),
+            kv(salesText("email"), settings.seller.email),
+            kv(salesText("fAddress"), doc.seller.address),
+            kv(salesText("fTaxId"), doc.seller.taxId)
+          ].join(""))}
+          ${party(salesText("customerInfo"), doc.customer.name, [
+            kv(salesText("fPhone"), doc.customer.phone),
+            kv(salesText("fAddress"), doc.customer.address),
+            kv(salesText("fTaxId"), doc.customer.taxId)
+          ].join(""))}
         </div>
-        ${photo ? `<div class="sales-paper-photo"><img src="${photo}" alt=""></div>` : ""}
-        <table>
+
+        <div class="sp-rule"></div>
+        ${highlight}
+
+        <table class="sp-table">
           <thead><tr>
             <th>${escapeHtml(salesText("itemName"))}</th>
-            <th class="num">${escapeHtml(salesText("qty"))}</th>
+            <th class="mid">${escapeHtml(salesText("qty"))}</th>
             <th class="num">${escapeHtml(salesText("unitPrice"))}</th>
             <th class="num">${escapeHtml(salesText("lineTotal"))}</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <div class="sales-paper-totals">
-          <div><span>${escapeHtml(salesText("subtotal"))}</span><span>${money.format(totals.subtotal)}</span></div>
-          ${totals.discount ? `<div><span>${escapeHtml(salesText("discount"))}</span><span>-${money.format(totals.discount)}</span></div>` : ""}
-          ${totals.shipping ? `<div><span>${escapeHtml(salesText("shipping"))}</span><span>${money.format(totals.shipping)}</span></div>` : ""}
-          ${doc.vat ? `<div><span>${escapeHtml(salesText("vat"))}</span><span>${money.format(totals.vat)}</span></div>` : ""}
-          <div class="is-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><span>${money.format(totals.total)}</span></div>
+
+        <div class="sp-totals">
+          ${totalRow(salesText("itemsTotal"), totals.subtotal, true)}
+          ${totalRow(salesText("shipping"), totals.shipping, true)}
+          ${totalRow(salesText("discount"), totals.discount, true)}
+          ${doc.vat ? totalRow(salesText("vat"), totals.vat, true) : ""}
+          <div class="sp-total-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><strong>${money.format(totals.total)}</strong></div>
         </div>
-        ${doc.type === "PAY" ? `<div class="sales-paper-pay">
-          ${doc.dueDate ? `<div><strong>${escapeHtml(salesText("dueDate"))}:</strong> ${escapeHtml(doc.dueDate)}</div>` : ""}
-          <div><strong>${escapeHtml(salesText("payMethod"))}:</strong> ${escapeHtml(salesPayMethodLabel(doc.payMethod))}</div>
-          ${bank ? `<div class="sales-paper-bank"><strong>${escapeHtml(salesText("payTo"))}</strong>
-            ${bank.bankName ? `<div><span>${escapeHtml(salesText("bankName"))}</span><span>${escapeHtml(bank.bankName)}</span></div>` : ""}
-            ${bank.accountName ? `<div><span>${escapeHtml(salesText("bankAccountName"))}</span><span>${escapeHtml(bank.accountName)}</span></div>` : ""}
-            ${bank.accountNo ? `<div><span>${escapeHtml(salesText("bankAccountNo"))}</span><span>${escapeHtml(bank.accountNo)}</span></div>` : ""}
+
+        ${type === "PAY" ? `
+        <div class="sp-pay">
+          <div>
+            <div class="sp-pay-title">${bankIcon}${escapeHtml(salesText("payChannel"))}</div>
+            <div class="sp-kv">
+              ${bank ? [
+                meta(salesText("bankName"), bank.bankName),
+                meta(salesText("bankAccountName"), bank.accountName),
+                meta(salesText("bankAccountNo"), bank.accountNo)
+              ].join("") : meta(salesText("payMethod"), salesPayMethodLabel(doc.payMethod))}
+            </div>
+          </div>
+          ${doc.dueDate ? `<div>
+            <div class="sp-pay-title">${dateIcon}${escapeHtml(salesText("dueDate"))}</div>
+            <div>${escapeHtml(doc.dueDate)}</div>
           </div>` : ""}
         </div>` : ""}
-        ${doc.note ? `<div class="sales-paper-note">${escapeHtml(doc.note)}</div>` : ""}
-        <div class="sales-paper-sign">
-          <div>${escapeHtml(doc.seller.name || salesText("shopInfo"))}</div>
-          <div>${escapeHtml(doc.customer.name || salesText("customerInfo"))}</div>
+
+        <div class="sp-foot">
+          <div class="sp-notes">
+            ${notes.length ? `<strong>${escapeHtml(salesText("note"))}</strong><ul>${notes.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>` : ""}
+          </div>
+          <div class="sp-sign">
+            <div class="sp-sign-line">${escapeHtml(salesText("thanksSign"))}<br>${escapeHtml(doc.seller.name || "")}</div>
+          </div>
         </div>`;
     }
-
-    function fitSalesPreview() {
-      const scroll = $("salesPreviewScroll");
-      const stage = $("salesPreviewStage");
-      const page = $("salesPreviewPaper");
-      if (!scroll || !stage || !page) return;
-      page.style.transform = "none";
-      const width = page.offsetWidth;
-      const height = page.offsetHeight;
-      if (!width) return;
-      const scale = Math.min(1, Math.max(160, scroll.clientWidth - 36) / width);
-      page.style.transform = `scale(${scale})`;
-      stage.style.width = `${width * scale}px`;
-      stage.style.height = `${height * scale}px`;
-    }
-
-    function openSalesPreview() {
-      readSalesForm();
-      const paper = $("salesPreviewPaper");
-      if (paper) paper.innerHTML = salesPaperHtml(salesUi.draft);
-      openSalesModal("salesPreviewModal");
-      requestAnimationFrame(fitSalesPreview);
-    }
-
-    window.addEventListener("resize", () => {
-      const modal = $("salesPreviewModal");
-      if (modal && modal.classList.contains("show")) fitSalesPreview();
-    });
 
     const SALES_PAY_METHODS = [["transfer", "payTransfer"], ["cash", "payCash"], ["other", "payOther"]];
 
@@ -9624,6 +9682,34 @@
       openSalesEditor(bill, false);
       showToast(salesText("paymentCreated"));
     }
+
+    function fitSalesPreview() {
+      const scroll = $("salesPreviewScroll");
+      const stage = $("salesPreviewStage");
+      const page = $("salesPreviewPaper");
+      if (!scroll || !stage || !page) return;
+      page.style.transform = "none";
+      const width = page.offsetWidth;
+      const height = page.offsetHeight;
+      if (!width) return;
+      const scale = Math.min(1, Math.max(160, scroll.clientWidth - 36) / width);
+      page.style.transform = `scale(${scale})`;
+      stage.style.width = `${width * scale}px`;
+      stage.style.height = `${height * scale}px`;
+    }
+
+    function openSalesPreview() {
+      readSalesForm();
+      const paper = $("salesPreviewPaper");
+      if (paper) paper.innerHTML = salesPaperHtml(salesUi.draft);
+      openSalesModal("salesPreviewModal");
+      requestAnimationFrame(fitSalesPreview);
+    }
+
+    window.addEventListener("resize", () => {
+      const modal = $("salesPreviewModal");
+      if (modal && modal.classList.contains("show")) fitSalesPreview();
+    });
 
     function printSalesDoc() {
       if (!salesUi.draft) return;
