@@ -370,16 +370,110 @@
     .tab { background: transparent; color: #445149; padding: 0 13px; }
     .tab.active { background: var(--panel); color: var(--ink); box-shadow: 0 4px 12px rgba(34,46,39,.08); }
     .view { display: none; }
-    .quote-doc { display: none; }
-    .quote-line { display: grid; grid-template-columns: 1fr 70px 110px 110px; gap: 8px; align-items: center; }
-    .quote-hidden-row { opacity: .62; }
+    #salesView [hidden] { display: none !important; }
+    .sales-check { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; font-size: 14px; }
+    .sales-check input { width: auto; }
+    .sales-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+    .sales-toolbar .field { flex: 1 1 260px; margin: 0; }
+    .sales-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sales-filter { border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 7px 15px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .sales-filter:hover { border-color: var(--accent); color: var(--ink); }
+    .sales-filter.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+    .sales-table { width: 100%; border-collapse: collapse; }
+    .sales-table th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; padding: 0 10px 10px; border-bottom: 1px solid var(--line); }
+    .sales-table td { padding: 13px 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+    .sales-table tr:last-child td { border-bottom: 0; }
+    .sales-table .num { text-align: right; white-space: nowrap; }
+    .sales-doc-no { font-weight: 700; color: var(--ink); }
+    .sales-doc-sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .sales-badge { display: inline-block; border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 700; white-space: nowrap; background: var(--control); color: var(--control-ink); }
+    .sales-badge.is-draft { background: var(--control); color: var(--control-ink); }
+    .sales-badge.is-sent { background: rgba(67, 111, 246, .14); color: var(--teal); }
+    .sales-badge.is-accepted, .sales-badge.is-paid { background: rgba(32, 184, 150, .16); color: var(--green); }
+    .sales-badge.is-rejected, .sales-badge.is-cancelled { background: rgba(184, 64, 64, .12); color: var(--red); }
+    .sales-badge.is-waiting { background: rgba(240, 170, 40, .18); color: #9a6b04; }
+    .sales-empty { color: var(--muted); padding: 26px 4px; text-align: center; }
+    .sales-editor-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .sales-editor-head h2 { margin: 0; }
+    .sales-editor-no { color: var(--muted); font-weight: 600; }
+    .sales-ref { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
+    .sales-ref button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
+    .sales-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .sales-col { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; background: var(--panel-head); }
+    .sales-col h3 { margin: 0 0 10px; font-size: 14px; }
+    .sales-col .field { margin: 0 0 10px; }
+    .sales-col .field:last-child { margin-bottom: 0; }
+    .sales-section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 22px 0 10px; }
+    .sales-section-head h3 { margin: 0; font-size: 15px; }
+    .sales-items-wrap { overflow-x: auto; }
+    .sales-items { width: 100%; border-collapse: collapse; min-width: 720px; }
+    .sales-items th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 8px 8px; }
+    .sales-items th.num, .sales-items td.num { text-align: right; }
+    .sales-items th.mid, .sales-items td.mid { text-align: center; }
+    .sales-items td { padding: 6px 8px; border-top: 1px solid var(--line); vertical-align: middle; }
+    .sales-items input[type="text"], .sales-items input[type="number"] { width: 100%; }
+    .sales-items .sales-line-total { font-weight: 700; white-space: nowrap; }
+    .sales-items tr.is-hidden-line { background: rgba(184, 64, 64, .05); }
+    .sales-items tr.is-hidden-line td:first-child::after { content: attr(data-hidden-tag); display: block; font-size: 11px; color: var(--red); margin-top: 3px; }
+    .sales-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); gap: 18px; margin-top: 18px; align-items: start; }
+    .sales-totals { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--panel-head); }
+    .sales-total-row { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; font-size: 14px; }
+    .sales-total-row.grand { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 10px; font-size: 17px; font-weight: 700; color: var(--ink); }
+    .sales-internal { border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px 16px; margin-top: 12px; background: transparent; }
+    .sales-internal-title { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
+    .sales-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+    .sales-actions .spacer { flex: 1 1 auto; }
+    .sales-pick-list { display: grid; gap: 8px; max-height: 46vh; overflow-y: auto; }
+    .sales-pick-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--radius); padding: 11px 14px; cursor: pointer; background: var(--panel); text-align: left; font: inherit; color: inherit; width: 100%; }
+    .sales-pick-row:hover { border-color: var(--accent); }
+    .sales-pick-row.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(67, 111, 246, .18); }
+    .sales-pick-name { font-weight: 700; }
+    .sales-pick-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .sales-choice { display: grid; gap: 10px; }
+    .sales-choice button { text-align: left; }
+    .sales-preview-box { max-width: 900px; width: 100%; max-height: 88vh; display: flex; flex-direction: column; }
+    .sales-preview-scroll { overflow: auto; padding: 16px; background: #eef1f6; }
+    @media (max-width: 900px) {
+      .sales-cols { grid-template-columns: 1fr; }
+      .sales-foot { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .sales-table thead { display: none; }
+      .sales-table tr { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 2px; border-bottom: 1px solid var(--line); }
+      .sales-table td { display: block; border: 0; padding: 0; }
+      .sales-table td.num, .sales-table td:last-child { text-align: right; }
+    }
+
+    /* The customer's copy. Only #salesPrintDoc reaches paper, and it is rebuilt
+       from a filtered item list, so an invisible line cannot leak into print. */
+    .sales-doc { display: none; }
+    .sales-paper { background: #fff; color: #111; font-size: 13px; line-height: 1.55; }
+    .sales-paper h1 { font-size: 22px; margin: 0 0 2px; letter-spacing: .02em; }
+    .sales-paper .sales-paper-head { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 14px; }
+    .sales-paper .sales-paper-parties { display: flex; justify-content: space-between; gap: 28px; margin-bottom: 16px; }
+    .sales-paper .sales-paper-block { flex: 1 1 0; min-width: 0; }
+    .sales-paper .sales-paper-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #666; margin-bottom: 3px; }
+    .sales-paper .sales-paper-name { font-weight: 700; }
+    .sales-paper table { width: 100%; border-collapse: collapse; }
+    .sales-paper th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #444; border-bottom: 1px solid #111; padding: 6px 6px; }
+    .sales-paper td { border-bottom: 1px solid #e2e2e2; padding: 7px 6px; vertical-align: top; }
+    .sales-paper td.num, .sales-paper th.num { text-align: right; white-space: nowrap; }
+    .sales-paper .sales-paper-detail { display: block; color: #666; font-size: 12px; margin-top: 2px; }
+    .sales-paper .sales-paper-totals { margin-top: 14px; margin-left: auto; width: 62%; max-width: 320px; }
+    .sales-paper .sales-paper-totals div { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
+    .sales-paper .sales-paper-totals div.grand { border-top: 1px solid #111; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: 700; }
+    .sales-paper .sales-paper-note { margin-top: 18px; white-space: pre-wrap; }
+    .sales-paper .sales-paper-sign { display: flex; justify-content: space-between; gap: 40px; margin-top: 44px; }
+    .sales-paper .sales-paper-sign div { flex: 1 1 0; border-top: 1px solid #999; padding-top: 6px; text-align: center; color: #666; font-size: 12px; }
+    @page { size: A4; margin: 14mm; }
     @media print {
       body * { visibility: hidden; }
-      #quotePrintDoc, #quotePrintDoc * { visibility: visible; }
-      #quotePrintDoc { display: block; position: absolute; inset: 0; margin: 0; padding: 24px; background: #fff; color: #111; }
-      .quote-print-table { width: 100%; border-collapse: collapse; }
-      .quote-print-table th, .quote-print-table td { border-bottom: 1px solid #ddd; padding: 8px 6px; text-align: left; }
-      .quote-print-table td.num, .quote-print-table th.num { text-align: right; }
+      #salesPrintDoc, #salesPrintDoc * { visibility: visible; }
+      #salesPrintDoc { display: block; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: #fff; }
+      /* Keep a row whole and let long tables break between rows rather than through one. */
+      .sales-paper tr { page-break-inside: avoid; }
+      .sales-paper thead { display: table-header-group; }
+      .sales-paper .sales-paper-totals, .sales-paper .sales-paper-sign { page-break-inside: avoid; }
     }
     .view.active { display: grid; gap: 16px; }
     .dashboard-grid { display: grid; gap: 16px; }
@@ -2135,9 +2229,9 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l2 4v14H4V7z"/><path d="M6 7h12"/><path d="M8 11h8"/><path d="M8 15h6"/></svg>
             <span class="side-label" data-side-label="orders">Orders</span>
           </button>
-          <button class="tab" data-tab="quotesView" type="button">
-            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
-            <span class="side-label" data-side-label="quotes">Quotes</span>
+          <button class="tab" data-tab="salesView" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M15 2v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/><path d="M9 9h2"/></svg>
+            <span class="side-label" data-side-label="sales">Sales documents</span>
           </button>
           <button class="tab side-nav-help" id="helpBtn" type="button">
             <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
@@ -2791,71 +2885,129 @@
           </div>
         </section>
 
-        <section id="quotesView" class="view">
-          <div class="card">
-            <div class="card-head">
-              <h2 id="quotesTitle">Quotations</h2>
-              <button class="btn" id="quoteNewBtn" type="button">New quote</button>
+        <section id="salesView" class="view">
+          <div class="panel" id="salesHome">
+            <div class="panel-head">
+              <h2 id="salesTitle">Sales documents</h2>
+              <button class="btn-primary" type="button" id="salesNewBtn">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                <span id="salesNewText">New quotation</span>
+              </button>
             </div>
-
-            <div class="grid-2">
-              <div>
-                <h3 id="quoteSellerTitle">Your details</h3>
-                <input id="quoteSellerName" type="text" placeholder="Name">
-                <input id="quoteSellerPhone" type="text" placeholder="Phone">
-                <input id="quoteSellerAddress" type="text" placeholder="Address">
-                <input id="quoteSellerTaxId" type="text" placeholder="Tax ID">
+            <div class="panel-body">
+              <div class="sales-toolbar">
+                <div class="field">
+                  <input id="salesSearch" type="search" autocomplete="off" placeholder="Search">
+                </div>
+                <div class="sales-filters" id="salesFilters">
+                  <button class="sales-filter active" type="button" data-sales-filter="all">All</button>
+                  <button class="sales-filter" type="button" data-sales-filter="quote">Quotations</button>
+                  <button class="sales-filter" type="button" data-sales-filter="waiting">Awaiting payment</button>
+                  <button class="sales-filter" type="button" data-sales-filter="paid">Paid</button>
+                </div>
               </div>
-              <div>
-                <h3 id="quoteCustomerTitle">Customer</h3>
-                <input id="quoteCustomerName" type="text" placeholder="Name">
-                <input id="quoteCustomerPhone" type="text" placeholder="Phone">
-                <input id="quoteCustomerAddress" type="text" placeholder="Address">
-                <input id="quoteCustomerTaxId" type="text" placeholder="Tax ID">
-              </div>
-            </div>
-
-            <div class="grid-3">
-              <label><span id="quoteNoLabel">Number</span><input id="quoteNo" type="text"></label>
-              <label><span id="quoteDateLabel">Date</span><input id="quoteDate" type="date"></label>
-              <label><span id="quoteValidLabel">Valid until</span><input id="quoteValidUntil" type="date"></label>
-            </div>
-
-            <div class="card-head">
-              <h3 id="quoteItemsTitle">Items</h3>
-              <div>
-                <select id="quoteOrderPick"></select>
-                <button class="btn" id="quoteAddOrderBtn" type="button">Add from order</button>
-                <button class="btn" id="quoteAddItemBtn" type="button">Add item</button>
-              </div>
-            </div>
-            <p class="hint" id="quoteHiddenHint"></p>
-            <div id="quoteItemList"></div>
-
-            <div class="grid-3">
-              <label><span id="quoteShippingLabel">Shipping</span><input id="quoteShipping" type="number" min="0" step="0.01" value="0"></label>
-              <label><span id="quoteDiscountLabel">Discount</span><input id="quoteDiscount" type="number" min="0" step="0.01" value="0"></label>
-              <label class="checkline"><input id="quoteVat" type="checkbox"><span id="quoteVatLabel">VAT 7%</span></label>
-            </div>
-
-            <label><span id="quoteNoteLabel">Notes</span><textarea id="quoteNote" rows="2"></textarea></label>
-
-            <div id="quoteTotals"></div>
-            <div id="quoteInternalBox"></div>
-
-            <div class="card-head">
-              <button class="btn primary" id="quoteSaveBtn" type="button">Save quote</button>
-              <button class="btn" id="quotePrintBtn" type="button">Print / Save as PDF</button>
+              <div id="salesList"></div>
             </div>
           </div>
 
-          <div class="card">
-            <h3 id="quoteSavedTitle">Saved quotes</h3>
-            <div id="quoteSavedList"></div>
+          <div class="panel" id="salesEditor" hidden>
+            <div class="panel-head">
+              <div class="sales-editor-head">
+                <button class="btn-ghost" type="button" id="salesBackBtn">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+                  <span id="salesBackText">Back</span>
+                </button>
+                <h2 id="salesEditorTitle">Quotation</h2>
+                <span class="sales-editor-no" id="salesEditorNo"></span>
+                <span class="sales-badge" id="salesEditorStatus"></span>
+              </div>
+              <button class="btn-danger" type="button" id="salesDeleteBtn">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+                <span id="salesDeleteText">Delete</span>
+              </button>
+            </div>
+            <div class="panel-body">
+              <p class="sales-ref" id="salesRefLine" hidden></p>
+              <p class="hint" id="salesLockedHint" hidden></p>
+
+              <div class="sales-cols">
+                <div class="sales-col">
+                  <h3 id="salesShopTitle">Your shop</h3>
+                  <div class="field"><label for="salesSellerName" id="salesSellerNameLabel">Name</label><input id="salesSellerName" type="text"></div>
+                  <div class="field"><label for="salesSellerPhone" id="salesSellerPhoneLabel">Phone</label><input id="salesSellerPhone" type="text"></div>
+                  <div class="field"><label for="salesSellerAddress" id="salesSellerAddressLabel">Address</label><textarea id="salesSellerAddress" rows="2"></textarea></div>
+                  <div class="field"><label for="salesSellerTaxId" id="salesSellerTaxIdLabel">Tax ID</label><input id="salesSellerTaxId" type="text"></div>
+                </div>
+                <div class="sales-col">
+                  <h3 id="salesCustomerTitle">Customer</h3>
+                  <div class="field"><label for="salesCustomerName" id="salesCustomerNameLabel">Name</label><input id="salesCustomerName" type="text"></div>
+                  <div class="field"><label for="salesCustomerPhone" id="salesCustomerPhoneLabel">Phone</label><input id="salesCustomerPhone" type="text"></div>
+                  <div class="field"><label for="salesCustomerAddress" id="salesCustomerAddressLabel">Address</label><textarea id="salesCustomerAddress" rows="2"></textarea></div>
+                  <div class="field"><label for="salesCustomerTaxId" id="salesCustomerTaxIdLabel">Tax ID</label><input id="salesCustomerTaxId" type="text"></div>
+                </div>
+                <div class="sales-col">
+                  <h3 id="salesDocTitle">Document</h3>
+                  <div class="field"><label for="salesDocNo" id="salesDocNoLabel">Number</label><input id="salesDocNo" type="text"></div>
+                  <div class="field"><label for="salesDocDate" id="salesDocDateLabel">Date</label><input id="salesDocDate" type="date"></div>
+                  <div class="field"><label for="salesValidUntil" id="salesValidUntilLabel">Valid until</label><input id="salesValidUntil" type="date"></div>
+                </div>
+              </div>
+
+              <div class="sales-section-head">
+                <h3 id="salesItemsTitle">Items</h3>
+                <button class="btn-secondary" type="button" id="salesAddItemBtn">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                  <span id="salesAddItemText">Add item</span>
+                </button>
+              </div>
+              <p class="hint" id="salesHiddenHint"></p>
+              <div class="sales-items-wrap">
+                <table class="sales-items">
+                  <thead>
+                    <tr>
+                      <th id="salesThName">Item</th>
+                      <th class="num" id="salesThQty">Qty</th>
+                      <th class="num" id="salesThPrice">Unit price</th>
+                      <th class="num" id="salesThCost">Cost</th>
+                      <th class="num" id="salesThTotal">Amount</th>
+                      <th class="mid" id="salesThFree">Free</th>
+                      <th class="mid" id="salesThVisible">Customer sees</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="salesItemRows"></tbody>
+                </table>
+              </div>
+              <p class="sales-empty" id="salesItemsEmpty" hidden></p>
+
+              <div class="sales-foot">
+                <div class="field">
+                  <label for="salesNote" id="salesNoteLabel">Notes</label>
+                  <textarea id="salesNote" rows="5"></textarea>
+                </div>
+                <div>
+                  <div class="grid-2">
+                    <div class="field"><label for="salesShipping" id="salesShippingLabel">Shipping</label><input id="salesShipping" type="number" min="0" step="0.01" value="0"></div>
+                    <div class="field"><label for="salesDiscount" id="salesDiscountLabel">Discount</label><input id="salesDiscount" type="number" min="0" step="0.01" value="0"></div>
+                  </div>
+                  <label class="sales-check"><input id="salesVat" type="checkbox"><span id="salesVatLabel">VAT 7%</span></label>
+                  <div class="sales-totals" id="salesTotals"></div>
+                  <div class="sales-internal" id="salesInternal"></div>
+                </div>
+              </div>
+
+              <div class="sales-actions">
+                <button class="btn-primary" type="button" id="salesSaveBtn">Save</button>
+                <button class="btn-secondary" type="button" id="salesPreviewBtn">Preview</button>
+                <button class="btn-secondary" type="button" id="salesPrintBtn">Print / PDF</button>
+                <span class="spacer"></span>
+                <button class="btn-secondary" type="button" id="salesMarkSentBtn">Mark as sent</button>
+                <button class="btn-primary" type="button" id="salesMarkAcceptedBtn">Customer accepted</button>
+                <button class="btn-ghost" type="button" id="salesMarkRejectedBtn">Rejected</button>
+              </div>
+            </div>
           </div>
         </section>
-
-        <div id="quotePrintDoc" class="quote-doc"></div>
       </section>
     </main>
       </div>
@@ -2890,6 +3042,62 @@
       </div>
     </div>
   </div>
+  <div class="feedback-modal" id="salesChoiceModal" role="dialog" aria-modal="true" aria-labelledby="salesChoiceTitle">
+    <div class="feedback-box">
+      <div class="panel-head">
+        <h2 id="salesChoiceTitle">Create a quotation from</h2>
+        <button class="btn-ghost" type="button" data-sales-close="salesChoiceModal" title="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="panel-body">
+        <div class="sales-choice">
+          <button class="btn-secondary" type="button" id="salesChoiceOrder">Pick an order</button>
+          <button class="btn-secondary" type="button" id="salesChoiceBlank">Enter items manually</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback-modal" id="salesOrderModal" role="dialog" aria-modal="true" aria-labelledby="salesOrderModalTitle">
+    <div class="feedback-box">
+      <div class="panel-head">
+        <h2 id="salesOrderModalTitle">Choose an order</h2>
+        <button class="btn-ghost" type="button" data-sales-close="salesOrderModal" title="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="panel-body stack">
+        <div class="field"><input id="salesOrderSearch" type="search" autocomplete="off" placeholder="Search"></div>
+        <div class="sales-pick-list" id="salesOrderList"></div>
+        <div class="feedback-actions">
+          <button class="btn-secondary" type="button" data-sales-close="salesOrderModal" id="salesOrderCancel">Cancel</button>
+          <button class="btn-primary" type="button" id="salesOrderUse">Use this order</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback-modal" id="salesPreviewModal" role="dialog" aria-modal="true" aria-labelledby="salesPreviewTitle">
+    <div class="feedback-box sales-preview-box">
+      <div class="panel-head">
+        <h2 id="salesPreviewTitle">Preview</h2>
+        <button class="btn-ghost" type="button" data-sales-close="salesPreviewModal" title="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="sales-preview-scroll"><div class="sales-paper" id="salesPreviewPaper" style="padding:26px;box-shadow:0 6px 24px rgba(0,0,0,.14)"></div></div>
+      <div class="panel-body">
+        <div class="feedback-actions">
+          <button class="btn-secondary" type="button" data-sales-close="salesPreviewModal" id="salesPreviewClose">Close</button>
+          <button class="btn-primary" type="button" id="salesPreviewPrint">Print / PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="salesPrintDoc" class="sales-doc"><div class="sales-paper" id="salesPrintPaper"></div></div>
+
 <div class="feedback-modal" id="importChoiceModal" role="dialog" aria-modal="true" aria-labelledby="importChoiceTitle" aria-describedby="importChoiceDescription">
     <div class="feedback-box">
       <div class="panel-head">
@@ -3728,7 +3936,8 @@
       materials: [],
       jobs: [],
       orders: [],
-      quotes: []
+      quotes: [],
+      salesDocs: []
     };
     const SUPPORTED_LANGUAGES = ["en", "th", "zh", "ja", "ko"];
     function normalizeLanguage(value) {
@@ -4215,107 +4424,182 @@
     Object.assign(orderI18n.ja, { orderSortDate: "日付順", orderDateDesc: "新しい日付を先に", orderDateAsc: "古い日付を先に" });
     Object.assign(orderI18n.ko, { orderSortDate: "날짜 정렬", orderDateDesc: "최근 날짜 먼저", orderDateAsc: "오래된 날짜 먼저" });
     function orderText(key) { return (orderI18n[lang()] && orderI18n[lang()][key]) || orderI18n.en[key] || key; }
-    const quoteI18n = {
+    const salesI18n = {
       th: {
-        quotesTab: "ใบเสนอราคา", quotesTitle: "ใบเสนอราคา",
-        quoteNew: "สร้างใบใหม่", quoteNo: "เลขที่", quoteDate: "วันที่", quoteValidUntil: "ยืนราคาถึง",
-        quoteSeller: "ข้อมูลร้าน", quoteCustomer: "ข้อมูลลูกค้า",
-        quoteContactName: "ชื่อ", quoteContactPhone: "โทรศัพท์", quoteContactAddress: "ที่อยู่", quoteContactTaxId: "เลขประจำตัวผู้เสียภาษี",
-        quoteItems: "รายการ", quoteAddOrder: "เพิ่มจากออเดอร์", quoteAddItem: "เพิ่มรายการเอง",
-        quoteItemName: "รายการ", quoteQty: "จำนวน", quoteUnitPrice: "ราคาต่อหน่วย", quoteItemCost: "ต้นทุน",
-        quoteFreebie: "ของแถม", quoteVisible: "ลูกค้าเห็น", quoteRemove: "ลบ",
-        quoteNoItems: "ยังไม่มีรายการ กดปุ่มด้านบนเพื่อเพิ่ม",
-        quoteShipping: "ค่าจัดส่ง", quoteDiscount: "ส่วนลด", quoteVat: "ภาษีมูลค่าเพิ่ม 7%",
-        quoteSubtotal: "รวมเป็นเงิน", quoteTotal: "ยอดที่ลูกค้าต้องชำระ",
-        quoteInternal: "สรุปภายใน (ลูกค้าไม่เห็น)", quoteCost: "ต้นทุนรวม", quoteProfit: "กำไร",
-        quoteNote: "หมายเหตุ", quoteSave: "บันทึกใบเสนอราคา", quotePrint: "พิมพ์ / บันทึก PDF",
-        quoteSaved: "ใบที่บันทึกไว้", quoteNoSaved: "ยังไม่มีใบเสนอราคาที่บันทึกไว้",
-        quoteEdit: "แก้ไข", quoteDelete: "ลบใบนี้", quoteDeleteConfirm: "ลบใบเสนอราคานี้?",
-        quoteSavedToast: "บันทึกใบเสนอราคาแล้ว", quoteNeedItem: "ต้องมีอย่างน้อย 1 รายการ",
-        quoteHiddenHint: "รายการที่ไม่ติ๊ก \"ลูกค้าเห็น\" จะถูกคิดรวมต้นทุน แต่ไม่แสดงบนใบที่ส่งให้ลูกค้า",
-        quoteFreeLabel: "แถมฟรี", quoteQuotation: "ใบเสนอราคา"
+        salesTab: "เอกสารขาย", salesTitle: "เอกสารขาย",
+        salesNew: "สร้างใบเสนอราคา", salesSearchPh: "ค้นหาเลขเอกสาร ชื่อลูกค้า หรือชื่อออเดอร์",
+        filterAll: "ทั้งหมด", filterQuote: "ใบเสนอราคา", filterWaiting: "รอชำระ", filterPaid: "ชำระแล้ว",
+        colNumber: "เลขที่เอกสาร", colType: "ประเภท", colCustomer: "ลูกค้า", colDate: "วันที่", colTotal: "ยอดรวม", colStatus: "สถานะ",
+        openDoc: "เปิด", salesEmpty: "ยังไม่มีเอกสาร กดปุ่มสร้างใบเสนอราคาเพื่อเริ่มต้น", salesNoMatch: "ไม่พบเอกสารที่ค้นหา",
+        typeQT: "ใบเสนอราคา", typePAY: "ใบแจ้งชำระเงิน", typeRC: "ใบเสร็จรับเงิน", typeDN: "ใบส่งของ",
+        stDraft: "ร่าง", stSent: "ส่งแล้ว", stAccepted: "ลูกค้าตกลง", stRejected: "ไม่ตกลง",
+        stWaiting: "รอชำระ", stPaid: "ชำระแล้ว", stCancelled: "ยกเลิก",
+        createFrom: "สร้างใบเสนอราคาจาก", fromOrder: "เลือกจากออเดอร์", fromBlank: "เพิ่มรายการเอง",
+        pickOrderTitle: "เลือกออเดอร์", pickOrderSearchPh: "ค้นหาชื่อออเดอร์", pickOrderUse: "ใช้รายการนี้",
+        pickOrderEmpty: "ยังไม่มีออเดอร์ในระบบ", pickOrderNone: "เลือกออเดอร์ก่อน",
+        orderDate: "วันที่", orderTotal: "ราคาขาย",
+        back: "กลับ", shopInfo: "ข้อมูลร้าน", customerInfo: "ข้อมูลลูกค้า", docInfo: "ข้อมูลเอกสาร",
+        fName: "ชื่อ", fPhone: "เบอร์โทร", fAddress: "ที่อยู่", fTaxId: "เลขผู้เสียภาษี",
+        docNo: "เลขที่", docDate: "วันที่", validUntil: "ยืนราคาถึง",
+        items: "รายการ", addItem: "เพิ่มรายการ", itemName: "ชื่อรายการ", itemDetail: "รายละเอียด",
+        qty: "จำนวน", unitPrice: "ราคาต่อหน่วย", itemCost: "ต้นทุน", lineTotal: "รวม",
+        freebie: "ของแถม", visible: "ลูกค้าเห็น", removeItem: "ลบ",
+        noItems: "ยังไม่มีรายการ กด \u201cเพิ่มรายการ\u201d เพื่อเริ่ม",
+        hiddenHint: "รายการที่ไม่ติ๊ก \u201cลูกค้าเห็น\u201d จะถูกคิดรวมต้นทุน แต่ไม่แสดงบนเอกสารที่ส่งให้ลูกค้า",
+        shipping: "ค่าจัดส่ง", discount: "ส่วนลด", vat: "ภาษีมูลค่าเพิ่ม 7%",
+        subtotal: "รวมเป็นเงิน", grandTotal: "ยอดรวมทั้งสิ้น",
+        internal: "สรุปภายใน (ลูกค้าไม่เห็น)", costTotal: "ต้นทุนรวม", profit: "กำไร",
+        note: "หมายเหตุ", save: "บันทึก", preview: "ดูตัวอย่าง", print: "พิมพ์ / PDF", close: "ปิด",
+        markSent: "ส่งแล้ว", markAccepted: "ลูกค้าตกลง", markRejected: "ไม่ตกลง",
+        savedToast: "บันทึกเอกสารแล้ว", needItem: "ต้องมีอย่างน้อย 1 รายการ",
+        deleteDoc: "ลบเอกสาร", deleteConfirm: "ลบเอกสารนี้?", deletedToast: "ลบเอกสารแล้ว",
+        statusChanged: "อัปเดตสถานะแล้ว", refLabel: "อ้างอิง", refOrder: "ออเดอร์",
+        freeLabel: "แถมฟรี", lockedHint: "เอกสารนี้ไม่ใช่ร่างแล้ว การแก้ไขจะเปลี่ยนเอกสารที่ส่งไปแล้ว",
+        createPayment: "สร้างใบแจ้งชำระเงิน", createDelivery: "สร้างใบส่งของ", markPaid: "รับชำระเงินแล้ว",
+        dueDate: "กำหนดชำระ", payMethod: "ช่องทางการชำระ", payPromptPay: "พร้อมเพย์", payTransfer: "โอนธนาคาร", payCash: "เงินสด", payOther: "อื่น ๆ",
+        paidAt: "วันที่รับเงิน", confirmPaid: "ยืนยันการรับเงิน", showPrices: "แสดงราคาในใบส่งของ", deliveryDate: "วันที่ส่ง", shipAddress: "ที่อยู่จัดส่ง"
       },
       en: {
-        quotesTab: "Quotes", quotesTitle: "Quotations",
-        quoteNew: "New quote", quoteNo: "Number", quoteDate: "Date", quoteValidUntil: "Valid until",
-        quoteSeller: "Your details", quoteCustomer: "Customer",
-        quoteContactName: "Name", quoteContactPhone: "Phone", quoteContactAddress: "Address", quoteContactTaxId: "Tax ID",
-        quoteItems: "Items", quoteAddOrder: "Add from order", quoteAddItem: "Add item",
-        quoteItemName: "Item", quoteQty: "Qty", quoteUnitPrice: "Unit price", quoteItemCost: "Cost",
-        quoteFreebie: "Free gift", quoteVisible: "Customer sees", quoteRemove: "Remove",
-        quoteNoItems: "No items yet. Use the buttons above to add one.",
-        quoteShipping: "Shipping", quoteDiscount: "Discount", quoteVat: "VAT 7%",
-        quoteSubtotal: "Subtotal", quoteTotal: "Total due",
-        quoteInternal: "Internal summary (hidden from the customer)", quoteCost: "Total cost", quoteProfit: "Profit",
-        quoteNote: "Notes", quoteSave: "Save quote", quotePrint: "Print / Save as PDF",
-        quoteSaved: "Saved quotes", quoteNoSaved: "No saved quotes yet",
-        quoteEdit: "Edit", quoteDelete: "Delete", quoteDeleteConfirm: "Delete this quote?",
-        quoteSavedToast: "Quote saved", quoteNeedItem: "Add at least one item first",
-        quoteHiddenHint: "Items without \"Customer sees\" ticked count towards your cost but never appear on the customer's copy",
-        quoteFreeLabel: "Free", quoteQuotation: "Quotation"
+        salesTab: "Sales docs", salesTitle: "Sales documents",
+        salesNew: "New quotation", salesSearchPh: "Search document no., customer or order",
+        filterAll: "All", filterQuote: "Quotations", filterWaiting: "Awaiting payment", filterPaid: "Paid",
+        colNumber: "Document no.", colType: "Type", colCustomer: "Customer", colDate: "Date", colTotal: "Total", colStatus: "Status",
+        openDoc: "Open", salesEmpty: "No documents yet. Use the button above to create your first quotation.", salesNoMatch: "No documents match your search",
+        typeQT: "Quotation", typePAY: "Payment request", typeRC: "Receipt", typeDN: "Delivery note",
+        stDraft: "Draft", stSent: "Sent", stAccepted: "Accepted", stRejected: "Rejected",
+        stWaiting: "Awaiting payment", stPaid: "Paid", stCancelled: "Cancelled",
+        createFrom: "Create a quotation from", fromOrder: "Pick an order", fromBlank: "Enter items manually",
+        pickOrderTitle: "Choose an order", pickOrderSearchPh: "Search order name", pickOrderUse: "Use this order",
+        pickOrderEmpty: "No orders yet", pickOrderNone: "Select an order first",
+        orderDate: "Date", orderTotal: "Sale price",
+        back: "Back", shopInfo: "Your shop", customerInfo: "Customer", docInfo: "Document",
+        fName: "Name", fPhone: "Phone", fAddress: "Address", fTaxId: "Tax ID",
+        docNo: "Number", docDate: "Date", validUntil: "Valid until",
+        items: "Items", addItem: "Add item", itemName: "Item", itemDetail: "Description",
+        qty: "Qty", unitPrice: "Unit price", itemCost: "Cost", lineTotal: "Amount",
+        freebie: "Free gift", visible: "Customer sees", removeItem: "Remove",
+        noItems: "No items yet. Use \u201cAdd item\u201d to start.",
+        hiddenHint: "Items without \u201cCustomer sees\u201d ticked count towards your cost but never appear on the customer's copy",
+        shipping: "Shipping", discount: "Discount", vat: "VAT 7%",
+        subtotal: "Subtotal", grandTotal: "Total due",
+        internal: "Internal summary (hidden from the customer)", costTotal: "Total cost", profit: "Profit",
+        note: "Notes", save: "Save", preview: "Preview", print: "Print / PDF", close: "Close",
+        markSent: "Mark as sent", markAccepted: "Customer accepted", markRejected: "Rejected",
+        savedToast: "Document saved", needItem: "Add at least one item first",
+        deleteDoc: "Delete", deleteConfirm: "Delete this document?", deletedToast: "Document deleted",
+        statusChanged: "Status updated", refLabel: "Reference", refOrder: "Order",
+        freeLabel: "Free", lockedHint: "This document is no longer a draft. Editing changes a copy the customer may already have.",
+        createPayment: "Create payment request", createDelivery: "Create delivery note", markPaid: "Mark as paid",
+        dueDate: "Due date", payMethod: "Payment method", payPromptPay: "PromptPay", payTransfer: "Bank transfer", payCash: "Cash", payOther: "Other",
+        paidAt: "Date received", confirmPaid: "Confirm payment", showPrices: "Show prices on the delivery note", deliveryDate: "Delivery date", shipAddress: "Delivery address"
       },
       zh: {
-        quotesTab: "报价单", quotesTitle: "报价单",
-        quoteNew: "新建报价", quoteNo: "编号", quoteDate: "日期", quoteValidUntil: "有效期至",
-        quoteSeller: "本店信息", quoteCustomer: "客户信息",
-        quoteContactName: "名称", quoteContactPhone: "电话", quoteContactAddress: "地址", quoteContactTaxId: "税号",
-        quoteItems: "项目", quoteAddOrder: "从订单添加", quoteAddItem: "添加项目",
-        quoteItemName: "项目", quoteQty: "数量", quoteUnitPrice: "单价", quoteItemCost: "成本",
-        quoteFreebie: "赠品", quoteVisible: "客户可见", quoteRemove: "删除",
-        quoteNoItems: "还没有项目，请用上方按钮添加。",
-        quoteShipping: "运费", quoteDiscount: "折扣", quoteVat: "增值税 7%",
-        quoteSubtotal: "小计", quoteTotal: "应付总额",
-        quoteInternal: "内部汇总（客户看不到）", quoteCost: "总成本", quoteProfit: "利润",
-        quoteNote: "备注", quoteSave: "保存报价单", quotePrint: "打印 / 保存为 PDF",
-        quoteSaved: "已保存的报价单", quoteNoSaved: "还没有保存的报价单",
-        quoteEdit: "编辑", quoteDelete: "删除", quoteDeleteConfirm: "确定删除这份报价单？",
-        quoteSavedToast: "报价单已保存", quoteNeedItem: "请至少添加一个项目",
-        quoteHiddenHint: "未勾选\"客户可见\"的项目会计入成本，但不会出现在给客户的报价单上",
-        quoteFreeLabel: "赠送", quoteQuotation: "报价单"
+        salesTab: "销售单据", salesTitle: "销售单据",
+        salesNew: "新建报价单", salesSearchPh: "搜索单号、客户或订单",
+        filterAll: "全部", filterQuote: "报价单", filterWaiting: "待付款", filterPaid: "已付款",
+        colNumber: "单号", colType: "类型", colCustomer: "客户", colDate: "日期", colTotal: "合计", colStatus: "状态",
+        openDoc: "打开", salesEmpty: "还没有单据，点击上方按钮创建第一份报价单。", salesNoMatch: "没有符合条件的单据",
+        typeQT: "报价单", typePAY: "付款通知单", typeRC: "收据", typeDN: "送货单",
+        stDraft: "草稿", stSent: "已发送", stAccepted: "客户已确认", stRejected: "未接受",
+        stWaiting: "待付款", stPaid: "已付款", stCancelled: "已取消",
+        createFrom: "创建报价单的方式", fromOrder: "从订单选择", fromBlank: "手动输入项目",
+        pickOrderTitle: "选择订单", pickOrderSearchPh: "搜索订单名称", pickOrderUse: "使用此订单",
+        pickOrderEmpty: "暂无订单", pickOrderNone: "请先选择订单",
+        orderDate: "日期", orderTotal: "售价",
+        back: "返回", shopInfo: "本店信息", customerInfo: "客户信息", docInfo: "单据信息",
+        fName: "名称", fPhone: "电话", fAddress: "地址", fTaxId: "税号",
+        docNo: "单号", docDate: "日期", validUntil: "有效期至",
+        items: "项目", addItem: "添加项目", itemName: "项目名称", itemDetail: "说明",
+        qty: "数量", unitPrice: "单价", itemCost: "成本", lineTotal: "金额",
+        freebie: "赠品", visible: "客户可见", removeItem: "删除",
+        noItems: "还没有项目，点击\u201c添加项目\u201d开始。",
+        hiddenHint: "未勾选\u201c客户可见\u201d的项目会计入成本，但不会出现在给客户的单据上",
+        shipping: "运费", discount: "折扣", vat: "增值税 7%",
+        subtotal: "小计", grandTotal: "应付总额",
+        internal: "内部汇总（客户看不到）", costTotal: "总成本", profit: "利润",
+        note: "备注", save: "保存", preview: "预览", print: "打印 / PDF", close: "关闭",
+        markSent: "标记已发送", markAccepted: "客户已确认", markRejected: "未接受",
+        savedToast: "单据已保存", needItem: "请至少添加一个项目",
+        deleteDoc: "删除", deleteConfirm: "确定删除这份单据？", deletedToast: "单据已删除",
+        statusChanged: "状态已更新", refLabel: "关联", refOrder: "订单",
+        freeLabel: "赠送", lockedHint: "此单据已不是草稿，修改会改动客户可能已收到的版本。",
+        createPayment: "创建付款通知单", createDelivery: "创建送货单", markPaid: "标记已收款",
+        dueDate: "付款期限", payMethod: "付款方式", payPromptPay: "PromptPay", payTransfer: "银行转账", payCash: "现金", payOther: "其他",
+        paidAt: "收款日期", confirmPaid: "确认收款", showPrices: "在送货单上显示价格", deliveryDate: "送货日期", shipAddress: "送货地址"
       },
       ja: {
-        quotesTab: "見積書", quotesTitle: "見積書",
-        quoteNew: "新規作成", quoteNo: "番号", quoteDate: "日付", quoteValidUntil: "有効期限",
-        quoteSeller: "自社情報", quoteCustomer: "お客様情報",
-        quoteContactName: "名前", quoteContactPhone: "電話番号", quoteContactAddress: "住所", quoteContactTaxId: "登録番号",
-        quoteItems: "明細", quoteAddOrder: "注文から追加", quoteAddItem: "明細を追加",
-        quoteItemName: "品目", quoteQty: "数量", quoteUnitPrice: "単価", quoteItemCost: "原価",
-        quoteFreebie: "サービス品", quoteVisible: "お客様に表示", quoteRemove: "削除",
-        quoteNoItems: "明細がありません。上のボタンから追加してください。",
-        quoteShipping: "送料", quoteDiscount: "値引き", quoteVat: "消費税 7%",
-        quoteSubtotal: "小計", quoteTotal: "お支払い合計",
-        quoteInternal: "社内用サマリー（お客様には表示されません）", quoteCost: "原価合計", quoteProfit: "利益",
-        quoteNote: "備考", quoteSave: "見積書を保存", quotePrint: "印刷 / PDF 保存",
-        quoteSaved: "保存した見積書", quoteNoSaved: "保存した見積書はまだありません",
-        quoteEdit: "編集", quoteDelete: "削除", quoteDeleteConfirm: "この見積書を削除しますか？",
-        quoteSavedToast: "見積書を保存しました", quoteNeedItem: "明細を1件以上追加してください",
-        quoteHiddenHint: "「お客様に表示」のない明細は原価には入りますが、お客様用の見積書には出ません",
-        quoteFreeLabel: "サービス", quoteQuotation: "見積書"
+        salesTab: "販売書類", salesTitle: "販売書類",
+        salesNew: "見積書を作成", salesSearchPh: "書類番号・顧客名・注文名で検索",
+        filterAll: "すべて", filterQuote: "見積書", filterWaiting: "入金待ち", filterPaid: "入金済み",
+        colNumber: "書類番号", colType: "種類", colCustomer: "顧客", colDate: "日付", colTotal: "合計", colStatus: "状態",
+        openDoc: "開く", salesEmpty: "書類がありません。上のボタンから見積書を作成してください。", salesNoMatch: "該当する書類がありません",
+        typeQT: "見積書", typePAY: "請求書", typeRC: "領収書", typeDN: "納品書",
+        stDraft: "下書き", stSent: "送信済み", stAccepted: "受注", stRejected: "見送り",
+        stWaiting: "入金待ち", stPaid: "入金済み", stCancelled: "キャンセル",
+        createFrom: "見積書の作成方法", fromOrder: "注文から選ぶ", fromBlank: "明細を手入力",
+        pickOrderTitle: "注文を選択", pickOrderSearchPh: "注文名を検索", pickOrderUse: "この注文を使う",
+        pickOrderEmpty: "注文がありません", pickOrderNone: "先に注文を選んでください",
+        orderDate: "日付", orderTotal: "販売価格",
+        back: "戻る", shopInfo: "自社情報", customerInfo: "顧客情報", docInfo: "書類情報",
+        fName: "名前", fPhone: "電話番号", fAddress: "住所", fTaxId: "登録番号",
+        docNo: "番号", docDate: "日付", validUntil: "有効期限",
+        items: "明細", addItem: "明細を追加", itemName: "品目", itemDetail: "内容",
+        qty: "数量", unitPrice: "単価", itemCost: "原価", lineTotal: "金額",
+        freebie: "サービス品", visible: "お客様に表示", removeItem: "削除",
+        noItems: "明細がありません。\u300c明細を追加\u300dから始めてください。",
+        hiddenHint: "\u300cお客様に表示\u300dのない明細は原価には入りますが、お客様用の書類には出ません",
+        shipping: "送料", discount: "値引き", vat: "消費税 7%",
+        subtotal: "小計", grandTotal: "お支払い合計",
+        internal: "社内用サマリー（お客様には表示されません）", costTotal: "原価合計", profit: "利益",
+        note: "備考", save: "保存", preview: "プレビュー", print: "印刷 / PDF", close: "閉じる",
+        markSent: "送信済みにする", markAccepted: "受注にする", markRejected: "見送り",
+        savedToast: "書類を保存しました", needItem: "明細を1件以上追加してください",
+        deleteDoc: "削除", deleteConfirm: "この書類を削除しますか？", deletedToast: "書類を削除しました",
+        statusChanged: "状態を更新しました", refLabel: "関連", refOrder: "注文",
+        freeLabel: "サービス", lockedHint: "この書類は下書きではありません。編集するとお客様にお渡し済みの内容が変わります。",
+        createPayment: "請求書を作成", createDelivery: "納品書を作成", markPaid: "入金済みにする",
+        dueDate: "支払期限", payMethod: "支払方法", payPromptPay: "PromptPay", payTransfer: "銀行振込", payCash: "現金", payOther: "その他",
+        paidAt: "入金日", confirmPaid: "入金を確定", showPrices: "納品書に金額を表示", deliveryDate: "納品日", shipAddress: "納品先住所"
       },
       ko: {
-        quotesTab: "견적서", quotesTitle: "견적서",
-        quoteNew: "새 견적서", quoteNo: "번호", quoteDate: "날짜", quoteValidUntil: "유효기간",
-        quoteSeller: "내 정보", quoteCustomer: "고객 정보",
-        quoteContactName: "이름", quoteContactPhone: "전화번호", quoteContactAddress: "주소", quoteContactTaxId: "사업자번호",
-        quoteItems: "항목", quoteAddOrder: "주문에서 추가", quoteAddItem: "항목 추가",
-        quoteItemName: "항목", quoteQty: "수량", quoteUnitPrice: "단가", quoteItemCost: "원가",
-        quoteFreebie: "무료 증정", quoteVisible: "고객에게 표시", quoteRemove: "삭제",
-        quoteNoItems: "항목이 없습니다. 위 버튼으로 추가하세요.",
-        quoteShipping: "배송비", quoteDiscount: "할인", quoteVat: "부가세 7%",
-        quoteSubtotal: "소계", quoteTotal: "결제 금액",
-        quoteInternal: "내부 요약 (고객에게 보이지 않음)", quoteCost: "총원가", quoteProfit: "이익",
-        quoteNote: "비고", quoteSave: "견적서 저장", quotePrint: "인쇄 / PDF 저장",
-        quoteSaved: "저장된 견적서", quoteNoSaved: "저장된 견적서가 없습니다",
-        quoteEdit: "수정", quoteDelete: "삭제", quoteDeleteConfirm: "이 견적서를 삭제할까요?",
-        quoteSavedToast: "견적서를 저장했습니다", quoteNeedItem: "항목을 하나 이상 추가하세요",
-        quoteHiddenHint: "\"고객에게 표시\"를 선택하지 않은 항목은 원가에는 포함되지만 고객용 견적서에는 나타나지 않습니다",
-        quoteFreeLabel: "무료", quoteQuotation: "견적서"
+        salesTab: "판매 문서", salesTitle: "판매 문서",
+        salesNew: "견적서 만들기", salesSearchPh: "문서번호, 고객명, 주문명 검색",
+        filterAll: "전체", filterQuote: "견적서", filterWaiting: "입금 대기", filterPaid: "입금 완료",
+        colNumber: "문서번호", colType: "종류", colCustomer: "고객", colDate: "날짜", colTotal: "합계", colStatus: "상태",
+        openDoc: "열기", salesEmpty: "문서가 없습니다. 위 버튼으로 첫 견적서를 만들어 보세요.", salesNoMatch: "검색 결과가 없습니다",
+        typeQT: "견적서", typePAY: "대금 청구서", typeRC: "영수증", typeDN: "거래명세서",
+        stDraft: "임시저장", stSent: "발송됨", stAccepted: "고객 승인", stRejected: "미승인",
+        stWaiting: "입금 대기", stPaid: "입금 완료", stCancelled: "취소",
+        createFrom: "견적서 만들기 방법", fromOrder: "주문에서 선택", fromBlank: "직접 입력",
+        pickOrderTitle: "주문 선택", pickOrderSearchPh: "주문명 검색", pickOrderUse: "이 주문 사용",
+        pickOrderEmpty: "주문이 없습니다", pickOrderNone: "먼저 주문을 선택하세요",
+        orderDate: "날짜", orderTotal: "판매가",
+        back: "뒤로", shopInfo: "내 정보", customerInfo: "고객 정보", docInfo: "문서 정보",
+        fName: "이름", fPhone: "전화번호", fAddress: "주소", fTaxId: "사업자번호",
+        docNo: "번호", docDate: "날짜", validUntil: "유효기간",
+        items: "항목", addItem: "항목 추가", itemName: "항목명", itemDetail: "설명",
+        qty: "수량", unitPrice: "단가", itemCost: "원가", lineTotal: "금액",
+        freebie: "무료 증정", visible: "고객에게 표시", removeItem: "삭제",
+        noItems: "항목이 없습니다. \u201c항목 추가\u201d로 시작하세요.",
+        hiddenHint: "\u201c고객에게 표시\u201d를 선택하지 않은 항목은 원가에는 포함되지만 고객용 문서에는 나타나지 않습니다",
+        shipping: "배송비", discount: "할인", vat: "부가세 7%",
+        subtotal: "소계", grandTotal: "결제 금액",
+        internal: "내부 요약 (고객에게 보이지 않음)", costTotal: "총원가", profit: "이익",
+        note: "비고", save: "저장", preview: "미리보기", print: "인쇄 / PDF", close: "닫기",
+        markSent: "발송 처리", markAccepted: "고객 승인", markRejected: "미승인",
+        savedToast: "문서를 저장했습니다", needItem: "항목을 하나 이상 추가하세요",
+        deleteDoc: "삭제", deleteConfirm: "이 문서를 삭제할까요?", deletedToast: "문서를 삭제했습니다",
+        statusChanged: "상태를 변경했습니다", refLabel: "참조", refOrder: "주문",
+        freeLabel: "무료", lockedHint: "이 문서는 임시저장 상태가 아닙니다. 수정하면 고객이 받은 내용과 달라집니다.",
+        createPayment: "대금 청구서 만들기", createDelivery: "거래명세서 만들기", markPaid: "입금 처리",
+        dueDate: "결제 기한", payMethod: "결제 방법", payPromptPay: "PromptPay", payTransfer: "계좌이체", payCash: "현금", payOther: "기타",
+        paidAt: "입금일", confirmPaid: "입금 확인", showPrices: "거래명세서에 금액 표시", deliveryDate: "출고일", shipAddress: "배송 주소"
       }
     };
-    Object.entries(quoteI18n).forEach(([code, values]) => {
+    Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
-    function quoteText(key) { return (quoteI18n[lang()] && quoteI18n[lang()][key]) || quoteI18n.en[key] || key; }
+    function salesText(key) { return (salesI18n[lang()] && salesI18n[lang()][key]) || salesI18n.en[key] || key; }
 
     const dynamicI18n = {
       th: {
@@ -6069,8 +6353,9 @@
       setText('.main-tabs [data-tab="catalogView"]', t("catalogTab"));
       setText('.main-tabs [data-tab="historyView"]', t("historyTab"));
       setText('.main-tabs [data-tab="ordersView"]', orderText("ordersTab"));
-      setText('[data-tab="quotesView"] .side-label', quoteText("quotesTab"));
-      renderQuoteScreen();
+      setText('[data-tab="salesView"] .side-label', salesText("salesTab"));
+      renderSalesLabels();
+      renderSales();
       setText('.tab[data-tab="dashboardView"]:not(.side-nav .tab)', sidebarText("dashboard"));
       setText('.tab[data-tab="ordersView"]:not(.side-nav .tab)', orderText("ordersTab"));
       setText("#catalogBadge", t("catalogTab"));
@@ -8281,381 +8566,721 @@
       return order.id;
     }
 
-    // ---------------------------------------------------------------- quotes
-    // A quote has two audiences. The customer sees only the lines ticked
-    // "visible"; the shop sees every line, because the whole point of an
-    // invisible line is to carry a real cost (packaging, a fitting) into the
-    // margin without showing it. Nothing invisible may ever reach the printed
-    // copy, so the print document is built from a filtered list rather than
-    // hidden with CSS.
-    const QUOTE_VAT_RATE = 0.07;
+    // -------------------------------------------------------- sales documents
+    // One list holds every document type. A document is a snapshot: it copies
+    // the customer, the lines and the prices at the moment it is created, so
+    // editing the order afterwards never rewrites a quotation the customer
+    // already holds. Two audiences share one item list - the customer sees only
+    // the lines ticked "visible", while the shop's cost total counts every line,
+    // which is the whole point of an invisible line (packaging, a fitting)
+    // carrying a real cost into the margin without appearing on the paper.
+    const SALES_VAT_RATE = 0.07;
+    const SALES_TYPE_KEYS = { QT: "typeQT", PAY: "typePAY", RC: "typeRC", DN: "typeDN" };
+    const SALES_STATUS_KEYS = {
+      draft: "stDraft", sent: "stSent", accepted: "stAccepted", rejected: "stRejected",
+      waiting: "stWaiting", paid: "stPaid", cancelled: "stCancelled"
+    };
+    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
 
-    function ensureQuotes() {
-      if (!Array.isArray(state.quotes)) state.quotes = [];
-      return state.quotes;
+    function salesItem(patch) {
+      return { name: "", detail: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
     }
 
-    function newQuoteNumber() {
+    function ensureSalesDocs() {
+      if (!Array.isArray(state.salesDocs)) state.salesDocs = [];
+      // Quotations from the first build lived in state.quotes. Carry them across
+      // once; that array is left untouched so nothing is ever lost.
+      if (!state.salesDocsMigratedAt) {
+        (Array.isArray(state.quotes) ? state.quotes : []).forEach((old) => {
+          if (!old || state.salesDocs.some((doc) => doc.id === old.id)) return;
+          state.salesDocs.push({
+            id: old.id || crypto.randomUUID(),
+            type: "QT",
+            number: old.number || "",
+            status: old.status || "draft",
+            date: old.date || "",
+            validUntil: old.validUntil || "",
+            orderId: old.orderId || "",
+            orderName: old.orderName || "",
+            sourceId: "",
+            seller: { name: "", phone: "", address: "", taxId: "", ...(old.seller || {}) },
+            customer: { name: "", phone: "", address: "", taxId: "", ...(old.customer || {}) },
+            items: (old.items || []).map((item) => salesItem(item)),
+            shipping: Number(old.shipping) || 0,
+            discount: Number(old.discount) || 0,
+            vat: Boolean(old.vat),
+            note: old.note || "",
+            createdAt: old.createdAt || new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          });
+        });
+        state.salesDocsMigratedAt = new Date().toISOString();
+      }
+      return state.salesDocs;
+    }
+
+    function nextSalesNumber(type) {
       const now = new Date();
-      const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
-      const used = ensureQuotes().filter((q) => (q.number || "").startsWith(`QT${stamp}`)).length;
-      return `QT${stamp}-${String(used + 1).padStart(3, "0")}`;
+      const prefix = `${type}${String(now.getFullYear()).slice(2)}${String(now.getMonth() + 1).padStart(2, "0")}-`;
+      // The running number comes from this account's own documents only, so two
+      // users can never be handed the same number.
+      const highest = (state.salesDocs || []).reduce((max, doc) => {
+        const value = String(doc.number || "");
+        if (!value.startsWith(prefix)) return max;
+        const seq = parseInt(value.slice(prefix.length), 10);
+        return Number.isFinite(seq) && seq > max ? seq : max;
+      }, 0);
+      return `${prefix}${String(highest + 1).padStart(3, "0")}`;
     }
 
-    function blankQuote() {
+    function sellerDefaults() {
+      try {
+        const raw = localStorage.getItem("printCostUserProfile");
+        const profile = raw ? JSON.parse(raw) : null;
+        if (!profile) return { name: "", phone: "", address: "", taxId: "" };
+        return {
+          name: profile.businessName || profile.business_name || profile.displayName || profile.display_name || "",
+          phone: profile.phone || "",
+          address: "",
+          taxId: ""
+        };
+      } catch (error) { return { name: "", phone: "", address: "", taxId: "" }; }
+    }
+
+    function lastSellerUsed() {
+      // The shop's own details rarely change, so carry them from the last
+      // document rather than making the user retype them every time.
+      const previous = (state.salesDocs || []).find((doc) => doc.seller && doc.seller.name);
+      return previous ? { ...previous.seller } : sellerDefaults();
+    }
+
+    function blankSalesDoc(type) {
       const today = new Date().toISOString().slice(0, 10);
       const later = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
       return {
         id: crypto.randomUUID(),
-        number: newQuoteNumber(),
+        type: type || "QT",
+        number: nextSalesNumber(type || "QT"),
+        status: "draft",
         date: today,
         validUntil: later,
-        seller: { name: "", phone: "", address: "", taxId: "" },
+        orderId: "",
+        orderName: "",
+        sourceId: "",
+        seller: lastSellerUsed(),
         customer: { name: "", phone: "", address: "", taxId: "" },
         items: [],
         shipping: 0,
         discount: 0,
         vat: false,
-        note: ""
+        note: "",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
       };
     }
 
-    let quoteDraft = null;
-
-    function currentQuote() {
-      if (!quoteDraft) quoteDraft = blankQuote();
-      return quoteDraft;
-    }
-
-    function quoteLineTotal(item) {
+    function salesLineTotal(item) {
       if (item.freebie) return 0;
       return Math.max(0, Number(item.qty) || 0) * Math.max(0, Number(item.unitPrice) || 0);
     }
 
-    function quoteLineCost(item) {
+    function salesLineCost(item) {
       return Math.max(0, Number(item.qty) || 0) * Math.max(0, Number(item.cost) || 0);
     }
 
-    function quoteTotals(quote) {
-      const visible = quote.items.filter((item) => item.visible);
-      const subtotal = visible.reduce((sum, item) => sum + quoteLineTotal(item), 0);
-      const shipping = Math.max(0, Number(quote.shipping) || 0);
-      const discount = Math.max(0, Number(quote.discount) || 0);
+    function salesTotals(doc) {
+      const items = Array.isArray(doc && doc.items) ? doc.items : [];
+      const visible = items.filter((item) => item.visible !== false);
+      const subtotal = visible.reduce((sum, item) => sum + salesLineTotal(item), 0);
+      const shipping = Math.max(0, Number(doc.shipping) || 0);
+      const discount = Math.max(0, Number(doc.discount) || 0);
       const beforeVat = Math.max(0, subtotal - discount + shipping);
-      const vat = quote.vat ? beforeVat * QUOTE_VAT_RATE : 0;
+      const vat = doc.vat ? beforeVat * SALES_VAT_RATE : 0;
       const total = beforeVat + vat;
-      // Every line counts here, visible or not — that is what an invisible line is for.
-      const cost = quote.items.reduce((sum, item) => sum + quoteLineCost(item), 0);
+      // Every line counts towards cost, visible or not.
+      const cost = items.reduce((sum, item) => sum + salesLineCost(item), 0);
       return { subtotal, shipping, discount, beforeVat, vat, total, cost, profit: total - cost };
     }
 
     function orderCostTotal(orderId) {
-      return orderJobs(orderId).reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0);
+      const jobs = orderJobs(orderId);
+      const order = (state.orders || []).find((item) => item.id === orderId);
+      return jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + (Number(order && order.extraCost) || 0);
     }
 
-    function renderQuoteOrderPicker() {
-      const select = $("quoteOrderPick");
-      if (!select) return;
-      const orders = (state.orders || []).filter((order) => (order.mode || "filament") === state.mode);
-      select.innerHTML = orders.length
-        ? orders.map((order) => `<option value="${order.id}">${escapeHtml(order.name || "-")}</option>`).join("")
-        : `<option value="">-</option>`;
+    function salesStatusLabel(doc) {
+      return salesText(SALES_STATUS_KEYS[doc.status] || "stDraft");
     }
 
-    function renderQuoteItems() {
-      const host = $("quoteItemList");
+    // ------------------------------------------------------------- home list
+    function salesFilterMatches(doc) {
+      if (salesUi.filter === "quote") return doc.type === "QT";
+      if (salesUi.filter === "waiting") return doc.status === "waiting";
+      if (salesUi.filter === "paid") return doc.status === "paid";
+      return true;
+    }
+
+    function salesSearchMatches(doc) {
+      const term = salesUi.search.trim().toLowerCase();
+      if (!term) return true;
+      return [doc.number, doc.customer && doc.customer.name, doc.orderName]
+        .some((value) => String(value || "").toLowerCase().includes(term));
+    }
+
+    function renderSalesList() {
+      const host = $("salesList");
       if (!host) return;
-      const quote = currentQuote();
+      const docs = ensureSalesDocs();
+      const shown = docs.filter((doc) => salesFilterMatches(doc) && salesSearchMatches(doc));
 
-      if (!quote.items.length) {
-        host.innerHTML = `<p class="hint">${escapeHtml(quoteText("quoteNoItems"))}</p>`;
+      if (!shown.length) {
+        host.innerHTML = `<p class="sales-empty">${escapeHtml(salesText(docs.length ? "salesNoMatch" : "salesEmpty"))}</p>`;
         return;
       }
 
-      host.innerHTML = quote.items.map((item, index) => `
-        <div class="quote-row ${item.visible ? "" : "quote-hidden-row"}" data-quote-index="${index}">
-          <div class="quote-line">
-            <input type="text" data-quote-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(quoteText("quoteItemName"))}">
-            <input type="number" min="0" step="1" data-quote-field="qty" value="${Number(item.qty) || 0}">
-            <input type="number" min="0" step="0.01" data-quote-field="unitPrice" value="${Number(item.unitPrice) || 0}">
-            <input type="number" min="0" step="0.01" data-quote-field="cost" value="${Number(item.cost) || 0}" title="${escapeHtml(quoteText("quoteItemCost"))}">
-          </div>
-          <div class="quote-line-opts">
-            <label><input type="checkbox" data-quote-field="freebie" ${item.freebie ? "checked" : ""}> ${escapeHtml(quoteText("quoteFreebie"))}</label>
-            <label><input type="checkbox" data-quote-field="visible" ${item.visible ? "checked" : ""}> ${escapeHtml(quoteText("quoteVisible"))}</label>
-            <button class="btn danger" type="button" data-quote-remove="${index}">${escapeHtml(quoteText("quoteRemove"))}</button>
-          </div>
-        </div>`).join("");
+      const rows = shown.map((doc) => {
+        const totals = salesTotals(doc);
+        return `<tr>
+          <td>
+            <span class="sales-doc-no">${escapeHtml(doc.number || "-")}</span>
+            <span class="sales-doc-sub">${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}</span>
+          </td>
+          <td>${escapeHtml((doc.customer && doc.customer.name) || "-")}${doc.orderName ? `<span class="sales-doc-sub">${escapeHtml(doc.orderName)}</span>` : ""}</td>
+          <td>${escapeHtml(doc.date || "-")}</td>
+          <td class="num">${money.format(totals.total)}</td>
+          <td class="num"><span class="sales-badge is-${escapeHtml(doc.status || "draft")}">${escapeHtml(salesStatusLabel(doc))}</span></td>
+          <td class="num"><button class="btn-secondary" type="button" data-sales-open="${doc.id}">${escapeHtml(salesText("openDoc"))}</button></td>
+        </tr>`;
+      }).join("");
+
+      host.innerHTML = `<table class="sales-table">
+        <thead><tr>
+          <th>${escapeHtml(salesText("colNumber"))}</th>
+          <th>${escapeHtml(salesText("colCustomer"))}</th>
+          <th>${escapeHtml(salesText("colDate"))}</th>
+          <th class="num">${escapeHtml(salesText("colTotal"))}</th>
+          <th class="num">${escapeHtml(salesText("colStatus"))}</th>
+          <th></th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
     }
 
-    function renderQuoteTotals() {
-      const quote = currentQuote();
-      const totals = quoteTotals(quote);
+    function renderSales() {
+      if (!$("salesList")) return;
+      renderSalesList();
+      if (salesUi.draft) renderSalesEditor();
+    }
 
-      const totalsBox = $("quoteTotals");
-      if (totalsBox) {
-        totalsBox.innerHTML = `
-          <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteSubtotal"))}</span><strong>${money.format(totals.subtotal)}</strong></div>
-          ${totals.discount ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteDiscount"))}</span><strong>-${money.format(totals.discount)}</strong></div>` : ""}
-          ${totals.shipping ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteShipping"))}</span><strong>${money.format(totals.shipping)}</strong></div>` : ""}
-          ${quote.vat ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteVat"))}</span><strong>${money.format(totals.vat)}</strong></div>` : ""}
-          <div class="quote-total-row grand"><span>${escapeHtml(quoteText("quoteTotal"))}</span><strong>${money.format(totals.total)}</strong></div>`;
+    // ---------------------------------------------------------------- editor
+    function salesEditorOpen() { return Boolean(salesUi.draft); }
+
+    function openSalesEditor(doc, isNew) {
+      salesUi.draft = structuredClone(doc);
+      salesUi.isNew = Boolean(isNew);
+      const home = $("salesHome");
+      const editor = $("salesEditor");
+      if (home) home.hidden = true;
+      if (editor) editor.hidden = false;
+      renderSalesEditor();
+      if (editor) editor.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+
+    function closeSalesEditor() {
+      salesUi.draft = null;
+      salesUi.isNew = false;
+      const home = $("salesHome");
+      const editor = $("salesEditor");
+      if (home) home.hidden = false;
+      if (editor) editor.hidden = true;
+      renderSalesList();
+    }
+
+    function renderSalesItems() {
+      const body = $("salesItemRows");
+      const empty = $("salesItemsEmpty");
+      if (!body) return;
+      const doc = salesUi.draft;
+      const items = (doc && doc.items) || [];
+
+      if (empty) {
+        empty.hidden = items.length > 0;
+        empty.textContent = salesText("noItems");
       }
 
-      const internal = $("quoteInternalBox");
+      body.innerHTML = items.map((item, index) => `
+        <tr data-sales-index="${index}" class="${item.visible === false ? "is-hidden-line" : ""}" data-hidden-tag="${escapeHtml(salesText("visible"))}: ✕">
+          <td>
+            <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
+            <input type="text" data-sales-field="detail" value="${escapeHtml(item.detail || "")}" placeholder="${escapeHtml(salesText("itemDetail"))}" style="margin-top:5px;font-size:13px">
+          </td>
+          <td class="num" style="width:88px"><input type="number" min="0" step="1" data-sales-field="qty" value="${Number(item.qty) || 0}"></td>
+          <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="unitPrice" value="${Number(item.unitPrice) || 0}" ${item.freebie ? "disabled" : ""}></td>
+          <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="cost" value="${Number(item.cost) || 0}"></td>
+          <td class="num sales-line-total" data-sales-line-total>${money.format(salesLineTotal(item))}</td>
+          <td class="mid"><input type="checkbox" data-sales-field="freebie" ${item.freebie ? "checked" : ""} title="${escapeHtml(salesText("freebie"))}"></td>
+          <td class="mid"><input type="checkbox" data-sales-field="visible" ${item.visible === false ? "" : "checked"} title="${escapeHtml(salesText("visible"))}"></td>
+          <td class="num"><button class="btn-ghost" type="button" data-sales-remove="${index}" title="${escapeHtml(salesText("removeItem"))}">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button></td>
+        </tr>`).join("");
+    }
+
+    function renderSalesTotals() {
+      const doc = salesUi.draft;
+      if (!doc) return;
+      const totals = salesTotals(doc);
+      const box = $("salesTotals");
+      if (box) {
+        box.innerHTML = `
+          <div class="sales-total-row"><span>${escapeHtml(salesText("subtotal"))}</span><strong>${money.format(totals.subtotal)}</strong></div>
+          ${totals.discount ? `<div class="sales-total-row"><span>${escapeHtml(salesText("discount"))}</span><strong>-${money.format(totals.discount)}</strong></div>` : ""}
+          ${totals.shipping ? `<div class="sales-total-row"><span>${escapeHtml(salesText("shipping"))}</span><strong>${money.format(totals.shipping)}</strong></div>` : ""}
+          ${doc.vat ? `<div class="sales-total-row"><span>${escapeHtml(salesText("vat"))}</span><strong>${money.format(totals.vat)}</strong></div>` : ""}
+          <div class="sales-total-row grand"><span>${escapeHtml(salesText("grandTotal"))}</span><strong>${money.format(totals.total)}</strong></div>`;
+      }
+      const internal = $("salesInternal");
       if (internal) {
         internal.innerHTML = `
-          <div class="quote-internal">
-            <div class="quote-internal-title">${escapeHtml(quoteText("quoteInternal"))}</div>
-            <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteCost"))}</span><strong>${money.format(totals.cost)}</strong></div>
-            <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteProfit"))}</span><strong>${money.format(totals.profit)}</strong></div>
-          </div>`;
+          <div class="sales-internal-title">${escapeHtml(salesText("internal"))}</div>
+          <div class="sales-total-row"><span>${escapeHtml(salesText("costTotal"))}</span><strong>${money.format(totals.cost)}</strong></div>
+          <div class="sales-total-row"><span>${escapeHtml(salesText("profit"))}</span><strong>${money.format(totals.profit)}</strong></div>`;
       }
     }
 
-    function renderQuoteSaved() {
-      const host = $("quoteSavedList");
-      if (!host) return;
-      const quotes = ensureQuotes();
-      host.innerHTML = quotes.length
-        ? quotes.map((quote) => {
-            const totals = quoteTotals(quote);
-            return `<div class="quote-saved-row">
-              <div>
-                <strong>${escapeHtml(quote.number || "-")}</strong>
-                <span class="hint">${escapeHtml(quote.customer?.name || "-")} · ${escapeHtml(quote.date || "")}</span>
-              </div>
-              <div>
-                <strong>${money.format(totals.total)}</strong>
-                <button class="btn" type="button" data-quote-open="${quote.id}">${escapeHtml(quoteText("quoteEdit"))}</button>
-                <button class="btn danger" type="button" data-quote-delete="${quote.id}">${escapeHtml(quoteText("quoteRemove"))}</button>
-              </div>
-            </div>`;
-          }).join("")
-        : `<p class="hint">${escapeHtml(quoteText("quoteNoSaved"))}</p>`;
+    function renderSalesEditor() {
+      const doc = salesUi.draft;
+      if (!doc || !$("salesEditor")) return;
+      const set = (id, value) => { const el = $(id); if (el) el.value = value == null ? "" : value; };
+
+      setText("#salesEditorTitle", salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"));
+      setText("#salesEditorNo", doc.number || "");
+      const badge = $("salesEditorStatus");
+      if (badge) {
+        badge.textContent = salesStatusLabel(doc);
+        badge.className = `sales-badge is-${doc.status || "draft"}`;
+      }
+
+      const ref = $("salesRefLine");
+      if (ref) {
+        if (doc.orderId) {
+          ref.hidden = false;
+          ref.innerHTML = `${escapeHtml(salesText("refLabel"))}: ${escapeHtml(salesText("refOrder"))} <button type="button" data-sales-goto-order="${doc.orderId}">${escapeHtml(doc.orderName || doc.orderId)}</button>`;
+        } else {
+          ref.hidden = true;
+          ref.innerHTML = "";
+        }
+      }
+
+      const locked = $("salesLockedHint");
+      if (locked) {
+        locked.hidden = doc.status === "draft";
+        locked.textContent = salesText("lockedHint");
+      }
+
+      set("salesSellerName", doc.seller.name);
+      set("salesSellerPhone", doc.seller.phone);
+      set("salesSellerAddress", doc.seller.address);
+      set("salesSellerTaxId", doc.seller.taxId);
+      set("salesCustomerName", doc.customer.name);
+      set("salesCustomerPhone", doc.customer.phone);
+      set("salesCustomerAddress", doc.customer.address);
+      set("salesCustomerTaxId", doc.customer.taxId);
+      set("salesDocNo", doc.number);
+      set("salesDocDate", doc.date);
+      set("salesValidUntil", doc.validUntil);
+      set("salesShipping", doc.shipping);
+      set("salesDiscount", doc.discount);
+      set("salesNote", doc.note);
+      const vat = $("salesVat");
+      if (vat) vat.checked = Boolean(doc.vat);
+
+      const sentBtn = $("salesMarkSentBtn");
+      const acceptBtn = $("salesMarkAcceptedBtn");
+      const rejectBtn = $("salesMarkRejectedBtn");
+      if (sentBtn) sentBtn.hidden = doc.status !== "draft";
+      if (acceptBtn) acceptBtn.hidden = !(doc.status === "draft" || doc.status === "sent");
+      if (rejectBtn) rejectBtn.hidden = !(doc.status === "draft" || doc.status === "sent");
+
+      renderSalesItems();
+      renderSalesTotals();
     }
 
-    function fillQuoteForm() {
-      const quote = currentQuote();
-      const set = (id, value) => { const el = $(id); if (el) el.value = value ?? ""; };
-      set("quoteNo", quote.number);
-      set("quoteDate", quote.date);
-      set("quoteValidUntil", quote.validUntil);
-      set("quoteSellerName", quote.seller.name);
-      set("quoteSellerPhone", quote.seller.phone);
-      set("quoteSellerAddress", quote.seller.address);
-      set("quoteSellerTaxId", quote.seller.taxId);
-      set("quoteCustomerName", quote.customer.name);
-      set("quoteCustomerPhone", quote.customer.phone);
-      set("quoteCustomerAddress", quote.customer.address);
-      set("quoteCustomerTaxId", quote.customer.taxId);
-      set("quoteShipping", quote.shipping);
-      set("quoteDiscount", quote.discount);
-      set("quoteNote", quote.note);
-      const vat = $("quoteVat");
-      if (vat) vat.checked = Boolean(quote.vat);
-    }
-
-    function readQuoteForm() {
-      const quote = currentQuote();
+    function readSalesForm() {
+      const doc = salesUi.draft;
+      if (!doc) return;
       const get = (id) => ($(id) ? $(id).value : "");
-      quote.number = get("quoteNo");
-      quote.date = get("quoteDate");
-      quote.validUntil = get("quoteValidUntil");
-      quote.seller = { name: get("quoteSellerName"), phone: get("quoteSellerPhone"), address: get("quoteSellerAddress"), taxId: get("quoteSellerTaxId") };
-      quote.customer = { name: get("quoteCustomerName"), phone: get("quoteCustomerPhone"), address: get("quoteCustomerAddress"), taxId: get("quoteCustomerTaxId") };
-      quote.shipping = Number(get("quoteShipping")) || 0;
-      quote.discount = Number(get("quoteDiscount")) || 0;
-      quote.note = get("quoteNote");
-      quote.vat = Boolean($("quoteVat") && $("quoteVat").checked);
+      doc.number = get("salesDocNo").trim() || doc.number;
+      doc.date = get("salesDocDate");
+      doc.validUntil = get("salesValidUntil");
+      doc.seller = { name: get("salesSellerName"), phone: get("salesSellerPhone"), address: get("salesSellerAddress"), taxId: get("salesSellerTaxId") };
+      doc.customer = { name: get("salesCustomerName"), phone: get("salesCustomerPhone"), address: get("salesCustomerAddress"), taxId: get("salesCustomerTaxId") };
+      doc.shipping = Number(get("salesShipping")) || 0;
+      doc.discount = Number(get("salesDiscount")) || 0;
+      doc.note = get("salesNote");
+      doc.vat = Boolean($("salesVat") && $("salesVat").checked);
     }
 
-    function renderQuoteScreen() {
-      const title = $("quotesTitle");
-      if (!title) return;
-      title.textContent = quoteText("quotesTitle");
-      const label = (id, key) => { const el = $(id); if (el) el.textContent = quoteText(key); };
-      label("quoteSellerTitle", "quoteSeller");
-      label("quoteCustomerTitle", "quoteCustomer");
-      label("quoteItemsTitle", "quoteItems");
-      label("quoteNoLabel", "quoteNo");
-      label("quoteDateLabel", "quoteDate");
-      label("quoteValidLabel", "quoteValidUntil");
-      label("quoteShippingLabel", "quoteShipping");
-      label("quoteDiscountLabel", "quoteDiscount");
-      label("quoteVatLabel", "quoteVat");
-      label("quoteNoteLabel", "quoteNote");
-      label("quoteSavedTitle", "quoteSaved");
-      label("quoteHiddenHint", "quoteHiddenHint");
-      const button = (id, key) => { const el = $(id); if (el) el.textContent = quoteText(key); };
-      button("quoteNewBtn", "quoteNew");
-      button("quoteAddOrderBtn", "quoteAddOrder");
-      button("quoteAddItemBtn", "quoteAddItem");
-      button("quoteSaveBtn", "quoteSave");
-      button("quotePrintBtn", "quotePrint");
-
-      renderQuoteOrderPicker();
-      fillQuoteForm();
-      renderQuoteItems();
-      renderQuoteTotals();
-      renderQuoteSaved();
+    function saveSalesDoc(options) {
+      const quiet = options && options.quiet;
+      readSalesForm();
+      const doc = salesUi.draft;
+      if (!doc) return false;
+      if (!doc.items.length) { showToast(salesText("needItem")); return false; }
+      doc.updatedAt = new Date().toISOString();
+      const docs = ensureSalesDocs();
+      const at = docs.findIndex((item) => item.id === doc.id);
+      if (at >= 0) docs[at] = structuredClone(doc);
+      else docs.unshift(structuredClone(doc));
+      salesUi.isNew = false;
+      persist({ skipRender: true });
+      renderSalesList();
+      if (!quiet) showToast(salesText("savedToast"));
+      return true;
     }
 
-    function buildQuotePrintDoc() {
-      const quote = currentQuote();
-      const totals = quoteTotals(quote);
-      // Only what the customer is allowed to see is written into the document.
-      const visible = quote.items.filter((item) => item.visible);
+    function setSalesStatus(status) {
+      if (!salesUi.draft) return;
+      salesUi.draft.status = status;
+      if (!saveSalesDoc({ quiet: true })) {
+        salesUi.draft.status = "draft";
+        return;
+      }
+      renderSalesEditor();
+      showToast(salesText("statusChanged"));
+    }
+
+    // ------------------------------------------------------------ the paper
+    function salesPaperHtml(doc) {
+      const totals = salesTotals(doc);
+      // Only what the customer may see is written into the document at all -
+      // an invisible line is filtered out here, never merely hidden with CSS.
+      const visible = (doc.items || []).filter((item) => item.visible !== false);
       const line = (label, value) => value ? `<div>${escapeHtml(label)}: ${escapeHtml(value)}</div>` : "";
 
       const rows = visible.map((item) => `
         <tr>
-          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(quoteText("quoteFreeLabel"))})</em>` : ""}</td>
+          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}${item.detail ? `<span class="sales-paper-detail">${escapeHtml(item.detail)}</span>` : ""}</td>
           <td class="num">${Number(item.qty) || 0}</td>
           <td class="num">${item.freebie ? "-" : money.format(Number(item.unitPrice) || 0)}</td>
-          <td class="num">${money.format(quoteLineTotal(item))}</td>
+          <td class="num">${money.format(salesLineTotal(item))}</td>
         </tr>`).join("");
 
-      const host = $("quotePrintDoc");
-      if (!host) return;
-      host.innerHTML = `
-        <h1 style="margin:0 0 4px">${escapeHtml(quoteText("quoteQuotation"))}</h1>
-        <div style="display:flex;justify-content:space-between;gap:24px;margin-bottom:16px">
+      return `
+        <div class="sales-paper-head">
           <div>
-            <strong>${escapeHtml(quote.seller.name || "")}</strong>
-            ${line(quoteText("quoteContactPhone"), quote.seller.phone)}
-            ${line(quoteText("quoteContactAddress"), quote.seller.address)}
-            ${line(quoteText("quoteContactTaxId"), quote.seller.taxId)}
+            <h1>${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}</h1>
+            <div class="sales-paper-name">${escapeHtml(doc.seller.name || "")}</div>
+            ${line(salesText("fPhone"), doc.seller.phone)}
+            ${line(salesText("fAddress"), doc.seller.address)}
+            ${line(salesText("fTaxId"), doc.seller.taxId)}
           </div>
-          <div style="text-align:right">
-            ${line(quoteText("quoteNo"), quote.number)}
-            ${line(quoteText("quoteDate"), quote.date)}
-            ${line(quoteText("quoteValidUntil"), quote.validUntil)}
+          <div style="text-align:right;white-space:nowrap">
+            ${line(salesText("docNo"), doc.number)}
+            ${line(salesText("docDate"), doc.date)}
+            ${doc.type === "QT" ? line(salesText("validUntil"), doc.validUntil) : ""}
           </div>
         </div>
-        <div style="margin-bottom:12px">
-          <strong>${escapeHtml(quoteText("quoteCustomer"))}</strong>
-          <div>${escapeHtml(quote.customer.name || "")}</div>
-          ${line(quoteText("quoteContactPhone"), quote.customer.phone)}
-          ${line(quoteText("quoteContactAddress"), quote.customer.address)}
-          ${line(quoteText("quoteContactTaxId"), quote.customer.taxId)}
+        <div class="sales-paper-parties">
+          <div class="sales-paper-block">
+            <div class="sales-paper-label">${escapeHtml(salesText("customerInfo"))}</div>
+            <div class="sales-paper-name">${escapeHtml(doc.customer.name || "")}</div>
+            ${line(salesText("fPhone"), doc.customer.phone)}
+            ${line(salesText("fAddress"), doc.customer.address)}
+            ${line(salesText("fTaxId"), doc.customer.taxId)}
+          </div>
         </div>
-        <table class="quote-print-table">
+        <table>
           <thead><tr>
-            <th>${escapeHtml(quoteText("quoteItemName"))}</th>
-            <th class="num">${escapeHtml(quoteText("quoteQty"))}</th>
-            <th class="num">${escapeHtml(quoteText("quoteUnitPrice"))}</th>
-            <th class="num">${escapeHtml(quoteText("quoteSubtotal"))}</th>
+            <th>${escapeHtml(salesText("itemName"))}</th>
+            <th class="num">${escapeHtml(salesText("qty"))}</th>
+            <th class="num">${escapeHtml(salesText("unitPrice"))}</th>
+            <th class="num">${escapeHtml(salesText("lineTotal"))}</th>
           </tr></thead>
           <tbody>${rows}</tbody>
         </table>
-        <div style="margin-top:16px;text-align:right">
-          <div>${escapeHtml(quoteText("quoteSubtotal"))}: ${money.format(totals.subtotal)}</div>
-          ${totals.discount ? `<div>${escapeHtml(quoteText("quoteDiscount"))}: -${money.format(totals.discount)}</div>` : ""}
-          ${totals.shipping ? `<div>${escapeHtml(quoteText("quoteShipping"))}: ${money.format(totals.shipping)}</div>` : ""}
-          ${quote.vat ? `<div>${escapeHtml(quoteText("quoteVat"))}: ${money.format(totals.vat)}</div>` : ""}
-          <div style="font-size:18px;margin-top:6px"><strong>${escapeHtml(quoteText("quoteTotal"))}: ${money.format(totals.total)}</strong></div>
+        <div class="sales-paper-totals">
+          <div><span>${escapeHtml(salesText("subtotal"))}</span><span>${money.format(totals.subtotal)}</span></div>
+          ${totals.discount ? `<div><span>${escapeHtml(salesText("discount"))}</span><span>-${money.format(totals.discount)}</span></div>` : ""}
+          ${totals.shipping ? `<div><span>${escapeHtml(salesText("shipping"))}</span><span>${money.format(totals.shipping)}</span></div>` : ""}
+          ${doc.vat ? `<div><span>${escapeHtml(salesText("vat"))}</span><span>${money.format(totals.vat)}</span></div>` : ""}
+          <div class="grand"><span>${escapeHtml(salesText("grandTotal"))}</span><span>${money.format(totals.total)}</span></div>
         </div>
-        ${quote.note ? `<div style="margin-top:16px;white-space:pre-wrap">${escapeHtml(quote.note)}</div>` : ""}`;
+        ${doc.note ? `<div class="sales-paper-note">${escapeHtml(doc.note)}</div>` : ""}
+        <div class="sales-paper-sign">
+          <div>${escapeHtml(doc.seller.name || salesText("shopInfo"))}</div>
+          <div>${escapeHtml(doc.customer.name || salesText("customerInfo"))}</div>
+        </div>`;
     }
 
-    function saveQuote() {
-      readQuoteForm();
-      const quote = currentQuote();
-      if (!quote.items.length) { showToast(quoteText("quoteNeedItem")); return; }
-      const quotes = ensureQuotes();
-      const at = quotes.findIndex((item) => item.id === quote.id);
-      if (at >= 0) quotes[at] = structuredClone(quote);
-      else quotes.unshift(structuredClone(quote));
-      persist();
-      renderQuoteSaved();
-      showToast(quoteText("quoteSavedToast"));
+    function printSalesDoc() {
+      if (!salesUi.draft) return;
+      readSalesForm();
+      const target = $("salesPrintPaper");
+      if (target) target.innerHTML = salesPaperHtml(salesUi.draft);
+      window.print();
+    }
+
+    // ----------------------------------------------------------- order picker
+    function salesOrderRows() {
+      const term = String($("salesOrderSearch") ? $("salesOrderSearch").value : "").trim().toLowerCase();
+      return (state.orders || [])
+        .filter((order) => (order.mode || "filament") === state.mode)
+        .filter((order) => !term || String(order.name || "").toLowerCase().includes(term));
+    }
+
+    function renderSalesOrderList() {
+      const host = $("salesOrderList");
+      if (!host) return;
+      const orders = salesOrderRows();
+      host.innerHTML = orders.length
+        ? orders.map((order) => `
+            <button class="sales-pick-row ${order.id === salesUi.pickedOrderId ? "selected" : ""}" type="button" data-sales-pick-order="${order.id}">
+              <span>
+                <span class="sales-pick-name">${escapeHtml(order.name || "-")}</span>
+                <span class="sales-pick-meta">${escapeHtml(salesText("orderDate"))}: ${escapeHtml(String(order.createdAt || "").slice(0, 10))} · ${escapeHtml(orderJobs(order.id).length + " " + orderText("jobsInOrder"))}</span>
+              </span>
+              <strong>${money.format(Number(order.salePrice) || 0)}</strong>
+            </button>`).join("")
+        : `<p class="sales-empty">${escapeHtml(salesText("pickOrderEmpty"))}</p>`;
+    }
+
+    function openSalesModal(id) {
+      const modal = $(id);
+      if (modal) modal.classList.add("show");
+    }
+
+    function closeSalesModal(id) {
+      const modal = $(id);
+      if (modal) modal.classList.remove("show");
+    }
+
+    function startQuoteFromOrder(order) {
+      const doc = blankSalesDoc("QT");
+      doc.orderId = order.id;
+      doc.orderName = order.name || "";
+      // Snapshot: the jobs inside the order become one priced line, and the cost
+      // is frozen here so later edits to the order leave this document alone.
+      doc.items = [salesItem({
+        name: order.name || "",
+        qty: 1,
+        unitPrice: Number(order.salePrice) || 0,
+        cost: orderCostTotal(order.id)
+      })];
+      openSalesEditor(doc, true);
+    }
+
+    // ------------------------------------------------------------- listeners
+    function renderSalesLabels() {
+      if (!$("salesTitle")) return;
+      const label = (selector, key) => setText(selector, salesText(key));
+      label("#salesTitle", "salesTitle");
+      label("#salesNewText", "salesNew");
+      label("#salesBackText", "back");
+      label("#salesDeleteText", "deleteDoc");
+      label("#salesShopTitle", "shopInfo");
+      label("#salesCustomerTitle", "customerInfo");
+      label("#salesDocTitle", "docInfo");
+      label("#salesSellerNameLabel", "fName");
+      label("#salesSellerPhoneLabel", "fPhone");
+      label("#salesSellerAddressLabel", "fAddress");
+      label("#salesSellerTaxIdLabel", "fTaxId");
+      label("#salesCustomerNameLabel", "fName");
+      label("#salesCustomerPhoneLabel", "fPhone");
+      label("#salesCustomerAddressLabel", "fAddress");
+      label("#salesCustomerTaxIdLabel", "fTaxId");
+      label("#salesDocNoLabel", "docNo");
+      label("#salesDocDateLabel", "docDate");
+      label("#salesValidUntilLabel", "validUntil");
+      label("#salesItemsTitle", "items");
+      label("#salesAddItemText", "addItem");
+      label("#salesHiddenHint", "hiddenHint");
+      label("#salesThName", "itemName");
+      label("#salesThQty", "qty");
+      label("#salesThPrice", "unitPrice");
+      label("#salesThCost", "itemCost");
+      label("#salesThTotal", "lineTotal");
+      label("#salesThFree", "freebie");
+      label("#salesThVisible", "visible");
+      label("#salesNoteLabel", "note");
+      label("#salesShippingLabel", "shipping");
+      label("#salesDiscountLabel", "discount");
+      label("#salesVatLabel", "vat");
+      label("#salesSaveBtn", "save");
+      label("#salesPreviewBtn", "preview");
+      label("#salesPrintBtn", "print");
+      label("#salesMarkSentBtn", "markSent");
+      label("#salesMarkAcceptedBtn", "markAccepted");
+      label("#salesMarkRejectedBtn", "markRejected");
+      label("#salesChoiceTitle", "createFrom");
+      label("#salesChoiceOrder", "fromOrder");
+      label("#salesChoiceBlank", "fromBlank");
+      label("#salesOrderModalTitle", "pickOrderTitle");
+      label("#salesOrderUse", "pickOrderUse");
+      label("#salesOrderCancel", "close");
+      label("#salesPreviewTitle", "preview");
+      label("#salesPreviewClose", "close");
+      label("#salesPreviewPrint", "print");
+      const search = $("salesSearch");
+      if (search) search.placeholder = salesText("salesSearchPh");
+      const orderSearch = $("salesOrderSearch");
+      if (orderSearch) orderSearch.placeholder = salesText("pickOrderSearchPh");
+      const filters = { all: "filterAll", quote: "filterQuote", waiting: "filterWaiting", paid: "filterPaid" };
+      Object.entries(filters).forEach(([value, key]) => {
+        const button = document.querySelector(`[data-sales-filter="${value}"]`);
+        if (button) button.textContent = salesText(key);
+      });
     }
 
     document.addEventListener("click", (event) => {
-      const newBtn = event.target.closest("#quoteNewBtn");
-      if (newBtn) { quoteDraft = blankQuote(); renderQuoteScreen(); return; }
+      const close = event.target.closest("[data-sales-close]");
+      if (close) { closeSalesModal(close.dataset.salesClose); return; }
 
-      const addOrder = event.target.closest("#quoteAddOrderBtn");
-      if (addOrder) {
-        const orderId = $("quoteOrderPick") ? $("quoteOrderPick").value : "";
-        const order = (state.orders || []).find((item) => item.id === orderId);
+      if (event.target.closest("#salesNewBtn")) {
+        salesUi.pickedOrderId = "";
+        openSalesModal("salesChoiceModal");
+        return;
+      }
+
+      if (event.target.closest("#salesChoiceOrder")) {
+        closeSalesModal("salesChoiceModal");
+        salesUi.pickedOrderId = "";
+        const search = $("salesOrderSearch");
+        if (search) search.value = "";
+        renderSalesOrderList();
+        openSalesModal("salesOrderModal");
+        return;
+      }
+
+      if (event.target.closest("#salesChoiceBlank")) {
+        closeSalesModal("salesChoiceModal");
+        const doc = blankSalesDoc("QT");
+        doc.items = [salesItem()];
+        openSalesEditor(doc, true);
+        return;
+      }
+
+      const pick = event.target.closest("[data-sales-pick-order]");
+      if (pick) {
+        salesUi.pickedOrderId = pick.dataset.salesPickOrder;
+        renderSalesOrderList();
+        return;
+      }
+
+      if (event.target.closest("#salesOrderUse")) {
+        const order = (state.orders || []).find((item) => item.id === salesUi.pickedOrderId);
+        if (!order) { showToast(salesText("pickOrderNone")); return; }
+        closeSalesModal("salesOrderModal");
+        startQuoteFromOrder(order);
+        return;
+      }
+
+      const open = event.target.closest("[data-sales-open]");
+      if (open) {
+        const found = ensureSalesDocs().find((item) => item.id === open.dataset.salesOpen);
+        if (found) openSalesEditor(found, false);
+        return;
+      }
+
+      if (event.target.closest("#salesBackBtn")) { closeSalesEditor(); return; }
+
+      if (event.target.closest("#salesAddItemBtn")) {
+        readSalesForm();
+        salesUi.draft.items.push(salesItem());
+        renderSalesItems();
+        renderSalesTotals();
+        return;
+      }
+
+      const remove = event.target.closest("[data-sales-remove]");
+      if (remove) {
+        readSalesForm();
+        salesUi.draft.items.splice(Number(remove.dataset.salesRemove), 1);
+        renderSalesItems();
+        renderSalesTotals();
+        return;
+      }
+
+      if (event.target.closest("#salesSaveBtn")) { saveSalesDoc(); return; }
+
+      if (event.target.closest("#salesPreviewBtn")) {
+        readSalesForm();
+        const paper = $("salesPreviewPaper");
+        if (paper) paper.innerHTML = salesPaperHtml(salesUi.draft);
+        openSalesModal("salesPreviewModal");
+        return;
+      }
+
+      if (event.target.closest("#salesPrintBtn")) { printSalesDoc(); return; }
+      if (event.target.closest("#salesPreviewPrint")) {
+        closeSalesModal("salesPreviewModal");
+        printSalesDoc();
+        return;
+      }
+
+      if (event.target.closest("#salesMarkSentBtn")) { setSalesStatus("sent"); return; }
+      if (event.target.closest("#salesMarkAcceptedBtn")) { setSalesStatus("accepted"); return; }
+      if (event.target.closest("#salesMarkRejectedBtn")) { setSalesStatus("rejected"); return; }
+
+      if (event.target.closest("#salesDeleteBtn")) {
+        if (!salesUi.draft || !confirm(salesText("deleteConfirm"))) return;
+        state.salesDocs = ensureSalesDocs().filter((item) => item.id !== salesUi.draft.id);
+        persist({ skipRender: true });
+        closeSalesEditor();
+        showToast(salesText("deletedToast"));
+        return;
+      }
+
+      const goOrder = event.target.closest("[data-sales-goto-order]");
+      if (goOrder) { showView("ordersView"); return; }
+
+      const quoteFromOrder = event.target.closest("[data-quote-from-order]");
+      if (quoteFromOrder) {
+        const order = (state.orders || []).find((item) => item.id === quoteFromOrder.dataset.quoteFromOrder);
         if (!order) return;
-        readQuoteForm();
-        currentQuote().items.push({
-          name: order.name || "",
-          qty: 1,
-          unitPrice: Number(order.salePrice) || 0,
-          cost: orderCostTotal(order.id),
-          freebie: false,
-          visible: true
+        showView("salesView");
+        startQuoteFromOrder(order);
+        return;
+      }
+
+      const filter = event.target.closest("[data-sales-filter]");
+      if (filter) {
+        salesUi.filter = filter.dataset.salesFilter;
+        document.querySelectorAll("[data-sales-filter]").forEach((button) => {
+          button.classList.toggle("active", button === filter);
         });
-        renderQuoteItems();
-        renderQuoteTotals();
-        return;
-      }
-
-      const addItem = event.target.closest("#quoteAddItemBtn");
-      if (addItem) {
-        readQuoteForm();
-        currentQuote().items.push({ name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true });
-        renderQuoteItems();
-        renderQuoteTotals();
-        return;
-      }
-
-      const removeBtn = event.target.closest("[data-quote-remove]");
-      if (removeBtn) {
-        readQuoteForm();
-        currentQuote().items.splice(Number(removeBtn.dataset.quoteRemove), 1);
-        renderQuoteItems();
-        renderQuoteTotals();
-        return;
-      }
-
-      const openBtn = event.target.closest("[data-quote-open]");
-      if (openBtn) {
-        const found = ensureQuotes().find((item) => item.id === openBtn.dataset.quoteOpen);
-        if (found) { quoteDraft = structuredClone(found); renderQuoteScreen(); }
-        return;
-      }
-
-      const deleteBtn = event.target.closest("[data-quote-delete]");
-      if (deleteBtn) {
-        if (!confirm(quoteText("quoteDeleteConfirm"))) return;
-        state.quotes = ensureQuotes().filter((item) => item.id !== deleteBtn.dataset.quoteDelete);
-        persist();
-        renderQuoteSaved();
-        return;
-      }
-
-      if (event.target.closest("#quoteSaveBtn")) { saveQuote(); return; }
-
-      if (event.target.closest("#quotePrintBtn")) {
-        readQuoteForm();
-        buildQuotePrintDoc();
-        window.print();
+        renderSalesList();
       }
     });
 
     document.addEventListener("input", (event) => {
-      const row = event.target.closest("[data-quote-index]");
-      if (!row) return;
-      const field = event.target.dataset.quoteField;
-      if (!field) return;
-      const item = currentQuote().items[Number(row.dataset.quoteIndex)];
-      if (!item) return;
-      item[field] = event.target.type === "checkbox"
-        ? event.target.checked
-        : (event.target.type === "number" ? Number(event.target.value) || 0 : event.target.value);
-      if (field === "visible") row.classList.toggle("quote-hidden-row", !item.visible);
-      renderQuoteTotals();
-    });
+      if (event.target.id === "salesSearch") { salesUi.search = event.target.value; renderSalesList(); return; }
+      if (event.target.id === "salesOrderSearch") { renderSalesOrderList(); return; }
+      if (!salesEditorOpen()) return;
 
-    document.addEventListener("change", (event) => {
-      if (event.target.closest("#quoteVat, #quoteShipping, #quoteDiscount")) {
-        readQuoteForm();
-        renderQuoteTotals();
+      const row = event.target.closest("#salesItemRows [data-sales-index]");
+      if (row) {
+        const field = event.target.dataset.salesField;
+        if (!field) return;
+        const item = salesUi.draft.items[Number(row.dataset.salesIndex)];
+        if (!item) return;
+        item[field] = event.target.type === "checkbox"
+          ? event.target.checked
+          : (event.target.type === "number" ? Number(event.target.value) || 0 : event.target.value);
+        if (field === "visible") row.classList.toggle("is-hidden-line", !item.visible);
+        if (field === "freebie") {
+          const priceInput = row.querySelector('[data-sales-field="unitPrice"]');
+          if (priceInput) priceInput.disabled = Boolean(item.freebie);
+        }
+        const lineCell = row.querySelector("[data-sales-line-total]");
+        if (lineCell) lineCell.textContent = money.format(salesLineTotal(item));
+        renderSalesTotals();
+        return;
+      }
+
+      if (event.target.closest("#salesShipping, #salesDiscount, #salesVat")) {
+        readSalesForm();
+        renderSalesTotals();
       }
     });
 
@@ -8932,6 +9557,7 @@
           : `<details class="history-row-menu order-row-menu">
               <summary aria-label="${escapeHtml(t("manage"))}" title="${escapeHtml(t("manage"))}">&#8942;</summary>
               <div class="history-row-menu-panel">
+                <button class="btn-ghost" type="button" data-quote-from-order="${order.id}">${salesText("salesNew")}</button>
                 ${orderClosed ? "" : `<button class="btn-ghost" type="button" data-add-job-order="${order.id}">${orderText("addJobToOrder")}</button>`}
                 <button class="btn-ghost" type="button" data-edit-order="${order.id}">${orderText("editOrder")}</button>
                 <button class="btn-ghost" type="button" data-toggle-order-closed="${order.id}">${orderClosed ? orderText("reopenOrder") : orderText("closeOrder")}</button>
@@ -9024,6 +9650,7 @@
       if (viewId === "dashboardView") renderDashboard();
       if (viewId === "historyView") renderHistory();
       if (viewId === "ordersView") renderOrders();
+      if (viewId === "salesView") renderSales();
     }
     async function editJob(id) {
       const job = state.jobs.find((item) => item.id === id);
