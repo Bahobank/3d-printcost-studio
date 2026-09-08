@@ -1,10 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
+import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, LogOut, Mail, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
 import { PLAN_CONFIGS, USD_PLAN_PRICES, getPlanAmount } from "@/lib/billing-plans";
 import { SubscriptionCenter } from "@/components/subscription-center";
 import type { UserProfile } from "@/lib/subscription";
+
+// Where a locked-out customer reaches a human. Must be a mailbox that is
+// actually monitored — it is the only contact route on that screen.
+const SUPPORT_EMAIL = "baho.studio25@gmail.com";
+const SUPPORT_SUBJECT = "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้ / Paid but still locked out";
 
 type BillingCycle = "monthly" | "yearly";
 type PlanKey = "maker" | "studio";
@@ -69,6 +74,9 @@ type PricingCopy = {
   expiredSubtitle: string;
   expiredTitle: string;
   footer: string;
+  stuckNote: string;
+  contactUs: string;
+  signOut: string;
   instantActivation: string;
   lowBalance: string;
   monthlyUnit: string;
@@ -177,6 +185,9 @@ const thCopy: PricingCopy = {
   cancelAnytime: "ยกเลิกได้ทุกเมื่อ",
   recommended: "แนะนำ",
   footer: "ข้อมูลของคุณเข้ารหัสและปลอดภัย",
+  stuckNote: "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้? แจ้งเราได้เลย เราจะรีบแก้ไขให้",
+  contactUs: "ติดต่อเรา",
+  signOut: "ออกจากระบบ",
   choosePaymentTitlePrefix: "เลือกแพ็กเกจ",
   choosePaymentSubtitle: "เลือกวิธีชำระเงินที่สะดวกสำหรับคุณ",
   paymentMethodHeading: "เลือกวิธีชำระเงิน",
@@ -267,6 +278,9 @@ const enCopy: PricingCopy = {
   cancelAnytime: "Cancel anytime",
   recommended: "Recommended",
   footer: "Your payment data is encrypted and secure",
+  stuckNote: "Paid but still locked out? Tell us and we will sort it out.",
+  contactUs: "Contact us",
+  signOut: "Sign out",
   choosePaymentTitlePrefix: "Choose plan",
   choosePaymentSubtitle: "Choose the payment method that works best for you.",
   paymentMethodHeading: "Choose a payment method",
@@ -357,6 +371,9 @@ const zhCopy: PricingCopy = {
   cancelAnytime: "随时取消",
   recommended: "推荐",
   footer: "您的支付信息已加密且安全",
+  stuckNote: "已付款但仍无法使用？告诉我们，我们会尽快处理。",
+  contactUs: "联系我们",
+  signOut: "退出登录",
   choosePaymentTitlePrefix: "选择方案",
   choosePaymentSubtitle: "选择最适合您的支付方式。",
   paymentMethodHeading: "选择支付方式",
@@ -447,6 +464,9 @@ const jaCopy: PricingCopy = {
   cancelAnytime: "いつでも解約可能",
   recommended: "おすすめ",
   footer: "お支払い情報は暗号化され安全に保護されます",
+  stuckNote: "お支払い済みなのに利用できない場合はご連絡ください。すぐに対応します。",
+  contactUs: "お問い合わせ",
+  signOut: "ログアウト",
   choosePaymentTitlePrefix: "プラン選択",
   choosePaymentSubtitle: "ご希望のお支払い方法を選択してください。",
   paymentMethodHeading: "お支払い方法を選択",
@@ -537,6 +557,9 @@ const koCopy: PricingCopy = {
   cancelAnytime: "언제든지 해지 가능",
   recommended: "추천",
   footer: "결제 정보는 암호화되어 안전하게 보호됩니다",
+  stuckNote: "결제했는데도 이용할 수 없나요? 알려주시면 바로 처리해 드리겠습니다.",
+  contactUs: "문의하기",
+  signOut: "로그아웃",
   choosePaymentTitlePrefix: "요금제 선택",
   choosePaymentSubtitle: "가장 편리한 결제 수단을 선택하세요.",
   paymentMethodHeading: "결제 수단 선택",
@@ -1090,6 +1113,31 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
             </div>
 
             <div className="mt-5 border-t border-slate-200 pt-4 text-center text-sm font-semibold leading-6 text-slate-500">{copy.footer}</div>
+
+            {locked ? (
+              // Locked is the only state with no other control on screen, so this is
+              // the customer's one route to a human — and to their own sign-out.
+              <div className="mt-4 rounded-2xl bg-slate-50 px-5 py-4 text-center">
+                <p className="text-sm font-semibold leading-6 text-slate-600">{copy.stuckNote}</p>
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
+                  <a
+                    className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
+                    href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(SUPPORT_SUBJECT)}`}
+                  >
+                    <Mail size={16} strokeWidth={2.4} />
+                    {copy.contactUs}
+                  </a>
+                  <a
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
+                    href="/logout"
+                  >
+                    <LogOut size={16} strokeWidth={2.4} />
+                    {copy.signOut}
+                  </a>
+                </div>
+                <p className="mt-3 text-xs font-semibold text-slate-400">{SUPPORT_EMAIL}</p>
+              </div>
+            ) : null}
           </>
         )}
       </div>
