@@ -3155,6 +3155,8 @@
                 <button class="btn-secondary" type="button" id="salesMarkRejectedBtn">Rejected</button>
                 <button class="btn-primary" type="button" id="salesMarkAcceptedBtn">Customer accepted</button>
                 <button class="btn-primary" type="button" id="salesCreatePaymentBtn">Create payment request</button>
+                <button class="btn-primary" type="button" id="salesMarkPaidBtn">Mark as paid</button>
+                <button class="btn-primary" type="button" id="salesOpenReceiptBtn">Open the receipt</button>
                 <button class="btn-ghost" type="button" id="salesCancelDocBtn">Cancel document</button>
               </div>
             </div>
@@ -3235,6 +3237,28 @@
         <div class="feedback-actions">
           <button class="btn-secondary" type="button" data-sales-close="salesSettingsModal" id="salesSettingsCancel">Close</button>
           <button class="btn-primary" type="button" id="salesSettingsSave">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="feedback-modal" id="salesPaidModal" role="dialog" aria-modal="true" aria-labelledby="salesPaidTitle">
+    <div class="feedback-box">
+      <div class="panel-head">
+        <h2 id="salesPaidTitle">Record a payment</h2>
+        <button class="btn-ghost" type="button" data-sales-close="salesPaidModal" title="Close">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="panel-body stack">
+        <div class="grid-2">
+          <div class="field"><label for="salesPaidAt" id="salesPaidAtLabel">Date received</label><input id="salesPaidAt" type="date"></div>
+          <div class="field"><label for="salesPaidMethod" id="salesPaidMethodLabel">Payment method</label><select id="salesPaidMethod"></select></div>
+        </div>
+        <div class="field"><label for="salesPaidNote" id="salesPaidNoteLabel">Payment note</label><input id="salesPaidNote" type="text"></div>
+        <div class="feedback-actions">
+          <button class="btn-secondary" type="button" data-sales-close="salesPaidModal" id="salesPaidCancel">Close</button>
+          <button class="btn-primary" type="button" id="salesPaidConfirm">Confirm payment</button>
         </div>
       </div>
     </div>
@@ -4823,6 +4847,11 @@
     Object.assign(salesI18n.zh, { issuer: "开单方", itemDetails: "商品明细", itemCode: "商品编号", payChannel: "付款方式", thanksSign: "感谢惠顾", subQT: "感谢您的关注", subPAY: "感谢您信任并选择我们", subRC: "感谢您的付款", subDN: "感谢惠顾", noteQT1: "此价格有效期至上方所示日期", noteQT2: "确认后我们即可安排开工", notePAY1: "请在到期日前付款，以便按时发货", notePAY2: "付款后请通过方便的渠道发送转账凭证" });
     Object.assign(salesI18n.ja, { issuer: "発行者", itemDetails: "商品明細", itemCode: "商品コード", payChannel: "お支払い方法", thanksSign: "ご利用ありがとうございます", subQT: "ご検討いただきありがとうございます", subPAY: "ご用命いただきありがとうございます", subRC: "ご入金ありがとうございました", subDN: "ご利用ありがとうございます", noteQT1: "この価格は上記の期日まで有効です", noteQT2: "ご確認いただければすぐに着手いたします", notePAY1: "納期どおりの発送のため、期日までにお支払いください", notePAY2: "お支払い後、振込控えをご都合のよい方法でお知らせください" });
     Object.assign(salesI18n.ko, { issuer: "발행자", itemDetails: "상품 상세", itemCode: "상품 코드", payChannel: "결제 방법", thanksSign: "이용해 주셔서 감사합니다", subQT: "관심 가져 주셔서 감사합니다", subPAY: "믿고 맡겨 주셔서 감사합니다", subRC: "결제해 주셔서 감사합니다", subDN: "이용해 주셔서 감사합니다", noteQT1: "이 가격은 위에 적힌 날짜까지 유효합니다", noteQT2: "확인해 주시면 바로 작업을 시작하겠습니다", notePAY1: "배송 일정을 지킬 수 있도록 기한 내에 결제해 주세요", notePAY2: "결제 후 편한 방법으로 이체 증빙을 보내주세요" });
+    Object.assign(salesI18n.th, { paidNote: "หมายเหตุการรับเงิน", paidTitle: "บันทึกรับชำระเงิน", receiptCreated: "ออกใบเสร็จรับเงินแล้ว", openReceipt: "เปิดใบเสร็จรับเงิน", receiptExists: "ใบแจ้งชำระเงินนี้มีใบเสร็จแล้ว เปิดใบเดิมให้", refPayment: "ใบแจ้งชำระเงิน", paidOn: "รับเงินเมื่อ", paidBy: "รับชำระโดย", subRC2: "ได้รับชำระเงินเรียบร้อยแล้ว ขอบคุณครับ", noteRC1: "เอกสารนี้เป็นหลักฐานการรับเงินที่สมบูรณ์" });
+    Object.assign(salesI18n.en, { paidNote: "Payment note", paidTitle: "Record a payment", receiptCreated: "Receipt issued", openReceipt: "Open the receipt", receiptExists: "This bill already has a receipt - opening it", refPayment: "Payment request", paidOn: "Received on", paidBy: "Received by", subRC2: "Payment received in full - thank you", noteRC1: "This document is your proof of payment" });
+    Object.assign(salesI18n.zh, { paidNote: "收款备注", paidTitle: "登记收款", receiptCreated: "已开具收据", openReceipt: "打开收据", receiptExists: "此付款通知单已有收据，为你打开", refPayment: "付款通知单", paidOn: "收款日期", paidBy: "收款方式", subRC2: "款项已全额收讫，谢谢惠顾", noteRC1: "本单据为正式收款凭证" });
+    Object.assign(salesI18n.ja, { paidNote: "入金メモ", paidTitle: "入金の記録", receiptCreated: "領収書を発行しました", openReceipt: "領収書を開く", receiptExists: "この請求書には既に領収書があります。開きます", refPayment: "請求書", paidOn: "入金日", paidBy: "入金方法", subRC2: "全額のご入金を確認しました。ありがとうございます", noteRC1: "本書は正式な受領証です" });
+    Object.assign(salesI18n.ko, { paidNote: "입금 메모", paidTitle: "입금 기록", receiptCreated: "영수증을 발행했습니다", openReceipt: "영수증 열기", receiptExists: "이 청구서에는 이미 영수증이 있어 해당 문서를 엽니다", refPayment: "대금 청구서", paidOn: "입금일", paidBy: "입금 방법", subRC2: "전액 입금이 확인되었습니다. 감사합니다", noteRC1: "본 문서는 정식 입금 증빙입니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8912,7 +8941,7 @@
         id: crypto.randomUUID(),
         type: type || "QT",
         number: nextSalesNumber(type || "QT"),
-        status: (type || "QT") === "QT" ? "draft" : "waiting",
+        status: (type || "QT") === "QT" ? "draft" : ((type === "RC") ? "paid" : "waiting"),
         date: today,
         validUntil: later,
         orderId: "",
@@ -8921,6 +8950,10 @@
         sourceNumber: "",
         imageKey: "",
         showImage: true,
+        quoteId: "",
+        quoteNumber: "",
+        paidAt: "",
+        paidNote: "",
         dueDate: "",
         payMethod: "transfer",
         bank: { ...salesSettings().bank },
@@ -9095,8 +9128,11 @@
         // The order step only counts as done when this document came from one.
         const reached = index === 0 ? Boolean(doc.orderId) : index < current;
         const state = index === current ? "is-current" : (reached ? "is-done" : "");
-        const target = index === 0 && doc.orderId ? ` data-sales-step-go="order"`
-          : (index === 1 && doc.type !== "QT" && doc.sourceId ? ` data-sales-step-go="${doc.sourceId}"` : "");
+        const link = index === 0 && doc.orderId ? "order"
+          : (index === 1 && doc.type === "PAY" ? doc.sourceId
+          : (index === 1 && doc.type === "RC" ? doc.quoteId
+          : (index === 2 && doc.type === "RC" ? doc.sourceId : "")));
+        const target = link ? ` data-sales-step-go="${link}"` : "";
         const arrow = index < SALES_STEPS.length - 1
           ? `<li class="sales-step-arrow ${index < current ? "is-done" : ""}" aria-hidden="true"></li>`
           : "";
@@ -9381,7 +9417,11 @@
       const ref = $("salesRefLine");
       if (ref) {
         const parts = [];
-        if (doc.sourceId) parts.push(`${escapeHtml(salesText("refQuotation"))} <button type="button" data-sales-open-ref="${doc.sourceId}">${escapeHtml(doc.sourceNumber || doc.sourceId)}</button>`);
+        if (doc.sourceId) {
+          const label = doc.type === "RC" ? salesText("refPayment") : salesText("refQuotation");
+          parts.push(`${escapeHtml(label)} <button type="button" data-sales-open-ref="${doc.sourceId}">${escapeHtml(doc.sourceNumber || doc.sourceId)}</button>`);
+        }
+        if (doc.quoteId) parts.push(`${escapeHtml(salesText("refQuotation"))} <button type="button" data-sales-open-ref="${doc.quoteId}">${escapeHtml(doc.quoteNumber || doc.quoteId)}</button>`);
         if (doc.orderId) parts.push(`${escapeHtml(salesText("refOrder"))} <button type="button" data-sales-goto-order="${doc.orderId}">${escapeHtml(doc.orderName || doc.orderId)}</button>`);
         ref.hidden = !parts.length;
         ref.innerHTML = parts.length ? `${escapeHtml(salesText("refLabel"))}: ${parts.join(" · ")}` : "";
@@ -9430,6 +9470,8 @@
       show("salesMarkAcceptedBtn", openStage);
       show("salesMarkRejectedBtn", openStage);
       show("salesCreatePaymentBtn", isQuote && doc.status === "accepted");
+      show("salesMarkPaidBtn", doc.type === "PAY" && doc.status === "waiting");
+      show("salesOpenReceiptBtn", doc.type === "PAY" && doc.status === "paid" && Boolean(relatedReceipt(doc)));
       show("salesCancelDocBtn", doc.type === "PAY" && doc.status === "waiting");
 
       renderSalesSteps();
@@ -9544,7 +9586,8 @@
       const noteLines = String(doc.note || "").split("\n").map((line) => line.trim()).filter(Boolean);
       const fallback = type === "PAY"
         ? [salesText("notePAY1"), salesText("notePAY2")]
-        : (type === "QT" ? [salesText("noteQT1"), salesText("noteQT2")] : []);
+        : (type === "QT" ? [salesText("noteQT1"), salesText("noteQT2")]
+        : (type === "RC" ? [salesText("noteRC1")] : []));
       const notes = noteLines.length ? noteLines : fallback;
 
       const bankIcon = '<svg viewBox="0 0 24 24"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg>';
@@ -9556,13 +9599,14 @@
             ${logo ? `<img class="sp-logo" src="${logo}" alt="">` : ""}
             <div>
               <h1 class="sp-title">${escapeHtml(salesText(SALES_TYPE_KEYS[type]))}</h1>
-              <div class="sp-subtitle">${escapeHtml(salesText("sub" + type))}</div>
+              <div class="sp-subtitle">${escapeHtml(salesText(type === "RC" ? "subRC2" : "sub" + type))}</div>
             </div>
           </div>
           <div class="sp-meta">
             ${meta(salesText("docNo"), doc.number)}
             ${meta(salesText(type === "QT" ? "docDate" : "issueDate"), doc.date)}
-            ${type === "QT" ? meta(salesText("validUntil"), doc.validUntil) : meta(salesText("dueDate"), doc.dueDate)}
+            ${type === "QT" ? meta(salesText("validUntil"), doc.validUntil)
+              : (type === "RC" ? meta(salesText("paidOn"), doc.paidAt) : meta(salesText("dueDate"), doc.dueDate))}
           </div>
         </div>
 
@@ -9601,6 +9645,20 @@
           <div class="sp-total-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><strong>${money.format(totals.total)}</strong></div>
         </div>
 
+        ${type === "RC" ? `
+        <div class="sp-pay">
+          <div>
+            <div class="sp-pay-title">${bankIcon}${escapeHtml(salesText("payChannel"))}</div>
+            <div class="sp-kv is-3">
+              ${meta(salesText("paidBy"), salesPayMethodLabel(doc.payMethod))}
+              ${doc.paidNote ? meta(salesText("note"), doc.paidNote) : ""}
+            </div>
+          </div>
+          ${doc.paidAt ? `<div>
+            <div class="sp-pay-title">${dateIcon}${escapeHtml(salesText("paidOn"))}</div>
+            <div>${escapeHtml(doc.paidAt)}</div>
+          </div>` : ""}
+        </div>` : ""}
         ${type === "PAY" ? `
         <div class="sp-pay">
           <div>
@@ -9711,6 +9769,70 @@
       const modal = $("salesPreviewModal");
       if (modal && modal.classList.contains("show")) fitSalesPreview();
     });
+
+    function relatedReceipt(bill) {
+      return ensureSalesDocs().find((doc) => doc.type === "RC" && doc.sourceId === bill.id);
+    }
+
+    function openPaidDialog() {
+      const doc = salesUi.draft;
+      if (!doc || doc.type !== "PAY") return;
+      const set = (id, value) => { const el = $(id); if (el) el.value = value; };
+      set("salesPaidAt", new Date().toISOString().slice(0, 10));
+      set("salesPaidMethod", normalizedPayMethod(doc.payMethod));
+      set("salesPaidNote", "");
+      openSalesModal("salesPaidModal");
+    }
+
+    function confirmPayment() {
+      const bill = salesUi.draft;
+      if (!bill || bill.type !== "PAY") return;
+      const get = (id) => ($(id) ? $(id).value : "");
+
+      bill.paidAt = get("salesPaidAt") || new Date().toISOString().slice(0, 10);
+      bill.payMethod = normalizedPayMethod(get("salesPaidMethod"));
+      bill.paidNote = get("salesPaidNote");
+      bill.status = "paid";
+      if (!saveSalesDoc({ quiet: true })) return;
+      closeSalesModal("salesPaidModal");
+
+      const existing = relatedReceipt(bill);
+      if (existing) {
+        showToast(salesText("receiptExists"));
+        openSalesEditor(existing, false);
+        return;
+      }
+
+      const receipt = blankSalesDoc("RC");
+      // The receipt states what was actually paid, so it copies the bill whole
+      // and keeps its own snapshot from here on.
+      receipt.seller = { ...bill.seller };
+      receipt.customer = { ...bill.customer };
+      receipt.items = structuredClone(bill.items);
+      receipt.shipping = bill.shipping;
+      receipt.discount = bill.discount;
+      receipt.vat = bill.vat;
+      receipt.note = "";
+      receipt.orderId = bill.orderId;
+      receipt.orderName = bill.orderName;
+      receipt.imageKey = bill.imageKey || "";
+      receipt.showImage = bill.showImage !== false;
+      receipt.sourceId = bill.id;
+      receipt.sourceNumber = bill.number;
+      // The whole chain travels with it: bill, quotation and order.
+      receipt.quoteId = bill.sourceId || "";
+      receipt.quoteNumber = bill.sourceNumber || "";
+      receipt.bank = { ...(bill.bank || {}) };
+      receipt.payMethod = bill.payMethod;
+      receipt.paidAt = bill.paidAt;
+      receipt.paidNote = bill.paidNote;
+      receipt.date = bill.paidAt;
+
+      ensureSalesDocs().unshift(structuredClone(receipt));
+      persist({ skipRender: true });
+      openSalesEditor(receipt, false);
+      showToast(salesText("receiptCreated"));
+    }
 
     function printSalesDoc() {
       if (!salesUi.draft) return;
@@ -9861,6 +9983,22 @@
       label("#salesMarkRejectedBtn", "markRejected");
       label("#salesCreatePaymentBtn", "createPayment");
       label("#salesCancelDocBtn", "cancelDoc");
+      label("#salesMarkPaidBtn", "markPaid");
+      label("#salesOpenReceiptBtn", "openReceipt");
+      label("#salesPaidTitle", "paidTitle");
+      label("#salesPaidAtLabel", "paidAt");
+      label("#salesPaidMethodLabel", "payMethod");
+      label("#salesPaidNoteLabel", "paidNote");
+      label("#salesPaidConfirm", "confirmPaid");
+      label("#salesPaidCancel", "close");
+      const paidMethod = $("salesPaidMethod");
+      if (paidMethod) {
+        const chosen = paidMethod.value;
+        paidMethod.innerHTML = SALES_PAY_METHODS
+          .map(([value, key]) => `<option value="${value}">${escapeHtml(salesText(key))}</option>`)
+          .join("");
+        if (chosen) paidMethod.value = chosen;
+      }
       label("#salesDueDateLabel", "dueDate");
       label("#salesPayMethodLabel", "payMethod");
       label("#salesImageTitle", "orderImage");
@@ -10012,6 +10150,14 @@
       if (event.target.closest("#salesMarkAcceptedBtn")) { setSalesStatus("accepted"); return; }
       if (event.target.closest("#salesMarkRejectedBtn")) { setSalesStatus("rejected"); return; }
       if (event.target.closest("#salesCreatePaymentBtn")) { createPaymentRequest(); return; }
+      if (event.target.closest("#salesMarkPaidBtn")) { openPaidDialog(); return; }
+      if (event.target.closest("#salesPaidConfirm")) { confirmPayment(); return; }
+
+      if (event.target.closest("#salesOpenReceiptBtn")) {
+        const found = relatedReceipt(salesUi.draft);
+        if (found) openSalesEditor(found, false);
+        return;
+      }
 
       if (event.target.closest("#salesCancelDocBtn")) {
         if (!confirm(salesText("cancelConfirm"))) return;
