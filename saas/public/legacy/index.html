@@ -418,7 +418,7 @@
     .sales-foot { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); gap: 18px; margin-top: 18px; align-items: start; }
     .sales-totals { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; background: var(--panel-head); }
     .sales-total-row { display: flex; justify-content: space-between; gap: 16px; padding: 5px 0; font-size: 14px; }
-    .sales-total-row.grand { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 10px; font-size: 17px; font-weight: 700; color: var(--ink); }
+    .sales-total-row.is-grand { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 10px; font-size: 17px; font-weight: 700; color: var(--ink); }
     .sales-internal { border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px 16px; margin-top: 12px; background: transparent; }
     .sales-internal-title { font-size: 12px; font-weight: 700; color: var(--muted); margin-bottom: 6px; }
     .sales-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
@@ -431,8 +431,10 @@
     .sales-pick-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
     .sales-choice { display: grid; gap: 10px; }
     .sales-choice button { text-align: left; }
-    .sales-preview-box { max-width: 900px; width: 100%; max-height: 88vh; display: flex; flex-direction: column; }
-    .sales-preview-scroll { overflow: auto; padding: 16px; background: #eef1f6; }
+    #salesPreviewModal .feedback-box { width: min(880px, 100%); max-height: 92vh; display: flex; flex-direction: column; }
+    .sales-preview-scroll { overflow: auto; padding: 18px; background: #5b6472; display: flex; justify-content: center; }
+    .sales-preview-stage { position: relative; flex: 0 0 auto; }
+    .sales-preview-page { width: 210mm; min-height: 297mm; padding: 15mm; box-sizing: border-box; background: #fff; box-shadow: 0 10px 32px rgba(0,0,0,.35); transform-origin: top left; position: absolute; inset: 0 auto auto 0; }
     @media (max-width: 900px) {
       .sales-cols { grid-template-columns: 1fr; }
       .sales-foot { grid-template-columns: 1fr; }
@@ -458,18 +460,17 @@
     .sales-paper th { text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: #444; border-bottom: 1px solid #111; padding: 6px 6px; }
     .sales-paper td { border-bottom: 1px solid #e2e2e2; padding: 7px 6px; vertical-align: top; }
     .sales-paper td.num, .sales-paper th.num { text-align: right; white-space: nowrap; }
-    .sales-paper .sales-paper-detail { display: block; color: #666; font-size: 12px; margin-top: 2px; }
     .sales-paper .sales-paper-totals { margin-top: 14px; margin-left: auto; width: 62%; max-width: 320px; }
     .sales-paper .sales-paper-totals div { display: flex; justify-content: space-between; gap: 16px; padding: 3px 0; }
-    .sales-paper .sales-paper-totals div.grand { border-top: 1px solid #111; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: 700; }
+    .sales-paper .sales-paper-totals div.is-grand { border-top: 1px solid #111; margin-top: 6px; padding-top: 8px; font-size: 16px; font-weight: 700; }
     .sales-paper .sales-paper-note { margin-top: 18px; white-space: pre-wrap; }
     .sales-paper .sales-paper-sign { display: flex; justify-content: space-between; gap: 40px; margin-top: 44px; }
     .sales-paper .sales-paper-sign div { flex: 1 1 0; border-top: 1px solid #999; padding-top: 6px; text-align: center; color: #666; font-size: 12px; }
     @page { size: A4; margin: 14mm; }
     @media print {
-      body * { visibility: hidden; }
-      #salesPrintDoc, #salesPrintDoc * { visibility: visible; }
-      #salesPrintDoc { display: block; position: absolute; left: 0; top: 0; width: 100%; margin: 0; padding: 0; background: #fff; }
+      html, body { height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; background: #fff !important; overflow: visible !important; }
+      body > *:not(#salesPrintDoc) { display: none !important; }
+      #salesPrintDoc { display: block !important; margin: 0; padding: 0; background: #fff; }
       /* Keep a row whole and let long tables break between rows rather than through one. */
       .sales-paper tr { page-break-inside: avoid; }
       .sales-paper thead { display: table-header-group; }
@@ -3086,7 +3087,11 @@
           <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
         </button>
       </div>
-      <div class="sales-preview-scroll"><div class="sales-paper" id="salesPreviewPaper" style="padding:26px;box-shadow:0 6px 24px rgba(0,0,0,.14)"></div></div>
+      <div class="sales-preview-scroll" id="salesPreviewScroll">
+        <div class="sales-preview-stage" id="salesPreviewStage">
+          <div class="sales-paper sales-preview-page" id="salesPreviewPaper"></div>
+        </div>
+      </div>
       <div class="panel-body">
         <div class="feedback-actions">
           <button class="btn-secondary" type="button" data-sales-close="salesPreviewModal" id="salesPreviewClose">Close</button>
@@ -4441,7 +4446,7 @@
         back: "กลับ", shopInfo: "ข้อมูลร้าน", customerInfo: "ข้อมูลลูกค้า", docInfo: "ข้อมูลเอกสาร",
         fName: "ชื่อ", fPhone: "เบอร์โทร", fAddress: "ที่อยู่", fTaxId: "เลขผู้เสียภาษี",
         docNo: "เลขที่", docDate: "วันที่", validUntil: "ยืนราคาถึง",
-        items: "รายการ", addItem: "เพิ่มรายการ", itemName: "ชื่อรายการ", itemDetail: "รายละเอียด",
+        items: "รายการ", addItem: "เพิ่มรายการ", itemName: "ชื่อรายการ",
         qty: "จำนวน", unitPrice: "ราคาต่อหน่วย", itemCost: "ต้นทุน", lineTotal: "รวม",
         freebie: "ของแถม", visible: "ลูกค้าเห็น", removeItem: "ลบ",
         noItems: "ยังไม่มีรายการ กด \u201cเพิ่มรายการ\u201d เพื่อเริ่ม",
@@ -4475,7 +4480,7 @@
         back: "Back", shopInfo: "Your shop", customerInfo: "Customer", docInfo: "Document",
         fName: "Name", fPhone: "Phone", fAddress: "Address", fTaxId: "Tax ID",
         docNo: "Number", docDate: "Date", validUntil: "Valid until",
-        items: "Items", addItem: "Add item", itemName: "Item", itemDetail: "Description",
+        items: "Items", addItem: "Add item", itemName: "Item",
         qty: "Qty", unitPrice: "Unit price", itemCost: "Cost", lineTotal: "Amount",
         freebie: "Free gift", visible: "Customer sees", removeItem: "Remove",
         noItems: "No items yet. Use \u201cAdd item\u201d to start.",
@@ -4509,7 +4514,7 @@
         back: "返回", shopInfo: "本店信息", customerInfo: "客户信息", docInfo: "单据信息",
         fName: "名称", fPhone: "电话", fAddress: "地址", fTaxId: "税号",
         docNo: "单号", docDate: "日期", validUntil: "有效期至",
-        items: "项目", addItem: "添加项目", itemName: "项目名称", itemDetail: "说明",
+        items: "项目", addItem: "添加项目", itemName: "项目名称",
         qty: "数量", unitPrice: "单价", itemCost: "成本", lineTotal: "金额",
         freebie: "赠品", visible: "客户可见", removeItem: "删除",
         noItems: "还没有项目，点击\u201c添加项目\u201d开始。",
@@ -4543,7 +4548,7 @@
         back: "戻る", shopInfo: "自社情報", customerInfo: "顧客情報", docInfo: "書類情報",
         fName: "名前", fPhone: "電話番号", fAddress: "住所", fTaxId: "登録番号",
         docNo: "番号", docDate: "日付", validUntil: "有効期限",
-        items: "明細", addItem: "明細を追加", itemName: "品目", itemDetail: "内容",
+        items: "明細", addItem: "明細を追加", itemName: "品目",
         qty: "数量", unitPrice: "単価", itemCost: "原価", lineTotal: "金額",
         freebie: "サービス品", visible: "お客様に表示", removeItem: "削除",
         noItems: "明細がありません。\u300c明細を追加\u300dから始めてください。",
@@ -4577,7 +4582,7 @@
         back: "뒤로", shopInfo: "내 정보", customerInfo: "고객 정보", docInfo: "문서 정보",
         fName: "이름", fPhone: "전화번호", fAddress: "주소", fTaxId: "사업자번호",
         docNo: "번호", docDate: "날짜", validUntil: "유효기간",
-        items: "항목", addItem: "항목 추가", itemName: "항목명", itemDetail: "설명",
+        items: "항목", addItem: "항목 추가", itemName: "항목명",
         qty: "수량", unitPrice: "단가", itemCost: "원가", lineTotal: "금액",
         freebie: "무료 증정", visible: "고객에게 표시", removeItem: "삭제",
         noItems: "항목이 없습니다. \u201c항목 추가\u201d로 시작하세요.",
@@ -8583,7 +8588,7 @@
     const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
 
     function salesItem(patch) {
-      return { name: "", detail: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
+      return { name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
     }
 
     function ensureSalesDocs() {
@@ -8705,7 +8710,8 @@
     function orderCostTotal(orderId) {
       const jobs = orderJobs(orderId);
       const order = (state.orders || []).find((item) => item.id === orderId);
-      return jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + (Number(order && order.extraCost) || 0);
+      const total = jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + (Number(order && order.extraCost) || 0);
+      return Math.round(total * 100) / 100;
     }
 
     function salesStatusLabel(doc) {
@@ -8812,7 +8818,6 @@
         <tr data-sales-index="${index}" class="${item.visible === false ? "is-hidden-line" : ""}" data-hidden-tag="${escapeHtml(salesText("visible"))}: ✕">
           <td>
             <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
-            <input type="text" data-sales-field="detail" value="${escapeHtml(item.detail || "")}" placeholder="${escapeHtml(salesText("itemDetail"))}" style="margin-top:5px;font-size:13px">
           </td>
           <td class="num" style="width:88px"><input type="number" min="0" step="1" data-sales-field="qty" value="${Number(item.qty) || 0}"></td>
           <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="unitPrice" value="${Number(item.unitPrice) || 0}" ${item.freebie ? "disabled" : ""}></td>
@@ -8837,7 +8842,7 @@
           ${totals.discount ? `<div class="sales-total-row"><span>${escapeHtml(salesText("discount"))}</span><strong>-${money.format(totals.discount)}</strong></div>` : ""}
           ${totals.shipping ? `<div class="sales-total-row"><span>${escapeHtml(salesText("shipping"))}</span><strong>${money.format(totals.shipping)}</strong></div>` : ""}
           ${doc.vat ? `<div class="sales-total-row"><span>${escapeHtml(salesText("vat"))}</span><strong>${money.format(totals.vat)}</strong></div>` : ""}
-          <div class="sales-total-row grand"><span>${escapeHtml(salesText("grandTotal"))}</span><strong>${money.format(totals.total)}</strong></div>`;
+          <div class="sales-total-row is-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><strong>${money.format(totals.total)}</strong></div>`;
       }
       const internal = $("salesInternal");
       if (internal) {
@@ -8960,7 +8965,7 @@
 
       const rows = visible.map((item) => `
         <tr>
-          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}${item.detail ? `<span class="sales-paper-detail">${escapeHtml(item.detail)}</span>` : ""}</td>
+          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(salesText("freeLabel"))})</em>` : ""}</td>
           <td class="num">${Number(item.qty) || 0}</td>
           <td class="num">${item.freebie ? "-" : money.format(Number(item.unitPrice) || 0)}</td>
           <td class="num">${money.format(salesLineTotal(item))}</td>
@@ -9004,7 +9009,7 @@
           ${totals.discount ? `<div><span>${escapeHtml(salesText("discount"))}</span><span>-${money.format(totals.discount)}</span></div>` : ""}
           ${totals.shipping ? `<div><span>${escapeHtml(salesText("shipping"))}</span><span>${money.format(totals.shipping)}</span></div>` : ""}
           ${doc.vat ? `<div><span>${escapeHtml(salesText("vat"))}</span><span>${money.format(totals.vat)}</span></div>` : ""}
-          <div class="grand"><span>${escapeHtml(salesText("grandTotal"))}</span><span>${money.format(totals.total)}</span></div>
+          <div class="is-grand"><span>${escapeHtml(salesText("grandTotal"))}</span><span>${money.format(totals.total)}</span></div>
         </div>
         ${doc.note ? `<div class="sales-paper-note">${escapeHtml(doc.note)}</div>` : ""}
         <div class="sales-paper-sign">
@@ -9012,6 +9017,34 @@
           <div>${escapeHtml(doc.customer.name || salesText("customerInfo"))}</div>
         </div>`;
     }
+
+    function fitSalesPreview() {
+      const scroll = $("salesPreviewScroll");
+      const stage = $("salesPreviewStage");
+      const page = $("salesPreviewPaper");
+      if (!scroll || !stage || !page) return;
+      page.style.transform = "none";
+      const width = page.offsetWidth;
+      const height = page.offsetHeight;
+      if (!width) return;
+      const scale = Math.min(1, Math.max(160, scroll.clientWidth - 36) / width);
+      page.style.transform = `scale(${scale})`;
+      stage.style.width = `${width * scale}px`;
+      stage.style.height = `${height * scale}px`;
+    }
+
+    function openSalesPreview() {
+      readSalesForm();
+      const paper = $("salesPreviewPaper");
+      if (paper) paper.innerHTML = salesPaperHtml(salesUi.draft);
+      openSalesModal("salesPreviewModal");
+      requestAnimationFrame(fitSalesPreview);
+    }
+
+    window.addEventListener("resize", () => {
+      const modal = $("salesPreviewModal");
+      if (modal && modal.classList.contains("show")) fitSalesPreview();
+    });
 
     function printSalesDoc() {
       if (!salesUi.draft) return;
@@ -9203,13 +9236,7 @@
 
       if (event.target.closest("#salesSaveBtn")) { saveSalesDoc(); return; }
 
-      if (event.target.closest("#salesPreviewBtn")) {
-        readSalesForm();
-        const paper = $("salesPreviewPaper");
-        if (paper) paper.innerHTML = salesPaperHtml(salesUi.draft);
-        openSalesModal("salesPreviewModal");
-        return;
-      }
+      if (event.target.closest("#salesPreviewBtn")) { openSalesPreview(); return; }
 
       if (event.target.closest("#salesPrintBtn")) { printSalesDoc(); return; }
       if (event.target.closest("#salesPreviewPrint")) {
