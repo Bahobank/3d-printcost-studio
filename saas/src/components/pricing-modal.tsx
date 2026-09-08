@@ -7,10 +7,6 @@ import { PLAN_CONFIGS, USD_PLAN_PRICES, getPlanAmount } from "@/lib/billing-plan
 import { SubscriptionCenter } from "@/components/subscription-center";
 import type { UserProfile } from "@/lib/subscription";
 
-// Pre-filled subject for the contact form. The support address itself stays on
-// the server — a customer never needs to see it, and showing it invites spam.
-const SUPPORT_SUBJECT = "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้";
-
 type BillingCycle = "monthly" | "yearly";
 type PlanKey = "maker" | "studio";
 export type PricingLanguage = "th" | "en" | "zh" | "ja" | "ko";
@@ -185,7 +181,7 @@ const thCopy: PricingCopy = {
   cancelAnytime: "ยกเลิกได้ทุกเมื่อ",
   recommended: "แนะนำ",
   footer: "ข้อมูลของคุณเข้ารหัสและปลอดภัย",
-  stuckNote: "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้? แจ้งเราได้เลย เราจะรีบแก้ไขให้",
+  stuckNote: "ต้องการความช่วยเหลือ? แจ้งทีมงานได้เลย",
   contactUs: "ติดต่อเรา",
   signOut: "ออกจากระบบ",
   choosePaymentTitlePrefix: "เลือกแพ็กเกจ",
@@ -278,7 +274,7 @@ const enCopy: PricingCopy = {
   cancelAnytime: "Cancel anytime",
   recommended: "Recommended",
   footer: "Your payment data is encrypted and secure",
-  stuckNote: "Paid but still locked out? Tell us and we will sort it out.",
+  stuckNote: "Need a hand? Get in touch with our team.",
   contactUs: "Contact us",
   signOut: "Sign out",
   choosePaymentTitlePrefix: "Choose plan",
@@ -371,7 +367,7 @@ const zhCopy: PricingCopy = {
   cancelAnytime: "随时取消",
   recommended: "推荐",
   footer: "您的支付信息已加密且安全",
-  stuckNote: "已付款但仍无法使用？告诉我们，我们会尽快处理。",
+  stuckNote: "需要帮助？请联系我们的团队。",
   contactUs: "联系我们",
   signOut: "退出登录",
   choosePaymentTitlePrefix: "选择方案",
@@ -464,7 +460,7 @@ const jaCopy: PricingCopy = {
   cancelAnytime: "いつでも解約可能",
   recommended: "おすすめ",
   footer: "お支払い情報は暗号化され安全に保護されます",
-  stuckNote: "お支払い済みなのに利用できない場合はご連絡ください。すぐに対応します。",
+  stuckNote: "お困りですか？サポートチームにご連絡ください。",
   contactUs: "お問い合わせ",
   signOut: "ログアウト",
   choosePaymentTitlePrefix: "プラン選択",
@@ -557,7 +553,7 @@ const koCopy: PricingCopy = {
   cancelAnytime: "언제든지 해지 가능",
   recommended: "추천",
   footer: "결제 정보는 암호화되어 안전하게 보호됩니다",
-  stuckNote: "결제했는데도 이용할 수 없나요? 알려주시면 바로 처리해 드리겠습니다.",
+  stuckNote: "도움이 필요하신가요? 지원팀에 문의해 주세요.",
   contactUs: "문의하기",
   signOut: "로그아웃",
   choosePaymentTitlePrefix: "요금제 선택",
@@ -1144,7 +1140,6 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
       </div>
 
       <SupportDialog
-        defaultSubject={SUPPORT_SUBJECT}
         language={language}
         onClose={() => setSupportOpen(false)}
         open={supportOpen}

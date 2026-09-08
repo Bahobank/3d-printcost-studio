@@ -9,9 +9,7 @@ type SupportCopy = {
   title: string;
   intro: string;
   subjectLabel: string;
-  subjectPlaceholder: string;
   bodyLabel: string;
-  bodyPlaceholder: string;
   send: string;
   sending: string;
   cancel: string;
@@ -27,9 +25,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
     title: "ติดต่อทีมงาน",
     intro: "เล่าปัญหาที่เจอให้เราฟังได้เลย เราจะรีบตรวจสอบและติดต่อกลับ",
     subjectLabel: "หัวข้อ",
-    subjectPlaceholder: "เช่น ชำระเงินแล้วแต่ยังใช้งานไม่ได้",
     bodyLabel: "รายละเอียด",
-    bodyPlaceholder: "บอกรายละเอียดให้มากที่สุด เช่น ชำระเมื่อไร ช่องทางไหน ยอดเท่าไร",
     send: "ส่งข้อความ",
     sending: "กำลังส่ง...",
     cancel: "ยกเลิก",
@@ -43,9 +39,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
     title: "Contact us",
     intro: "Tell us what went wrong and we will look into it and get back to you.",
     subjectLabel: "Subject",
-    subjectPlaceholder: "e.g. I paid but still cannot use the app",
     bodyLabel: "Details",
-    bodyPlaceholder: "As much detail as you can: when you paid, by which method, and how much.",
     send: "Send message",
     sending: "Sending...",
     cancel: "Cancel",
@@ -59,9 +53,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
     title: "联系我们",
     intro: "请告诉我们遇到的问题，我们会尽快核实并回复您。",
     subjectLabel: "主题",
-    subjectPlaceholder: "例如：已付款但仍无法使用",
     bodyLabel: "详细说明",
-    bodyPlaceholder: "请尽量详细说明：何时付款、使用哪种方式、金额多少。",
     send: "发送",
     sending: "发送中...",
     cancel: "取消",
@@ -75,9 +67,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
     title: "お問い合わせ",
     intro: "困っている内容をお知らせください。確認のうえご連絡します。",
     subjectLabel: "件名",
-    subjectPlaceholder: "例：支払い済みなのに利用できない",
     bodyLabel: "詳細",
-    bodyPlaceholder: "いつ、どの方法で、いくら支払ったかなど、できるだけ詳しくお書きください。",
     send: "送信する",
     sending: "送信中...",
     cancel: "キャンセル",
@@ -91,9 +81,7 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
     title: "문의하기",
     intro: "어떤 문제가 있었는지 알려주시면 확인 후 연락드리겠습니다.",
     subjectLabel: "제목",
-    subjectPlaceholder: "예: 결제했는데 이용할 수 없습니다",
     bodyLabel: "상세 내용",
-    bodyPlaceholder: "언제, 어떤 방법으로, 얼마를 결제하셨는지 가능한 자세히 적어주세요.",
     send: "보내기",
     sending: "보내는 중...",
     cancel: "취소",
@@ -106,13 +94,12 @@ const supportCopy: Record<SupportLanguage, SupportCopy> = {
 };
 
 type SupportDialogProps = {
-  defaultSubject?: string;
   language: SupportLanguage;
   onClose: () => void;
   open: boolean;
 };
 
-export function SupportDialog({ defaultSubject, language, onClose, open }: SupportDialogProps) {
+export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
   const copy = supportCopy[language] ?? supportCopy.th;
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
@@ -121,11 +108,11 @@ export function SupportDialog({ defaultSubject, language, onClose, open }: Suppo
 
   useEffect(() => {
     if (!open) return;
-    setSubject(defaultSubject ?? "");
+    setSubject("");
     setBody("");
     setState("editing");
     setError(null);
-  }, [defaultSubject, open]);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -209,7 +196,6 @@ export function SupportDialog({ defaultSubject, language, onClose, open }: Suppo
               id="support-subject"
               maxLength={200}
               onChange={(event) => setSubject(event.target.value)}
-              placeholder={copy.subjectPlaceholder}
               type="text"
               value={subject}
             />
@@ -223,7 +209,6 @@ export function SupportDialog({ defaultSubject, language, onClose, open }: Suppo
               id="support-body"
               maxLength={4000}
               onChange={(event) => setBody(event.target.value)}
-              placeholder={copy.bodyPlaceholder}
               value={body}
             />
 
