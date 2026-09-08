@@ -536,6 +536,7 @@
     .sales-paper .sp-party-name { font-weight: 700; font-size: 15px; margin-bottom: 6px; }
     .sales-paper .sp-kv { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; font-size: 12.5px; align-items: start; }
     .sales-paper .sp-kv .k { color: #7a7a7a; white-space: nowrap; }
+    .sales-paper .sp-kv.is-3 { grid-template-columns: auto auto 1fr; column-gap: 8px; }
     .sales-paper .sp-kv .c { color: #bbb; }
     .sales-paper .sp-rule { border-top: 1px solid #e6e6e6; margin: 20px 0; }
     .sales-paper .sp-section-title { font-weight: 700; font-size: 15px; margin: 0 0 12px; }
@@ -9500,7 +9501,7 @@
       const type = SALES_TYPE_KEYS[doc.type] ? doc.type : "QT";
 
       const kv = (label, value) => value
-        ? `<div class="k">${escapeHtml(label)}</div><div class="v">${escapeHtml(String(value)).replace(/\n/g, "<br>")}</div>`
+        ? `<div class="k">${escapeHtml(label)}:</div><div class="v">${escapeHtml(String(value)).replace(/\n/g, "<br>")}</div>`
         : "";
       const meta = (label, value) => value
         ? `<div class="k">${escapeHtml(label)}</div><div class="c">:</div><div class="v">${escapeHtml(value)}</div>`
@@ -9604,7 +9605,7 @@
         <div class="sp-pay">
           <div>
             <div class="sp-pay-title">${bankIcon}${escapeHtml(salesText("payChannel"))}</div>
-            <div class="sp-kv">
+            <div class="sp-kv is-3">
               ${bank ? [
                 meta(salesText("bankName"), bank.bankName),
                 meta(salesText("bankAccountName"), bank.accountName),
