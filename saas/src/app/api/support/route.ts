@@ -9,7 +9,7 @@ const MAX_BODY = 4000;
 // Same delivery route the legacy app's feedback form already uses, so both kinds
 // of message land in the same inbox. Which inbox that is lives in the Web3Forms
 // account for this key, not here.
-const WEB3FORMS_KEY = "9e9ef92b-a801-4370-9b20-f0e27058283f";
+const WEB3FORMS_KEY = "588a3255-28a6-4c2d-b64d-fa5c06b01a1d";
 
 /**
  * Takes a message from the in-app contact form. The customer writing in is often
