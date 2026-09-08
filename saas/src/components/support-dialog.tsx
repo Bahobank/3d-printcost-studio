@@ -149,6 +149,24 @@ export function SupportDialog({ language, onClose, open }: SupportDialogProps) {
         body: JSON.stringify({ name, subject, body }),
       });
       if (!res.ok) throw new Error(String(res.status));
+
+      // Web3Forms only accepts submissions from the browser on the free plan, so
+      // the server hands back the composed notification and it goes out from here.
+      // The message is already stored by this point: a delivery failure is worth
+      // logging, not worth telling the customer their message did not arrive.
+      const data = (await res.json().catch(() => ({}))) as { notify?: Record<string, unknown> };
+      if (data.notify) {
+        try {
+          await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: JSON.stringify(data.notify),
+          });
+        } catch (deliveryError) {
+          console.error("[support] could not deliver the notification", deliveryError);
+        }
+      }
+
       setState("sent");
     } catch {
       setState("editing");

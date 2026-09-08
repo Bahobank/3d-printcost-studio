@@ -9,6 +9,10 @@ const MAX_BODY = 4000;
 // Same delivery route the legacy app's feedback form already uses, so both kinds
 // of message land in the same inbox. Which inbox that is lives in the Web3Forms
 // account for this key, not here.
+//
+// Web3Forms rejects server-to-server calls on the free plan, so this route
+// composes the notification and hands it back for the browser to post — exactly
+// how the legacy feedback form has always delivered. The key is public by design.
 const WEB3FORMS_KEY = "588a3255-28a6-4c2d-b64d-fa5c06b01a1d";
 
 /**
@@ -79,16 +83,17 @@ export async function POST(request: Request) {
 
     // Stored safely by now, so delivery is a convenience on top: a mail outage
     // must not tell the customer their message failed.
-    await notifyStudio({ senderName, email, subject, body, profile });
-
-    return NextResponse.json({ ok: true });
+    return NextResponse.json({
+      ok: true,
+      notify: buildNotification({ senderName, email, subject, body, profile }),
+    });
   } catch (error) {
     console.error("[support] unexpected failure", error);
     return NextResponse.json({ ok: false, reason: "store-failed" }, { status: 500 });
   }
 }
 
-async function notifyStudio({
+function buildNotification({
   senderName,
   email,
   subject,
@@ -107,29 +112,13 @@ async function notifyStudio({
 
 ${body}`;
 
-  try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_KEY,
-        subject: `[ติดต่อทีมงาน] ${subject}`,
-        from_name: `3D PrintCost Studio - ${senderName}`,
-        app: "3D PrintCost Studio",
-        name: senderName,
-        email: email ?? undefined,
-        message,
-      }),
-    });
-
-    const result = (await response.json().catch(() => ({}))) as { success?: boolean; message?: string };
-    if (!response.ok || result.success === false) {
-      console.error("[support] delivery failed", result.message ?? response.status);
-      return;
-    }
-
-    console.info("[support] delivered to the studio inbox", { subject });
-  } catch (error) {
-    console.error("[support] delivery threw", error);
-  }
+  return {
+    access_key: WEB3FORMS_KEY,
+    subject: `[ติดต่อทีมงาน] ${subject}`,
+    from_name: `3D PrintCost Studio - ${senderName}`,
+    app: "3D PrintCost Studio",
+    name: senderName,
+    email: email ?? undefined,
+    message,
+  };
 }
