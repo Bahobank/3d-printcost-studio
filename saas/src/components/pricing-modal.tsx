@@ -1,15 +1,15 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, Lock, LogOut, Mail, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
+import { Boxes, CheckCircle2, CreditCard, Crown, FlaskConical, LifeBuoy, Lock, LogOut, QrCode, ShieldCheck, Star, Tag, Wallet, X } from "lucide-react";
+import { SupportDialog } from "@/components/support-dialog";
 import { PLAN_CONFIGS, USD_PLAN_PRICES, getPlanAmount } from "@/lib/billing-plans";
 import { SubscriptionCenter } from "@/components/subscription-center";
 import type { UserProfile } from "@/lib/subscription";
 
-// Where a locked-out customer reaches a human. Must be a mailbox that is
-// actually monitored — it is the only contact route on that screen.
-const SUPPORT_EMAIL = "baho.studio25@gmail.com";
-const SUPPORT_SUBJECT = "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้ / Paid but still locked out";
+// Pre-filled subject for the contact form. The support address itself stays on
+// the server — a customer never needs to see it, and showing it invites spam.
+const SUPPORT_SUBJECT = "ชำระเงินแล้วแต่ยังเข้าใช้งานไม่ได้";
 
 type BillingCycle = "monthly" | "yearly";
 type PlanKey = "maker" | "studio";
@@ -1055,6 +1055,7 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
   const copy = pricingCopy[language];
   const [billingCycle, setBillingCycle] = useState<BillingCycle>(currentCycle ?? "yearly");
   const [checkoutPlan, setCheckoutPlan] = useState<PlanKey | null>(null);
+  const [supportOpen, setSupportOpen] = useState(false);
 
   useEffect(() => {
     setCheckoutPlan(null);
@@ -1120,13 +1121,14 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
               <div className="mt-4 rounded-2xl bg-slate-50 px-5 py-4 text-center">
                 <p className="text-sm font-semibold leading-6 text-slate-600">{copy.stuckNote}</p>
                 <div className="mt-3 flex flex-wrap items-center justify-center gap-2.5">
-                  <a
+                  <button
                     className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-slate-800"
-                    href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(SUPPORT_SUBJECT)}`}
+                    onClick={() => setSupportOpen(true)}
+                    type="button"
                   >
-                    <Mail size={16} strokeWidth={2.4} />
+                    <LifeBuoy size={16} strokeWidth={2.4} />
                     {copy.contactUs}
-                  </a>
+                  </button>
                   <a
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-bold text-slate-700 transition hover:bg-slate-100"
                     href="/logout"
@@ -1135,12 +1137,18 @@ export function PricingDialog({ currentCycle = null, currentPlan = null, expired
                     {copy.signOut}
                   </a>
                 </div>
-                <p className="mt-3 text-xs font-semibold text-slate-400">{SUPPORT_EMAIL}</p>
               </div>
             ) : null}
           </>
         )}
       </div>
+
+      <SupportDialog
+        defaultSubject={SUPPORT_SUBJECT}
+        language={language}
+        onClose={() => setSupportOpen(false)}
+        open={supportOpen}
+      />
     </div>
   );
 }
