@@ -489,6 +489,9 @@
     .sales-pick-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; border: 1px solid var(--line); border-radius: var(--radius); padding: 11px 14px; cursor: pointer; background: var(--panel); text-align: left; font: inherit; color: inherit; width: 100%; }
     .sales-pick-row:hover { border-color: var(--accent); }
     .sales-pick-row.selected { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(67, 111, 246, .18); }
+    .sales-pick-main { display: flex; align-items: center; gap: 12px; min-width: 0; }
+    .sales-pick-thumb { width: 48px; height: 48px; border-radius: 8px; border: 1px solid var(--line); background: var(--soft) center/cover no-repeat; flex: 0 0 auto; }
+    .sales-pick-text { display: grid; gap: 2px; min-width: 0; }
     .sales-pick-name { font-weight: 700; }
     .sales-pick-meta { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
     .sales-choice { display: grid; gap: 10px; }
@@ -8990,6 +8993,16 @@
       return doc.orderId ? `order:${doc.orderId}` : "";
     }
 
+    async function loadOrderThumb(order) {
+      const key = `order:${order.id}`;
+      if (salesImageCache.has(key)) return salesImageCache.get(key);
+      let data = "";
+      try { data = (await orderImageSrc(order)) || ""; }
+      catch (error) { data = ""; }
+      salesImageCache.set(key, data);
+      return data;
+    }
+
     async function loadSalesImage(doc) {
       const cacheKey = salesImageCacheKey(doc);
       if (!cacheKey) return "";
@@ -9203,8 +9216,17 @@
     // ---------------------------------------------------------------- editor
     function salesEditorOpen() { return Boolean(salesUi.draft); }
 
+    function markLineFromOrder(doc) {
+      if (!doc || !doc.orderId) return;
+      const items = doc.items || [];
+      if (!items.length || items.some((item) => item.fromOrder)) return;
+      const match = items.find((item) => item.name && item.name === doc.orderName) || items[0];
+      if (match) match.fromOrder = true;
+    }
+
     function openSalesEditor(doc, isNew) {
       salesUi.draft = structuredClone(doc);
+      markLineFromOrder(salesUi.draft);
       const pending = salesUi.draft;
       if (salesImageCacheKey(pending) && !salesImageData(pending)) {
         loadSalesImage(pending).then(() => {
@@ -9624,15 +9646,28 @@
       if (!host) return;
       const orders = salesOrderRows();
       host.innerHTML = orders.length
-        ? orders.map((order) => `
-            <button class="sales-pick-row ${order.id === salesUi.pickedOrderId ? "selected" : ""}" type="button" data-sales-pick-order="${order.id}">
-              <span>
-                <span class="sales-pick-name">${escapeHtml(order.name || "-")}</span>
-                <span class="sales-pick-meta">${escapeHtml(salesText("orderDate"))}: ${escapeHtml(String(order.createdAt || "").slice(0, 10))} · ${escapeHtml(orderJobs(order.id).length + " " + orderText("jobsInOrder"))}</span>
+        ? orders.map((order) => {
+            const thumb = salesImageCache.get(`order:${order.id}`) || "";
+            return `<button class="sales-pick-row ${order.id === salesUi.pickedOrderId ? "selected" : ""}" type="button" data-sales-pick-order="${order.id}">
+              <span class="sales-pick-main">
+                <span class="sales-pick-thumb" style="${thumb ? `background-image:url(&quot;${thumb}&quot;)` : ""}"></span>
+                <span class="sales-pick-text">
+                  <span class="sales-pick-name">${escapeHtml(order.name || "-")}</span>
+                  <span class="sales-pick-meta">${escapeHtml(salesText("orderDate"))}: ${escapeHtml(String(order.createdAt || "").slice(0, 10))} · ${escapeHtml(orderJobs(order.id).length + " " + orderText("jobsInOrder"))}</span>
+                </span>
               </span>
               <strong>${money.format(Number(order.salePrice) || 0)}</strong>
-            </button>`).join("")
+            </button>`;
+          }).join("")
         : `<p class="sales-empty">${escapeHtml(salesText("pickOrderEmpty"))}</p>`;
+
+      // The pictures arrive after the rows; fill them in when they do.
+      const missing = orders.filter((order) => !salesImageCache.has(`order:${order.id}`));
+      if (missing.length) {
+        Promise.all(missing.map(loadOrderThumb)).then(() => {
+          if ($("salesOrderModal") && $("salesOrderModal").classList.contains("show")) renderSalesOrderList();
+        });
+      }
     }
 
     function fillSalesSettings() {
