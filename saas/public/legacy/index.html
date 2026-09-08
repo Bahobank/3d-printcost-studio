@@ -370,6 +370,17 @@
     .tab { background: transparent; color: #445149; padding: 0 13px; }
     .tab.active { background: var(--panel); color: var(--ink); box-shadow: 0 4px 12px rgba(34,46,39,.08); }
     .view { display: none; }
+    .quote-doc { display: none; }
+    .quote-line { display: grid; grid-template-columns: 1fr 70px 110px 110px; gap: 8px; align-items: center; }
+    .quote-hidden-row { opacity: .62; }
+    @media print {
+      body * { visibility: hidden; }
+      #quotePrintDoc, #quotePrintDoc * { visibility: visible; }
+      #quotePrintDoc { display: block; position: absolute; inset: 0; margin: 0; padding: 24px; background: #fff; color: #111; }
+      .quote-print-table { width: 100%; border-collapse: collapse; }
+      .quote-print-table th, .quote-print-table td { border-bottom: 1px solid #ddd; padding: 8px 6px; text-align: left; }
+      .quote-print-table td.num, .quote-print-table th.num { text-align: right; }
+    }
     .view.active { display: grid; gap: 16px; }
     .dashboard-grid { display: grid; gap: 16px; }
     .dashboard-hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding: 22px; border-radius: 20px; background: linear-gradient(135deg, var(--panel), var(--soft)); border: 1px solid var(--line); box-shadow: var(--shadow); }
@@ -2124,6 +2135,10 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l2 4v14H4V7z"/><path d="M6 7h12"/><path d="M8 11h8"/><path d="M8 15h6"/></svg>
             <span class="side-label" data-side-label="orders">Orders</span>
           </button>
+          <button class="tab" data-tab="quotesView" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8"/><path d="M8 17h5"/></svg>
+            <span class="side-label" data-side-label="quotes">Quotes</span>
+          </button>
           <button class="tab side-nav-help" id="helpBtn" type="button">
             <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             <span class="side-label" data-side-label="help">How to use</span>
@@ -2775,6 +2790,72 @@
             </div>
           </div>
         </section>
+
+        <section id="quotesView" class="view">
+          <div class="card">
+            <div class="card-head">
+              <h2 id="quotesTitle">Quotations</h2>
+              <button class="btn" id="quoteNewBtn" type="button">New quote</button>
+            </div>
+
+            <div class="grid-2">
+              <div>
+                <h3 id="quoteSellerTitle">Your details</h3>
+                <input id="quoteSellerName" type="text" placeholder="Name">
+                <input id="quoteSellerPhone" type="text" placeholder="Phone">
+                <input id="quoteSellerAddress" type="text" placeholder="Address">
+                <input id="quoteSellerTaxId" type="text" placeholder="Tax ID">
+              </div>
+              <div>
+                <h3 id="quoteCustomerTitle">Customer</h3>
+                <input id="quoteCustomerName" type="text" placeholder="Name">
+                <input id="quoteCustomerPhone" type="text" placeholder="Phone">
+                <input id="quoteCustomerAddress" type="text" placeholder="Address">
+                <input id="quoteCustomerTaxId" type="text" placeholder="Tax ID">
+              </div>
+            </div>
+
+            <div class="grid-3">
+              <label><span id="quoteNoLabel">Number</span><input id="quoteNo" type="text"></label>
+              <label><span id="quoteDateLabel">Date</span><input id="quoteDate" type="date"></label>
+              <label><span id="quoteValidLabel">Valid until</span><input id="quoteValidUntil" type="date"></label>
+            </div>
+
+            <div class="card-head">
+              <h3 id="quoteItemsTitle">Items</h3>
+              <div>
+                <select id="quoteOrderPick"></select>
+                <button class="btn" id="quoteAddOrderBtn" type="button">Add from order</button>
+                <button class="btn" id="quoteAddItemBtn" type="button">Add item</button>
+              </div>
+            </div>
+            <p class="hint" id="quoteHiddenHint"></p>
+            <div id="quoteItemList"></div>
+
+            <div class="grid-3">
+              <label><span id="quoteShippingLabel">Shipping</span><input id="quoteShipping" type="number" min="0" step="0.01" value="0"></label>
+              <label><span id="quoteDiscountLabel">Discount</span><input id="quoteDiscount" type="number" min="0" step="0.01" value="0"></label>
+              <label class="checkline"><input id="quoteVat" type="checkbox"><span id="quoteVatLabel">VAT 7%</span></label>
+            </div>
+
+            <label><span id="quoteNoteLabel">Notes</span><textarea id="quoteNote" rows="2"></textarea></label>
+
+            <div id="quoteTotals"></div>
+            <div id="quoteInternalBox"></div>
+
+            <div class="card-head">
+              <button class="btn primary" id="quoteSaveBtn" type="button">Save quote</button>
+              <button class="btn" id="quotePrintBtn" type="button">Print / Save as PDF</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 id="quoteSavedTitle">Saved quotes</h3>
+            <div id="quoteSavedList"></div>
+          </div>
+        </section>
+
+        <div id="quotePrintDoc" class="quote-doc"></div>
       </section>
     </main>
       </div>
@@ -3646,7 +3727,8 @@
       customMaterialBrands: { filament: [], resin: [] },
       materials: [],
       jobs: [],
-      orders: []
+      orders: [],
+      quotes: []
     };
     const SUPPORTED_LANGUAGES = ["en", "th", "zh", "ja", "ko"];
     function normalizeLanguage(value) {
@@ -4133,6 +4215,108 @@
     Object.assign(orderI18n.ja, { orderSortDate: "日付順", orderDateDesc: "新しい日付を先に", orderDateAsc: "古い日付を先に" });
     Object.assign(orderI18n.ko, { orderSortDate: "날짜 정렬", orderDateDesc: "최근 날짜 먼저", orderDateAsc: "오래된 날짜 먼저" });
     function orderText(key) { return (orderI18n[lang()] && orderI18n[lang()][key]) || orderI18n.en[key] || key; }
+    const quoteI18n = {
+      th: {
+        quotesTab: "ใบเสนอราคา", quotesTitle: "ใบเสนอราคา",
+        quoteNew: "สร้างใบใหม่", quoteNo: "เลขที่", quoteDate: "วันที่", quoteValidUntil: "ยืนราคาถึง",
+        quoteSeller: "ข้อมูลร้าน", quoteCustomer: "ข้อมูลลูกค้า",
+        quoteContactName: "ชื่อ", quoteContactPhone: "โทรศัพท์", quoteContactAddress: "ที่อยู่", quoteContactTaxId: "เลขประจำตัวผู้เสียภาษี",
+        quoteItems: "รายการ", quoteAddOrder: "เพิ่มจากออเดอร์", quoteAddItem: "เพิ่มรายการเอง",
+        quoteItemName: "รายการ", quoteQty: "จำนวน", quoteUnitPrice: "ราคาต่อหน่วย", quoteItemCost: "ต้นทุน",
+        quoteFreebie: "ของแถม", quoteVisible: "ลูกค้าเห็น", quoteRemove: "ลบ",
+        quoteNoItems: "ยังไม่มีรายการ กดปุ่มด้านบนเพื่อเพิ่ม",
+        quoteShipping: "ค่าจัดส่ง", quoteDiscount: "ส่วนลด", quoteVat: "ภาษีมูลค่าเพิ่ม 7%",
+        quoteSubtotal: "รวมเป็นเงิน", quoteTotal: "ยอดที่ลูกค้าต้องชำระ",
+        quoteInternal: "สรุปภายใน (ลูกค้าไม่เห็น)", quoteCost: "ต้นทุนรวม", quoteProfit: "กำไร",
+        quoteNote: "หมายเหตุ", quoteSave: "บันทึกใบเสนอราคา", quotePrint: "พิมพ์ / บันทึก PDF",
+        quoteSaved: "ใบที่บันทึกไว้", quoteNoSaved: "ยังไม่มีใบเสนอราคาที่บันทึกไว้",
+        quoteEdit: "แก้ไข", quoteDelete: "ลบใบนี้", quoteDeleteConfirm: "ลบใบเสนอราคานี้?",
+        quoteSavedToast: "บันทึกใบเสนอราคาแล้ว", quoteNeedItem: "ต้องมีอย่างน้อย 1 รายการ",
+        quoteHiddenHint: "รายการที่ไม่ติ๊ก \"ลูกค้าเห็น\" จะถูกคิดรวมต้นทุน แต่ไม่แสดงบนใบที่ส่งให้ลูกค้า",
+        quoteFreeLabel: "แถมฟรี", quoteQuotation: "ใบเสนอราคา"
+      },
+      en: {
+        quotesTab: "Quotes", quotesTitle: "Quotations",
+        quoteNew: "New quote", quoteNo: "Number", quoteDate: "Date", quoteValidUntil: "Valid until",
+        quoteSeller: "Your details", quoteCustomer: "Customer",
+        quoteContactName: "Name", quoteContactPhone: "Phone", quoteContactAddress: "Address", quoteContactTaxId: "Tax ID",
+        quoteItems: "Items", quoteAddOrder: "Add from order", quoteAddItem: "Add item",
+        quoteItemName: "Item", quoteQty: "Qty", quoteUnitPrice: "Unit price", quoteItemCost: "Cost",
+        quoteFreebie: "Free gift", quoteVisible: "Customer sees", quoteRemove: "Remove",
+        quoteNoItems: "No items yet. Use the buttons above to add one.",
+        quoteShipping: "Shipping", quoteDiscount: "Discount", quoteVat: "VAT 7%",
+        quoteSubtotal: "Subtotal", quoteTotal: "Total due",
+        quoteInternal: "Internal summary (hidden from the customer)", quoteCost: "Total cost", quoteProfit: "Profit",
+        quoteNote: "Notes", quoteSave: "Save quote", quotePrint: "Print / Save as PDF",
+        quoteSaved: "Saved quotes", quoteNoSaved: "No saved quotes yet",
+        quoteEdit: "Edit", quoteDelete: "Delete", quoteDeleteConfirm: "Delete this quote?",
+        quoteSavedToast: "Quote saved", quoteNeedItem: "Add at least one item first",
+        quoteHiddenHint: "Items without \"Customer sees\" ticked count towards your cost but never appear on the customer's copy",
+        quoteFreeLabel: "Free", quoteQuotation: "Quotation"
+      },
+      zh: {
+        quotesTab: "报价单", quotesTitle: "报价单",
+        quoteNew: "新建报价", quoteNo: "编号", quoteDate: "日期", quoteValidUntil: "有效期至",
+        quoteSeller: "本店信息", quoteCustomer: "客户信息",
+        quoteContactName: "名称", quoteContactPhone: "电话", quoteContactAddress: "地址", quoteContactTaxId: "税号",
+        quoteItems: "项目", quoteAddOrder: "从订单添加", quoteAddItem: "添加项目",
+        quoteItemName: "项目", quoteQty: "数量", quoteUnitPrice: "单价", quoteItemCost: "成本",
+        quoteFreebie: "赠品", quoteVisible: "客户可见", quoteRemove: "删除",
+        quoteNoItems: "还没有项目，请用上方按钮添加。",
+        quoteShipping: "运费", quoteDiscount: "折扣", quoteVat: "增值税 7%",
+        quoteSubtotal: "小计", quoteTotal: "应付总额",
+        quoteInternal: "内部汇总（客户看不到）", quoteCost: "总成本", quoteProfit: "利润",
+        quoteNote: "备注", quoteSave: "保存报价单", quotePrint: "打印 / 保存为 PDF",
+        quoteSaved: "已保存的报价单", quoteNoSaved: "还没有保存的报价单",
+        quoteEdit: "编辑", quoteDelete: "删除", quoteDeleteConfirm: "确定删除这份报价单？",
+        quoteSavedToast: "报价单已保存", quoteNeedItem: "请至少添加一个项目",
+        quoteHiddenHint: "未勾选\"客户可见\"的项目会计入成本，但不会出现在给客户的报价单上",
+        quoteFreeLabel: "赠送", quoteQuotation: "报价单"
+      },
+      ja: {
+        quotesTab: "見積書", quotesTitle: "見積書",
+        quoteNew: "新規作成", quoteNo: "番号", quoteDate: "日付", quoteValidUntil: "有効期限",
+        quoteSeller: "自社情報", quoteCustomer: "お客様情報",
+        quoteContactName: "名前", quoteContactPhone: "電話番号", quoteContactAddress: "住所", quoteContactTaxId: "登録番号",
+        quoteItems: "明細", quoteAddOrder: "注文から追加", quoteAddItem: "明細を追加",
+        quoteItemName: "品目", quoteQty: "数量", quoteUnitPrice: "単価", quoteItemCost: "原価",
+        quoteFreebie: "サービス品", quoteVisible: "お客様に表示", quoteRemove: "削除",
+        quoteNoItems: "明細がありません。上のボタンから追加してください。",
+        quoteShipping: "送料", quoteDiscount: "値引き", quoteVat: "消費税 7%",
+        quoteSubtotal: "小計", quoteTotal: "お支払い合計",
+        quoteInternal: "社内用サマリー（お客様には表示されません）", quoteCost: "原価合計", quoteProfit: "利益",
+        quoteNote: "備考", quoteSave: "見積書を保存", quotePrint: "印刷 / PDF 保存",
+        quoteSaved: "保存した見積書", quoteNoSaved: "保存した見積書はまだありません",
+        quoteEdit: "編集", quoteDelete: "削除", quoteDeleteConfirm: "この見積書を削除しますか？",
+        quoteSavedToast: "見積書を保存しました", quoteNeedItem: "明細を1件以上追加してください",
+        quoteHiddenHint: "「お客様に表示」のない明細は原価には入りますが、お客様用の見積書には出ません",
+        quoteFreeLabel: "サービス", quoteQuotation: "見積書"
+      },
+      ko: {
+        quotesTab: "견적서", quotesTitle: "견적서",
+        quoteNew: "새 견적서", quoteNo: "번호", quoteDate: "날짜", quoteValidUntil: "유효기간",
+        quoteSeller: "내 정보", quoteCustomer: "고객 정보",
+        quoteContactName: "이름", quoteContactPhone: "전화번호", quoteContactAddress: "주소", quoteContactTaxId: "사업자번호",
+        quoteItems: "항목", quoteAddOrder: "주문에서 추가", quoteAddItem: "항목 추가",
+        quoteItemName: "항목", quoteQty: "수량", quoteUnitPrice: "단가", quoteItemCost: "원가",
+        quoteFreebie: "무료 증정", quoteVisible: "고객에게 표시", quoteRemove: "삭제",
+        quoteNoItems: "항목이 없습니다. 위 버튼으로 추가하세요.",
+        quoteShipping: "배송비", quoteDiscount: "할인", quoteVat: "부가세 7%",
+        quoteSubtotal: "소계", quoteTotal: "결제 금액",
+        quoteInternal: "내부 요약 (고객에게 보이지 않음)", quoteCost: "총원가", quoteProfit: "이익",
+        quoteNote: "비고", quoteSave: "견적서 저장", quotePrint: "인쇄 / PDF 저장",
+        quoteSaved: "저장된 견적서", quoteNoSaved: "저장된 견적서가 없습니다",
+        quoteEdit: "수정", quoteDelete: "삭제", quoteDeleteConfirm: "이 견적서를 삭제할까요?",
+        quoteSavedToast: "견적서를 저장했습니다", quoteNeedItem: "항목을 하나 이상 추가하세요",
+        quoteHiddenHint: "\"고객에게 표시\"를 선택하지 않은 항목은 원가에는 포함되지만 고객용 견적서에는 나타나지 않습니다",
+        quoteFreeLabel: "무료", quoteQuotation: "견적서"
+      }
+    };
+    Object.entries(quoteI18n).forEach(([code, values]) => {
+      i18n[code] = { ...(i18n[code] || {}), ...values };
+    });
+    function quoteText(key) { return (quoteI18n[lang()] && quoteI18n[lang()][key]) || quoteI18n.en[key] || key; }
+
     const dynamicI18n = {
       th: {
         addMaterial: "เพิ่ม", editMaterial: "แก้ไข", saveStock: "บันทึกสต็อก", stockList: "รายการสต็อก", itemUnit: "รายการ", modelUnit: "รุ่น", totalCost: "ต้นทุนรวม", ofPackage: "ของแพ็ก",
@@ -5885,6 +6069,8 @@
       setText('.main-tabs [data-tab="catalogView"]', t("catalogTab"));
       setText('.main-tabs [data-tab="historyView"]', t("historyTab"));
       setText('.main-tabs [data-tab="ordersView"]', orderText("ordersTab"));
+      setText('[data-tab="quotesView"] .side-label', quoteText("quotesTab"));
+      renderQuoteScreen();
       setText('.tab[data-tab="dashboardView"]:not(.side-nav .tab)', sidebarText("dashboard"));
       setText('.tab[data-tab="ordersView"]:not(.side-nav .tab)', orderText("ordersTab"));
       setText("#catalogBadge", t("catalogTab"));
@@ -8094,6 +8280,384 @@
       renderOrderOptions(order.id);
       return order.id;
     }
+
+    // ---------------------------------------------------------------- quotes
+    // A quote has two audiences. The customer sees only the lines ticked
+    // "visible"; the shop sees every line, because the whole point of an
+    // invisible line is to carry a real cost (packaging, a fitting) into the
+    // margin without showing it. Nothing invisible may ever reach the printed
+    // copy, so the print document is built from a filtered list rather than
+    // hidden with CSS.
+    const QUOTE_VAT_RATE = 0.07;
+
+    function ensureQuotes() {
+      if (!Array.isArray(state.quotes)) state.quotes = [];
+      return state.quotes;
+    }
+
+    function newQuoteNumber() {
+      const now = new Date();
+      const stamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}`;
+      const used = ensureQuotes().filter((q) => (q.number || "").startsWith(`QT${stamp}`)).length;
+      return `QT${stamp}-${String(used + 1).padStart(3, "0")}`;
+    }
+
+    function blankQuote() {
+      const today = new Date().toISOString().slice(0, 10);
+      const later = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
+      return {
+        id: crypto.randomUUID(),
+        number: newQuoteNumber(),
+        date: today,
+        validUntil: later,
+        seller: { name: "", phone: "", address: "", taxId: "" },
+        customer: { name: "", phone: "", address: "", taxId: "" },
+        items: [],
+        shipping: 0,
+        discount: 0,
+        vat: false,
+        note: ""
+      };
+    }
+
+    let quoteDraft = null;
+
+    function currentQuote() {
+      if (!quoteDraft) quoteDraft = blankQuote();
+      return quoteDraft;
+    }
+
+    function quoteLineTotal(item) {
+      if (item.freebie) return 0;
+      return Math.max(0, Number(item.qty) || 0) * Math.max(0, Number(item.unitPrice) || 0);
+    }
+
+    function quoteLineCost(item) {
+      return Math.max(0, Number(item.qty) || 0) * Math.max(0, Number(item.cost) || 0);
+    }
+
+    function quoteTotals(quote) {
+      const visible = quote.items.filter((item) => item.visible);
+      const subtotal = visible.reduce((sum, item) => sum + quoteLineTotal(item), 0);
+      const shipping = Math.max(0, Number(quote.shipping) || 0);
+      const discount = Math.max(0, Number(quote.discount) || 0);
+      const beforeVat = Math.max(0, subtotal - discount + shipping);
+      const vat = quote.vat ? beforeVat * QUOTE_VAT_RATE : 0;
+      const total = beforeVat + vat;
+      // Every line counts here, visible or not — that is what an invisible line is for.
+      const cost = quote.items.reduce((sum, item) => sum + quoteLineCost(item), 0);
+      return { subtotal, shipping, discount, beforeVat, vat, total, cost, profit: total - cost };
+    }
+
+    function orderCostTotal(orderId) {
+      return orderJobs(orderId).reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0);
+    }
+
+    function renderQuoteOrderPicker() {
+      const select = $("quoteOrderPick");
+      if (!select) return;
+      const orders = (state.orders || []).filter((order) => (order.mode || "filament") === state.mode);
+      select.innerHTML = orders.length
+        ? orders.map((order) => `<option value="${order.id}">${escapeHtml(order.name || "-")}</option>`).join("")
+        : `<option value="">-</option>`;
+    }
+
+    function renderQuoteItems() {
+      const host = $("quoteItemList");
+      if (!host) return;
+      const quote = currentQuote();
+
+      if (!quote.items.length) {
+        host.innerHTML = `<p class="hint">${escapeHtml(quoteText("quoteNoItems"))}</p>`;
+        return;
+      }
+
+      host.innerHTML = quote.items.map((item, index) => `
+        <div class="quote-row ${item.visible ? "" : "quote-hidden-row"}" data-quote-index="${index}">
+          <div class="quote-line">
+            <input type="text" data-quote-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(quoteText("quoteItemName"))}">
+            <input type="number" min="0" step="1" data-quote-field="qty" value="${Number(item.qty) || 0}">
+            <input type="number" min="0" step="0.01" data-quote-field="unitPrice" value="${Number(item.unitPrice) || 0}">
+            <input type="number" min="0" step="0.01" data-quote-field="cost" value="${Number(item.cost) || 0}" title="${escapeHtml(quoteText("quoteItemCost"))}">
+          </div>
+          <div class="quote-line-opts">
+            <label><input type="checkbox" data-quote-field="freebie" ${item.freebie ? "checked" : ""}> ${escapeHtml(quoteText("quoteFreebie"))}</label>
+            <label><input type="checkbox" data-quote-field="visible" ${item.visible ? "checked" : ""}> ${escapeHtml(quoteText("quoteVisible"))}</label>
+            <button class="btn danger" type="button" data-quote-remove="${index}">${escapeHtml(quoteText("quoteRemove"))}</button>
+          </div>
+        </div>`).join("");
+    }
+
+    function renderQuoteTotals() {
+      const quote = currentQuote();
+      const totals = quoteTotals(quote);
+
+      const totalsBox = $("quoteTotals");
+      if (totalsBox) {
+        totalsBox.innerHTML = `
+          <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteSubtotal"))}</span><strong>${money.format(totals.subtotal)}</strong></div>
+          ${totals.discount ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteDiscount"))}</span><strong>-${money.format(totals.discount)}</strong></div>` : ""}
+          ${totals.shipping ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteShipping"))}</span><strong>${money.format(totals.shipping)}</strong></div>` : ""}
+          ${quote.vat ? `<div class="quote-total-row"><span>${escapeHtml(quoteText("quoteVat"))}</span><strong>${money.format(totals.vat)}</strong></div>` : ""}
+          <div class="quote-total-row grand"><span>${escapeHtml(quoteText("quoteTotal"))}</span><strong>${money.format(totals.total)}</strong></div>`;
+      }
+
+      const internal = $("quoteInternalBox");
+      if (internal) {
+        internal.innerHTML = `
+          <div class="quote-internal">
+            <div class="quote-internal-title">${escapeHtml(quoteText("quoteInternal"))}</div>
+            <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteCost"))}</span><strong>${money.format(totals.cost)}</strong></div>
+            <div class="quote-total-row"><span>${escapeHtml(quoteText("quoteProfit"))}</span><strong>${money.format(totals.profit)}</strong></div>
+          </div>`;
+      }
+    }
+
+    function renderQuoteSaved() {
+      const host = $("quoteSavedList");
+      if (!host) return;
+      const quotes = ensureQuotes();
+      host.innerHTML = quotes.length
+        ? quotes.map((quote) => {
+            const totals = quoteTotals(quote);
+            return `<div class="quote-saved-row">
+              <div>
+                <strong>${escapeHtml(quote.number || "-")}</strong>
+                <span class="hint">${escapeHtml(quote.customer?.name || "-")} · ${escapeHtml(quote.date || "")}</span>
+              </div>
+              <div>
+                <strong>${money.format(totals.total)}</strong>
+                <button class="btn" type="button" data-quote-open="${quote.id}">${escapeHtml(quoteText("quoteEdit"))}</button>
+                <button class="btn danger" type="button" data-quote-delete="${quote.id}">${escapeHtml(quoteText("quoteRemove"))}</button>
+              </div>
+            </div>`;
+          }).join("")
+        : `<p class="hint">${escapeHtml(quoteText("quoteNoSaved"))}</p>`;
+    }
+
+    function fillQuoteForm() {
+      const quote = currentQuote();
+      const set = (id, value) => { const el = $(id); if (el) el.value = value ?? ""; };
+      set("quoteNo", quote.number);
+      set("quoteDate", quote.date);
+      set("quoteValidUntil", quote.validUntil);
+      set("quoteSellerName", quote.seller.name);
+      set("quoteSellerPhone", quote.seller.phone);
+      set("quoteSellerAddress", quote.seller.address);
+      set("quoteSellerTaxId", quote.seller.taxId);
+      set("quoteCustomerName", quote.customer.name);
+      set("quoteCustomerPhone", quote.customer.phone);
+      set("quoteCustomerAddress", quote.customer.address);
+      set("quoteCustomerTaxId", quote.customer.taxId);
+      set("quoteShipping", quote.shipping);
+      set("quoteDiscount", quote.discount);
+      set("quoteNote", quote.note);
+      const vat = $("quoteVat");
+      if (vat) vat.checked = Boolean(quote.vat);
+    }
+
+    function readQuoteForm() {
+      const quote = currentQuote();
+      const get = (id) => ($(id) ? $(id).value : "");
+      quote.number = get("quoteNo");
+      quote.date = get("quoteDate");
+      quote.validUntil = get("quoteValidUntil");
+      quote.seller = { name: get("quoteSellerName"), phone: get("quoteSellerPhone"), address: get("quoteSellerAddress"), taxId: get("quoteSellerTaxId") };
+      quote.customer = { name: get("quoteCustomerName"), phone: get("quoteCustomerPhone"), address: get("quoteCustomerAddress"), taxId: get("quoteCustomerTaxId") };
+      quote.shipping = Number(get("quoteShipping")) || 0;
+      quote.discount = Number(get("quoteDiscount")) || 0;
+      quote.note = get("quoteNote");
+      quote.vat = Boolean($("quoteVat") && $("quoteVat").checked);
+    }
+
+    function renderQuoteScreen() {
+      const title = $("quotesTitle");
+      if (!title) return;
+      title.textContent = quoteText("quotesTitle");
+      const label = (id, key) => { const el = $(id); if (el) el.textContent = quoteText(key); };
+      label("quoteSellerTitle", "quoteSeller");
+      label("quoteCustomerTitle", "quoteCustomer");
+      label("quoteItemsTitle", "quoteItems");
+      label("quoteNoLabel", "quoteNo");
+      label("quoteDateLabel", "quoteDate");
+      label("quoteValidLabel", "quoteValidUntil");
+      label("quoteShippingLabel", "quoteShipping");
+      label("quoteDiscountLabel", "quoteDiscount");
+      label("quoteVatLabel", "quoteVat");
+      label("quoteNoteLabel", "quoteNote");
+      label("quoteSavedTitle", "quoteSaved");
+      label("quoteHiddenHint", "quoteHiddenHint");
+      const button = (id, key) => { const el = $(id); if (el) el.textContent = quoteText(key); };
+      button("quoteNewBtn", "quoteNew");
+      button("quoteAddOrderBtn", "quoteAddOrder");
+      button("quoteAddItemBtn", "quoteAddItem");
+      button("quoteSaveBtn", "quoteSave");
+      button("quotePrintBtn", "quotePrint");
+
+      renderQuoteOrderPicker();
+      fillQuoteForm();
+      renderQuoteItems();
+      renderQuoteTotals();
+      renderQuoteSaved();
+    }
+
+    function buildQuotePrintDoc() {
+      const quote = currentQuote();
+      const totals = quoteTotals(quote);
+      // Only what the customer is allowed to see is written into the document.
+      const visible = quote.items.filter((item) => item.visible);
+      const line = (label, value) => value ? `<div>${escapeHtml(label)}: ${escapeHtml(value)}</div>` : "";
+
+      const rows = visible.map((item) => `
+        <tr>
+          <td>${escapeHtml(item.name || "-")}${item.freebie ? ` <em>(${escapeHtml(quoteText("quoteFreeLabel"))})</em>` : ""}</td>
+          <td class="num">${Number(item.qty) || 0}</td>
+          <td class="num">${item.freebie ? "-" : money.format(Number(item.unitPrice) || 0)}</td>
+          <td class="num">${money.format(quoteLineTotal(item))}</td>
+        </tr>`).join("");
+
+      const host = $("quotePrintDoc");
+      if (!host) return;
+      host.innerHTML = `
+        <h1 style="margin:0 0 4px">${escapeHtml(quoteText("quoteQuotation"))}</h1>
+        <div style="display:flex;justify-content:space-between;gap:24px;margin-bottom:16px">
+          <div>
+            <strong>${escapeHtml(quote.seller.name || "")}</strong>
+            ${line(quoteText("quoteContactPhone"), quote.seller.phone)}
+            ${line(quoteText("quoteContactAddress"), quote.seller.address)}
+            ${line(quoteText("quoteContactTaxId"), quote.seller.taxId)}
+          </div>
+          <div style="text-align:right">
+            ${line(quoteText("quoteNo"), quote.number)}
+            ${line(quoteText("quoteDate"), quote.date)}
+            ${line(quoteText("quoteValidUntil"), quote.validUntil)}
+          </div>
+        </div>
+        <div style="margin-bottom:12px">
+          <strong>${escapeHtml(quoteText("quoteCustomer"))}</strong>
+          <div>${escapeHtml(quote.customer.name || "")}</div>
+          ${line(quoteText("quoteContactPhone"), quote.customer.phone)}
+          ${line(quoteText("quoteContactAddress"), quote.customer.address)}
+          ${line(quoteText("quoteContactTaxId"), quote.customer.taxId)}
+        </div>
+        <table class="quote-print-table">
+          <thead><tr>
+            <th>${escapeHtml(quoteText("quoteItemName"))}</th>
+            <th class="num">${escapeHtml(quoteText("quoteQty"))}</th>
+            <th class="num">${escapeHtml(quoteText("quoteUnitPrice"))}</th>
+            <th class="num">${escapeHtml(quoteText("quoteSubtotal"))}</th>
+          </tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <div style="margin-top:16px;text-align:right">
+          <div>${escapeHtml(quoteText("quoteSubtotal"))}: ${money.format(totals.subtotal)}</div>
+          ${totals.discount ? `<div>${escapeHtml(quoteText("quoteDiscount"))}: -${money.format(totals.discount)}</div>` : ""}
+          ${totals.shipping ? `<div>${escapeHtml(quoteText("quoteShipping"))}: ${money.format(totals.shipping)}</div>` : ""}
+          ${quote.vat ? `<div>${escapeHtml(quoteText("quoteVat"))}: ${money.format(totals.vat)}</div>` : ""}
+          <div style="font-size:18px;margin-top:6px"><strong>${escapeHtml(quoteText("quoteTotal"))}: ${money.format(totals.total)}</strong></div>
+        </div>
+        ${quote.note ? `<div style="margin-top:16px;white-space:pre-wrap">${escapeHtml(quote.note)}</div>` : ""}`;
+    }
+
+    function saveQuote() {
+      readQuoteForm();
+      const quote = currentQuote();
+      if (!quote.items.length) { showToast(quoteText("quoteNeedItem")); return; }
+      const quotes = ensureQuotes();
+      const at = quotes.findIndex((item) => item.id === quote.id);
+      if (at >= 0) quotes[at] = structuredClone(quote);
+      else quotes.unshift(structuredClone(quote));
+      persist();
+      renderQuoteSaved();
+      showToast(quoteText("quoteSavedToast"));
+    }
+
+    document.addEventListener("click", (event) => {
+      const newBtn = event.target.closest("#quoteNewBtn");
+      if (newBtn) { quoteDraft = blankQuote(); renderQuoteScreen(); return; }
+
+      const addOrder = event.target.closest("#quoteAddOrderBtn");
+      if (addOrder) {
+        const orderId = $("quoteOrderPick") ? $("quoteOrderPick").value : "";
+        const order = (state.orders || []).find((item) => item.id === orderId);
+        if (!order) return;
+        readQuoteForm();
+        currentQuote().items.push({
+          name: order.name || "",
+          qty: 1,
+          unitPrice: Number(order.salePrice) || 0,
+          cost: orderCostTotal(order.id),
+          freebie: false,
+          visible: true
+        });
+        renderQuoteItems();
+        renderQuoteTotals();
+        return;
+      }
+
+      const addItem = event.target.closest("#quoteAddItemBtn");
+      if (addItem) {
+        readQuoteForm();
+        currentQuote().items.push({ name: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true });
+        renderQuoteItems();
+        renderQuoteTotals();
+        return;
+      }
+
+      const removeBtn = event.target.closest("[data-quote-remove]");
+      if (removeBtn) {
+        readQuoteForm();
+        currentQuote().items.splice(Number(removeBtn.dataset.quoteRemove), 1);
+        renderQuoteItems();
+        renderQuoteTotals();
+        return;
+      }
+
+      const openBtn = event.target.closest("[data-quote-open]");
+      if (openBtn) {
+        const found = ensureQuotes().find((item) => item.id === openBtn.dataset.quoteOpen);
+        if (found) { quoteDraft = structuredClone(found); renderQuoteScreen(); }
+        return;
+      }
+
+      const deleteBtn = event.target.closest("[data-quote-delete]");
+      if (deleteBtn) {
+        if (!confirm(quoteText("quoteDeleteConfirm"))) return;
+        state.quotes = ensureQuotes().filter((item) => item.id !== deleteBtn.dataset.quoteDelete);
+        persist();
+        renderQuoteSaved();
+        return;
+      }
+
+      if (event.target.closest("#quoteSaveBtn")) { saveQuote(); return; }
+
+      if (event.target.closest("#quotePrintBtn")) {
+        readQuoteForm();
+        buildQuotePrintDoc();
+        window.print();
+      }
+    });
+
+    document.addEventListener("input", (event) => {
+      const row = event.target.closest("[data-quote-index]");
+      if (!row) return;
+      const field = event.target.dataset.quoteField;
+      if (!field) return;
+      const item = currentQuote().items[Number(row.dataset.quoteIndex)];
+      if (!item) return;
+      item[field] = event.target.type === "checkbox"
+        ? event.target.checked
+        : (event.target.type === "number" ? Number(event.target.value) || 0 : event.target.value);
+      if (field === "visible") row.classList.toggle("quote-hidden-row", !item.visible);
+      renderQuoteTotals();
+    });
+
+    document.addEventListener("change", (event) => {
+      if (event.target.closest("#quoteVat, #quoteShipping, #quoteDiscount")) {
+        readQuoteForm();
+        renderQuoteTotals();
+      }
+    });
 
     function orderJobs(orderId) {
       return state.jobs.filter((job) => job.orderId === orderId && (job.mode || "filament") === state.mode);
