@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { sendMail, supportInbox } from "@/lib/mailer";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
@@ -67,6 +68,22 @@ export async function POST(request: Request) {
     }
 
     console.info("[support] message received", { email, subject });
+
+    // The message is safely stored by now, so mail is a convenience on top:
+    // it fails quietly rather than telling the customer their message bounced.
+    const inbox = supportInbox();
+    if (inbox) {
+      await sendMail({
+        to: inbox,
+        subject: `[ติดต่อทีมงาน] ${subject}`,
+        replyTo: email ?? undefined,
+        text: `จาก: ${email ?? "(ไม่ทราบอีเมล)"}
+สถานะแพ็กเกจ: ${profile?.subscription_status ?? "-"} / ${profile?.subscription_plan ?? "-"}
+
+${body}`,
+      });
+    }
+
     return NextResponse.json({ ok: true });
   } catch (error) {
     console.error("[support] unexpected failure", error);
