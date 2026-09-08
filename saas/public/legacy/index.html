@@ -403,6 +403,24 @@
     .sales-editor-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
     .sales-editor-head h2 { margin: 0; }
     .sales-editor-no { color: var(--muted); font-weight: 600; }
+    .sales-steps { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; list-style: none; margin: 0 0 8px; padding: 0; }
+    .sales-step { display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 5px 13px; font-size: 13px; font-weight: 600; color: var(--muted); background: var(--panel); }
+    .sales-step .sales-step-no { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--control); color: var(--control-ink); font-size: 11px; }
+    .sales-step.is-done { border-color: color-mix(in srgb, var(--green) 45%, var(--line)); color: var(--green); }
+    .sales-step.is-done .sales-step-no { background: var(--green); color: #fff; }
+    .sales-step.is-current { border-color: var(--accent); background: var(--accent); color: #fff; }
+    .sales-step.is-current .sales-step-no { background: rgba(255,255,255,.28); color: #fff; }
+    .sales-step[data-sales-step-go] { cursor: pointer; }
+    .sales-step[data-sales-step-go]:hover { border-color: var(--accent); }
+    .sales-step-arrow { color: var(--muted); font-size: 12px; }
+    .sales-next { margin: 0 0 12px; font-size: 13px; color: var(--ink); }
+    .sales-next::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-right: 8px; vertical-align: middle; }
+    .sales-next.is-done::before { background: var(--green); }
+    .sales-next.is-stopped::before { background: var(--red); }
+    .sales-image-box { border: 1px solid var(--line); border-radius: var(--radius); padding: 10px; margin-top: 12px; background: var(--panel-head); }
+    .sales-image-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+    .sales-image-head .sales-check { margin: 0; font-weight: 500; }
+    .sales-image-box img { display: block; width: 100%; max-height: 220px; object-fit: contain; border-radius: 8px; background: var(--soft); }
     .sales-ref { color: var(--muted); font-size: 13px; margin: 0 0 14px; }
     .sales-ref button { background: none; border: 0; padding: 0; font: inherit; color: var(--accent); font-weight: 600; cursor: pointer; text-decoration: underline; }
     .sales-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; align-items: start; padding: 14px; }
@@ -467,6 +485,8 @@
     .sales-paper h1 { font-size: 22px; margin: 0 0 2px; letter-spacing: .02em; }
     .sales-paper .sales-paper-head { display: flex; justify-content: space-between; gap: 28px; align-items: flex-start; border-bottom: 2px solid #111; padding-bottom: 12px; margin-bottom: 14px; }
     .sales-paper .sales-paper-parties { display: flex; justify-content: space-between; gap: 28px; margin-bottom: 16px; }
+    .sales-paper .sales-paper-photo { margin: 0 0 16px; border: 1px solid #ddd; border-radius: 4px; padding: 6px; }
+    .sales-paper .sales-paper-photo img { display: block; width: 100%; max-height: 95mm; object-fit: contain; }
     .sales-paper .sales-paper-block { flex: 1 1 0; min-width: 0; }
     .sales-paper .sales-paper-label { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: #666; margin-bottom: 3px; }
     .sales-paper .sales-paper-name { font-weight: 700; }
@@ -2944,6 +2964,8 @@
               </button>
             </div>
             <div class="panel-body">
+              <ol class="sales-steps" id="salesSteps"></ol>
+              <p class="sales-next" id="salesNext"></p>
               <p class="sales-ref" id="salesRefLine" hidden></p>
               <p class="hint" id="salesLockedHint" hidden></p>
 
@@ -3015,6 +3037,13 @@
                   <div class="field">
                     <label for="salesNote" id="salesNoteLabel">Notes</label>
                     <textarea id="salesNote" rows="5"></textarea>
+                  </div>
+                  <div class="sales-image-box" id="salesImageBox" hidden>
+                    <div class="sales-image-head">
+                      <span id="salesImageTitle">Order photo</span>
+                      <label class="sales-check"><input type="checkbox" id="salesShowImage" checked><span id="salesShowImageLabel">Show on the document</span></label>
+                    </div>
+                    <img id="salesImagePreview" alt="">
                   </div>
                   <div class="field" id="salesPayDetailsField" hidden>
                     <label for="salesPayDetails" id="salesPayDetailsLabel">Payment details</label>
@@ -4643,6 +4672,11 @@
     Object.assign(salesI18n.zh, { payDetails: "收款信息", payDetailsPh: "例如 PromptPay 08x-xxx-xxxx / 银行 ... 账号 ...", payTo: "付款至", cancelDoc: "取消单据", cancelConfirm: "确定取消这份付款通知单？", refQuotation: "报价单", paymentCreated: "已创建付款通知单", paymentExists: "此报价单已有付款通知单，为你打开", saveFirst: "请先保存单据", issueDate: "开具日期" });
     Object.assign(salesI18n.ja, { payDetails: "振込先", payDetailsPh: "例: PromptPay 08x-xxx-xxxx / 銀行 ... 口座 ...", payTo: "お支払い先", cancelDoc: "書類を取消", cancelConfirm: "この請求書を取り消しますか？", refQuotation: "見積書", paymentCreated: "請求書を作成しました", paymentExists: "この見積書には既に請求書があります。開きます", saveFirst: "先に書類を保存してください", issueDate: "発行日" });
     Object.assign(salesI18n.ko, { payDetails: "입금 정보", payDetailsPh: "예: PromptPay 08x-xxx-xxxx / 은행 ... 계좌 ...", payTo: "입금처", cancelDoc: "문서 취소", cancelConfirm: "이 대금 청구서를 취소할까요?", refQuotation: "견적서", paymentCreated: "대금 청구서를 만들었습니다", paymentExists: "이 견적서에는 이미 청구서가 있어 해당 문서를 엽니다", saveFirst: "문서를 먼저 저장하세요", issueDate: "발행일" });
+    Object.assign(salesI18n.th, { stepOrder: "ออเดอร์", stepQuote: "ใบเสนอราคา", stepPayment: "ใบแจ้งชำระเงิน", stepReceipt: "ใบเสร็จรับเงิน", nextLabel: "ขั้นต่อไป", nextSend: "ส่งใบเสนอราคาให้ลูกค้า แล้วกด \u201cส่งแล้ว\u201d", nextAccept: "รอลูกค้าตอบ แล้วกด \u201cลูกค้าตกลง\u201d หรือ \u201cไม่ตกลง\u201d", nextPayment: "กด \u201cสร้างใบแจ้งชำระเงิน\u201d", nextReceive: "ส่งใบแจ้งชำระเงินให้ลูกค้า เมื่อได้รับเงินแล้วค่อยบันทึกรับชำระ", nextReceipt: "ออกใบเสร็จรับเงินให้ลูกค้า", doneRejected: "ลูกค้าไม่ตกลง จบขั้นตอนนี้", doneCancelled: "เอกสารนี้ถูกยกเลิกแล้ว", doneAll: "เสร็จสมบูรณ์", orderImage: "รูปออเดอร์", showImage: "แสดงรูปในเอกสาร" });
+    Object.assign(salesI18n.en, { stepOrder: "Order", stepQuote: "Quotation", stepPayment: "Payment request", stepReceipt: "Receipt", nextLabel: "Next", nextSend: "Send the quotation to the customer, then mark it as sent", nextAccept: "Wait for the customer, then mark it accepted or rejected", nextPayment: "Create the payment request", nextReceive: "Send the payment request; record the payment once the money arrives", nextReceipt: "Issue the receipt to the customer", doneRejected: "The customer said no - this line ends here", doneCancelled: "This document was cancelled", doneAll: "All done", orderImage: "Order photo", showImage: "Show the photo on the document" });
+    Object.assign(salesI18n.zh, { stepOrder: "订单", stepQuote: "报价单", stepPayment: "付款通知单", stepReceipt: "收据", nextLabel: "下一步", nextSend: "把报价单发给客户，然后标记为已发送", nextAccept: "等客户回复后，标记为已确认或未接受", nextPayment: "创建付款通知单", nextReceive: "把付款通知单发给客户，收到款后再记录", nextReceipt: "给客户开具收据", doneRejected: "客户未接受，流程到此结束", doneCancelled: "此单据已取消", doneAll: "已完成", orderImage: "订单图片", showImage: "在单据上显示图片" });
+    Object.assign(salesI18n.ja, { stepOrder: "注文", stepQuote: "見積書", stepPayment: "請求書", stepReceipt: "領収書", nextLabel: "次の手順", nextSend: "見積書をお客様に送り、送信済みにします", nextAccept: "お客様の返事を待ち、受注または見送りにします", nextPayment: "請求書を作成します", nextReceive: "請求書を送り、入金を確認してから記録します", nextReceipt: "領収書を発行します", doneRejected: "見送りとなり、この流れはここで終わります", doneCancelled: "この書類は取り消されました", doneAll: "完了", orderImage: "注文の写真", showImage: "書類に写真を表示" });
+    Object.assign(salesI18n.ko, { stepOrder: "주문", stepQuote: "견적서", stepPayment: "대금 청구서", stepReceipt: "영수증", nextLabel: "다음 단계", nextSend: "견적서를 고객에게 보낸 뒤 발송 처리하세요", nextAccept: "고객 회신을 기다린 뒤 승인 또는 미승인으로 표시하세요", nextPayment: "대금 청구서를 만드세요", nextReceive: "청구서를 보내고 입금이 확인되면 기록하세요", nextReceipt: "고객에게 영수증을 발행하세요", doneRejected: "고객이 승인하지 않아 여기서 끝납니다", doneCancelled: "이 문서는 취소되었습니다", doneAll: "완료", orderImage: "주문 사진", showImage: "문서에 사진 표시" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8722,6 +8756,8 @@
         orderName: "",
         sourceId: "",
         sourceNumber: "",
+        imageKey: "",
+        showImage: true,
         dueDate: "",
         payMethod: "promptpay",
         payDetails: "",
@@ -8765,6 +8801,89 @@
       const order = (state.orders || []).find((item) => item.id === orderId);
       const total = jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + (Number(order && order.extraCost) || 0);
       return Math.round(total * 100) / 100;
+    }
+
+    const salesImageCache = new Map();
+
+    async function loadSalesImage(key) {
+      if (!key) return "";
+      if (salesImageCache.has(key)) return salesImageCache.get(key);
+      let data = "";
+      try { data = (await getJobImage(key)) || ""; }
+      catch (error) { data = ""; }
+      salesImageCache.set(key, data);
+      return data;
+    }
+
+    function salesImageData(doc) {
+      if (!doc || !doc.imageKey) return "";
+      return salesImageCache.get(doc.imageKey) || "";
+    }
+
+    // Four steps, in the order the shop works through them. The order itself is
+    // step one even though it is not a document.
+    const SALES_STEPS = [
+      { key: "order", label: "stepOrder" },
+      { key: "QT", label: "stepQuote" },
+      { key: "PAY", label: "stepPayment" },
+      { key: "RC", label: "stepReceipt" }
+    ];
+
+    function salesStepIndex(doc) {
+      const at = SALES_STEPS.findIndex((step) => step.key === doc.type);
+      return at < 0 ? 1 : at;
+    }
+
+    function salesNextHint(doc) {
+      if (doc.status === "cancelled") return { key: "doneCancelled", tone: "is-stopped" };
+      if (doc.status === "rejected") return { key: "doneRejected", tone: "is-stopped" };
+      if (doc.type === "QT") {
+        if (doc.status === "draft") return { key: "nextSend", tone: "" };
+        if (doc.status === "sent") return { key: "nextAccept", tone: "" };
+        if (doc.status === "accepted") return { key: "nextPayment", tone: "" };
+      }
+      if (doc.type === "PAY") {
+        if (doc.status === "waiting") return { key: "nextReceive", tone: "" };
+        if (doc.status === "paid") return { key: "nextReceipt", tone: "" };
+      }
+      return { key: "doneAll", tone: "is-done" };
+    }
+
+    function renderSalesSteps() {
+      const host = $("salesSteps");
+      const next = $("salesNext");
+      const doc = salesUi.draft;
+      if (!host || !doc) return;
+      const current = salesStepIndex(doc);
+
+      host.innerHTML = SALES_STEPS.map((step, index) => {
+        // The order step only counts as done when this document came from one.
+        const reached = index === 0 ? Boolean(doc.orderId) : index < current;
+        const state = index === current ? "is-current" : (reached ? "is-done" : "");
+        const target = index === 0 && doc.orderId ? ` data-sales-step-go="order"`
+          : (index === 1 && doc.type !== "QT" && doc.sourceId ? ` data-sales-step-go="${doc.sourceId}"` : "");
+        const arrow = index < SALES_STEPS.length - 1 ? `<li class="sales-step-arrow" aria-hidden="true">&#8250;</li>` : "";
+        return `<li class="sales-step ${state}"${target}><span class="sales-step-no">${index + 1}</span>${escapeHtml(salesText(step.label))}</li>${arrow}`;
+      }).join("");
+
+      if (next) {
+        const hint = salesNextHint(doc);
+        const prefix = hint.tone ? "" : `${escapeHtml(salesText("nextLabel"))}: `;
+        next.className = `sales-next ${hint.tone}`;
+        next.innerHTML = `${prefix}${escapeHtml(salesText(hint.key))}`;
+      }
+    }
+
+    function renderSalesImage() {
+      const box = $("salesImageBox");
+      const img = $("salesImagePreview");
+      const doc = salesUi.draft;
+      if (!box || !img || !doc) return;
+      const data = salesImageData(doc);
+      box.hidden = !data;
+      if (data) img.src = data;
+      const toggle = $("salesShowImage");
+      if (toggle) toggle.checked = doc.showImage !== false;
     }
 
     function salesStatusLabel(doc) {
@@ -8836,6 +8955,11 @@
 
     function openSalesEditor(doc, isNew) {
       salesUi.draft = structuredClone(doc);
+      if (doc.imageKey && !salesImageCache.has(doc.imageKey)) {
+        loadSalesImage(doc.imageKey).then(() => {
+          if (salesUi.draft && salesUi.draft.imageKey === doc.imageKey) renderSalesImage();
+        });
+      }
       salesUi.isNew = Boolean(isNew);
       const home = $("salesHome");
       const editor = $("salesEditor");
@@ -8985,6 +9109,8 @@
 
       const head = $("salesHeadBox");
       if (head) head.open = salesUi.headOpen === null ? !doc.customer.name : salesUi.headOpen;
+      renderSalesSteps();
+      renderSalesImage();
       renderSalesDigest();
       renderSalesItems();
       renderSalesTotals();
@@ -9006,6 +9132,7 @@
       doc.dueDate = get("salesDueDate");
       doc.payMethod = get("salesPayMethod") || doc.payMethod;
       doc.payDetails = get("salesPayDetails");
+      doc.showImage = !$("salesShowImage") || $("salesShowImage").checked;
     }
 
     function saveSalesDoc(options) {
@@ -9044,6 +9171,7 @@
       // Only what the customer may see is written into the document at all -
       // an invisible line is filtered out here, never merely hidden with CSS.
       const visible = (doc.items || []).filter((item) => item.visible !== false);
+      const photo = doc.showImage === false ? "" : salesImageData(doc);
       const line = (label, value) => value ? `<div>${escapeHtml(label)}: ${escapeHtml(value)}</div>` : "";
 
       const rows = visible.map((item) => `
@@ -9078,6 +9206,7 @@
             ${line(salesText("fTaxId"), doc.customer.taxId)}
           </div>
         </div>
+        ${photo ? `<div class="sales-paper-photo"><img src="${photo}" alt=""></div>` : ""}
         <table>
           <thead><tr>
             <th>${escapeHtml(salesText("itemName"))}</th>
@@ -9167,6 +9296,8 @@
       bill.note = source.note;
       bill.orderId = source.orderId;
       bill.orderName = source.orderName;
+      bill.imageKey = source.imageKey || "";
+      bill.showImage = source.showImage !== false;
       bill.sourceId = source.id;
       bill.sourceNumber = source.number;
       bill.dueDate = new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10);
@@ -9225,6 +9356,7 @@
       const doc = blankSalesDoc("QT");
       doc.orderId = order.id;
       doc.orderName = order.name || "";
+      doc.imageKey = order.imageKey || "";
       // Snapshot: the jobs inside the order become one priced line, and the cost
       // is frozen here so later edits to the order leave this document alone.
       doc.items = [salesItem({
@@ -9283,6 +9415,8 @@
       label("#salesDueDateLabel", "dueDate");
       label("#salesPayMethodLabel", "payMethod");
       label("#salesPayDetailsLabel", "payDetails");
+      label("#salesImageTitle", "orderImage");
+      label("#salesShowImageLabel", "showImage");
       const payDetails = $("salesPayDetails");
       if (payDetails) payDetails.placeholder = salesText("payDetailsPh");
       const payMethod = $("salesPayMethod");
@@ -9410,6 +9544,15 @@
         return;
       }
 
+      const stepGo = event.target.closest("[data-sales-step-go]");
+      if (stepGo) {
+        const target = stepGo.dataset.salesStepGo;
+        if (target === "order") { showView("ordersView"); return; }
+        const found = ensureSalesDocs().find((item) => item.id === target);
+        if (found) openSalesEditor(found, false);
+        return;
+      }
+
       const openRef = event.target.closest("[data-sales-open-ref]");
       if (openRef) {
         const found = ensureSalesDocs().find((item) => item.id === openRef.dataset.salesOpenRef);
@@ -9478,6 +9621,8 @@
         renderSalesTotals();
         return;
       }
+
+      if (event.target.id === "salesShowImage") { readSalesForm(); return; }
 
       if (event.target.closest(".sales-cols")) {
         readSalesForm();
