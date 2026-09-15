@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LayerView — พรีวิวเลเยอร์งานพิมพ์ 3D</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧱</text></svg>" />
-  <script type="module" crossorigin src="/layerview/assets/index-C__X-_eS.js"></script>
+  <script type="module" crossorigin src="/layerview/assets/index-D9m8yWyk.js"></script>
   <link rel="stylesheet" crossorigin href="/layerview/assets/index-CieliIxk.css">
 </head>
 <body>
@@ -142,7 +142,16 @@
         <span class="val"><input type="number" id="paintAngle" min="1" max="180" step="1" value="30" style="width:64px" />°</span>
       </label>
       <input type="range" id="paintAngleRange" min="1" max="180" step="1" value="30" />
-      <p class="hint">สีไหลไปตามผิวเรียบ และหยุดตรงสัน/มุมที่หักเกินองศานี้ — ค่าน้อย = แยกละเอียด, ค่ามาก = เทกว้าง</p>
+      <label class="row">
+        <span>วัดมุมจาก</span>
+        <span class="val">
+          <select id="paintMode">
+            <option value="seed">หน้าที่คลิก (จำกัดทิศทาง)</option>
+            <option value="adjacent">หน้าข้างเคียง (ไหลตามผิวโค้ง)</option>
+          </select>
+        </span>
+      </label>
+      <p class="hint" id="paintHint">สีจะติดเฉพาะผิวที่หันไปทางเดียวกับจุดที่คลิก ไม่เกินองศาที่ตั้ง — ผิวบนก็ได้แค่ผิวบน ไม่ลามลงผนัง · Ctrl+Z เลิกทำ</p>
       <div class="views">
         <button id="paintAll">ทาทั้งชิ้น</button>
         <button id="paintUndo">เลิกทำ</button>
