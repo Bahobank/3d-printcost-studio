@@ -891,21 +891,23 @@
     .custom-only { display: none; }
     .custom-only.show { display: grid; }
     .job-lines { display: grid; gap: 10px; }
-    .job-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, 150px) auto; gap: 10px; align-items: end; padding: 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-head); }
+    .job-line { display: grid; grid-template-columns: minmax(0, 1fr) minmax(120px, 160px) auto; gap: 12px; align-items: center; padding: 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel-head); }
+    .job-line > .field:first-child { align-self: stretch; }
     .job-line-material { display: none; }
     .material-picker { position: relative; }
-    .material-picker-button { width: 100%; min-height: 60px; border: 1px solid var(--input-border); border-radius: 8px; background: var(--input-bg); color: var(--ink); padding: 7px 36px 7px 8px; display: flex; align-items: center; gap: 10px; text-align: left; cursor: pointer; position: relative; }
+    .material-picker-button { width: 100%; min-height: 108px; border: 1px solid var(--input-border); border-radius: 10px; background: var(--input-bg); color: var(--ink); padding: 10px 40px 10px 10px; display: flex; align-items: center; gap: 14px; text-align: left; cursor: pointer; position: relative; }
     .material-picker-button::after { content: ""; position: absolute; right: 13px; top: 50%; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: translateY(-64%) rotate(45deg); opacity: .72; }
-    .material-picker-menu { position: absolute; z-index: 35; left: 0; top: calc(100% + 4px); width: min(430px, calc(100vw - 80px)); min-width: 100%; max-width: calc(100vw - 80px); box-sizing: border-box; max-height: 330px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); box-shadow: var(--shadow); padding: 6px; display: none; }
+    .material-picker-menu { position: absolute; z-index: 35; left: 0; top: calc(100% + 4px); width: min(560px, calc(100vw - 80px)); min-width: 100%; max-width: calc(100vw - 80px); box-sizing: border-box; max-height: 440px; overflow: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); box-shadow: var(--shadow); padding: 6px; display: none; }
     .material-picker.open .material-picker-menu { display: grid; gap: 4px; justify-items: stretch; align-items: stretch; }
-    .material-picker-option { width: 100%; justify-self: stretch; min-height: 54px; border: 0; border-radius: 7px; background: transparent; color: var(--ink); padding: 6px; display: flex; align-items: center; justify-content: flex-start; gap: 10px; text-align: left; cursor: pointer; }
+    .material-picker-option { width: 100%; justify-self: stretch; min-height: 80px; border: 0; border-radius: 8px; background: transparent; color: var(--ink); padding: 8px; display: flex; align-items: center; justify-content: flex-start; gap: 12px; text-align: left; cursor: pointer; }
     .material-picker-option:hover, .material-picker-option.active { background: var(--soft); }
-    .material-picker .swatch { width: 38px; height: 38px; min-width: 38px; min-height: 38px; flex: 0 0 38px; }
-    .material-picker-copy { display: grid; gap: 2px; min-width: 0; }
-    .material-picker-copy strong, .material-picker-copy span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .material-picker-copy strong { font-size: 13px; line-height: 1.2; }
-    .material-picker-copy span { color: var(--muted); font-size: 11px; font-weight: 600; }
-    .material-picker-menu .material-picker-copy strong, .material-picker-menu .material-picker-copy span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .material-picker .swatch { width: 84px; height: 84px; min-width: 84px; min-height: 84px; flex: 0 0 84px; }
+    .material-picker-menu .swatch { width: 64px; height: 64px; min-width: 64px; min-height: 64px; flex: 0 0 64px; }
+    .material-picker-copy { display: grid; gap: 3px; min-width: 0; }
+    .material-picker-copy strong, .material-picker-copy span { overflow: hidden; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .material-picker-copy strong { font-size: 15px; line-height: 1.25; }
+    .material-picker-copy span { color: var(--muted); font-size: 12.5px; font-weight: 600; }
+    .material-picker-menu .material-picker-copy strong { font-size: 14px; }
     .image-upload { border: 1px dashed var(--line); border-radius: var(--radius); padding: 12px; display: grid; gap: 10px; background: var(--panel-head); }
     .image-upload:focus-within { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(22,115,122,.12); }
     .image-upload.drag-over, .order-image-drop.drag-over { border-color: var(--teal); background: color-mix(in srgb, var(--soft) 78%, var(--teal) 10%); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--teal) 30%, transparent); }
