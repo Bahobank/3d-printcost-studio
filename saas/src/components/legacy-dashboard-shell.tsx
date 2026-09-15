@@ -18,6 +18,9 @@ export function LegacyDashboardShell({ profile }: { profile: UserProfile }) {
           <iframe
             className="block h-screen w-full border-0 bg-white"
             id="legacy-dashboard-frame"
+            // The layer preview inside copies pictures to the clipboard; the
+            // permission has to be delegated through every frame on the way.
+            allow="clipboard-write"
             src={`/legacy/index.html?user=${encodeURIComponent(profile.user_id)}`}
             title="3D PrintCost Studio"
           />

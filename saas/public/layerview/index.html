@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LayerView — พรีวิวเลเยอร์งานพิมพ์ 3D</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧱</text></svg>" />
+  <script type="module" crossorigin src="/layerview/assets/index-B0xs6_Od.js"></script>
+  <link rel="stylesheet" crossorigin href="/layerview/assets/index-ZhmcpWpE.css">
+</head>
+<body>
+<div id="app">
+  <aside id="panel">
+    <header class="brand">
+      <div class="logo">🧱</div>
+      <div>
+        <h1>LayerView</h1>
+        <p>พรีวิวเลเยอร์งานพิมพ์ 3D</p>
+      </div>
+    </header>
+
+    <section class="card" id="dropCard">
+      <input type="file" id="fileInput" accept=".stl,.obj,.3mf,.mtl" multiple hidden />
+      <button class="primary" id="btnOpen">เลือกไฟล์โมเดล</button>
+      <p class="hint">หรือลากไฟล์ <b>.stl .obj .3mf</b> มาวางบนหน้าจอ (ลาก .mtl มาพร้อม .obj ได้ จะได้สีวัสดุด้วย)</p>
+      <div class="samples">
+        <span>ลองตัวอย่าง:</span>
+        <button class="link" data-sample="knot">ปมเชือก</button>
+        <button class="link" data-sample="torus">โดนัท (มีรู)</button>
+        <button class="link" data-sample="cup">แก้ว (ผนังบาง)</button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>ขนาดชิ้นงาน</h2>
+      <div class="dims" id="dims">—</div>
+      <label class="row">
+        <span>ย่อ/ขยาย</span>
+        <span class="val"><input type="number" id="scalePct" value="100" min="1" max="2000" step="1" /> %</span>
+      </label>
+      <label class="row">
+        <span>ด้านที่ยาวที่สุด</span>
+        <span class="val"><input type="number" id="targetSize" min="1" max="1000" step="0.1" /> มม.</span>
+      </label>
+      <label class="row">
+        <span>แกนขึ้นของไฟล์</span>
+        <span class="val">
+          <select id="upAxis">
+            <option value="z">Z ขึ้น (STL/3MF)</option>
+            <option value="y">Y ขึ้น (OBJ/เกม)</option>
+          </select>
+        </span>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>ค่าการพิมพ์</h2>
+      <label class="row check">
+        <input type="checkbox" id="autoLayer" checked />
+        <span>ตั้งความหนาอัตโนมัติตามขนาดงาน</span>
+      </label>
+      <label class="row">
+        <span>ความหนาต่อชั้น</span>
+        <span class="val"><input type="number" id="layerH" value="0.2" min="0.02" max="1.5" step="0.01" /> มม.</span>
+      </label>
+      <input type="range" id="layerHRange" min="0.02" max="1" step="0.01" value="0.2" />
+      <p class="hint" id="layerHint">—</p>
+
+      <label class="row">
+        <span>ความกว้างเส้น (หัวฉีด)</span>
+        <span class="val"><input type="number" id="lineW" value="0.4" min="0.1" max="3" step="0.05" /> มม.</span>
+      </label>
+      <label class="row">
+        <span>ความหนาแน่นอินฟิล</span>
+        <span class="val"><input type="number" id="infill" value="15" min="0" max="100" step="5" /> %</span>
+      </label>
+      <label class="row">
+        <span>ชั้นทึบบน/ล่าง</span>
+        <span class="val"><input type="number" id="shells" value="3" min="0" max="8" step="1" /> ชั้น</span>
+      </label>
+    </section>
+
+    <section class="card">
+      <h2>การแสดงผล</h2>
+      <label class="row">
+        <span>รูปแบบ</span>
+        <span class="val">
+          <select id="viewMode">
+            <option value="layers">เลเยอร์</option>
+            <option value="both">เลเยอร์ + โมเดลจาง</option>
+            <option value="model">โมเดลอย่างเดียว</option>
+          </select>
+        </span>
+      </label>
+      <label class="row">
+        <span>สีของเส้น</span>
+        <span class="val">
+          <select id="colorMode">
+            <option value="height">ไล่สีตามความสูง</option>
+            <option value="file">สีจากไฟล์</option>
+          </select>
+        </span>
+      </label>
+      <label class="row">
+        <span>วิธีวาดเส้น</span>
+        <span class="val">
+          <select id="lineMode">
+            <option value="auto">อัตโนมัติ</option>
+            <option value="solid">เม็ดพลาสติกจริง</option>
+            <option value="bead">เส้นหนา</option>
+            <option value="thin">เส้นบาง (เร็วสุด)</option>
+          </select>
+        </span>
+      </label>
+      <label class="row check"><input type="checkbox" id="shade" checked /><span>ใส่แสงเงาให้เส้น</span></label>
+      <label class="row check"><input type="checkbox" id="showInfill" checked /><span>แสดงอินฟิลด้านใน</span></label>
+      <label class="row check"><input type="checkbox" id="showPlate" checked /><span>แสดงแท่นพิมพ์</span></label>
+      <div class="views">
+        <button data-view="iso">มุมเอียง</button>
+        <button data-view="front">ด้านหน้า</button>
+        <button data-view="top">ด้านบน</button>
+      </div>
+      <button class="primary capture" id="btnCapture" title="คัดลอกภาพหน้าจอไปวางที่อื่นได้ทันที">📷 แคปรูป (คัดลอก)</button>
+    </section>
+
+    <section class="card stats">
+      <h2>สรุปผล</h2>
+      <div id="stats" class="statgrid">—</div>
+    </section>
+
+    <footer class="foot">ลากเมาส์ซ้าย = หมุน · ลากขวา/ล้อกด = เลื่อน · สกอร์ล = ซูม</footer>
+  </aside>
+
+  <main id="viewport">
+    <canvas id="canvas"></canvas>
+
+    <div id="layerBar" hidden>
+      <button id="btnPlay" title="เล่นการพิมพ์">▶</button>
+      <input type="range" id="layerRange" min="1" max="1" value="1" />
+      <div class="layerInfo">
+        <b id="layerNum">–</b>
+        <span id="layerZ"></span>
+      </div>
+    </div>
+
+    <div id="overlay" class="empty">
+      <div class="ovbox">
+        <div class="bigicon">🧊</div>
+        <h3>ลากไฟล์ 3D มาวางตรงนี้</h3>
+        <p>รองรับ STL · OBJ · 3MF — แล้วจะสไลซ์เป็นเลเยอร์ให้ดูทันที</p>
+      </div>
+    </div>
+
+    <div id="toast" hidden></div>
+  </main>
+</div>
+</body>
+</html>

@@ -372,6 +372,8 @@
     .tab.active { background: var(--panel); color: var(--ink); box-shadow: 0 4px 12px rgba(34,46,39,.08); }
     .view { display: none; }
     #salesView [hidden] { display: none !important; }
+    .layer-panel { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: calc(100vh - 140px); }
+    .layer-frame { display: block; width: 100%; height: 100%; min-height: 640px; border: 0; background: #0e1116; }
     .sales-check { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; font-size: 14px; }
     .sales-check input { width: auto; }
     .sales-toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; margin-bottom: 14px; }
@@ -2336,6 +2338,10 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M15 2v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/><path d="M9 9h2"/></svg>
             <span class="side-label" data-side-label="sales">Sales documents</span>
           </button>
+          <button class="tab" data-tab="layerView" type="button">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>
+            <span class="side-label" data-side-label="layer">Layer preview</span>
+          </button>
           <button class="tab side-nav-help" id="helpBtn" type="button">
             <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             <span class="side-label" data-side-label="help">How to use</span>
@@ -2981,6 +2987,16 @@
               </div>
               <div class="order-list" id="ordersList"></div>
             </div>
+          </div>
+        </section>
+
+        <section id="layerView" class="view">
+          <div class="panel layer-panel">
+            <div class="panel-head">
+              <h2 id="layerTitle">Layer preview</h2>
+              <span class="hint" id="layerHint">STL / OBJ / 3MF</span>
+            </div>
+            <iframe id="layerFrame" class="layer-frame" title="LayerView" allow="clipboard-write" data-src="/layerview/"></iframe>
           </div>
         </section>
 
@@ -4862,6 +4878,11 @@
     Object.assign(salesI18n.zh, { paidSales: "已收款销售" });
     Object.assign(salesI18n.ja, { paidSales: "入金済みの販売" });
     Object.assign(salesI18n.ko, { paidSales: "입금된 판매" });
+    Object.assign(salesI18n.th, { layerTab: "พรีวิวเลเยอร์", layerHint: "ใส่ไฟล์ STL / OBJ / 3MF ดูงานเป็นชั้นแบบเครื่องพิมพ์ แล้วกด “แคปรูป” ไปวางที่ไหนก็ได้" });
+    Object.assign(salesI18n.en, { layerTab: "Layer preview", layerHint: "Drop an STL / OBJ / 3MF to see it sliced like a printer, then capture a picture to paste anywhere" });
+    Object.assign(salesI18n.zh, { layerTab: "分层预览", layerHint: "拖入 STL / OBJ / 3MF 即可按打印层查看，再截图粘贴到任何地方" });
+    Object.assign(salesI18n.ja, { layerTab: "レイヤープレビュー", layerHint: "STL / OBJ / 3MF を入れると印刷レイヤーで表示。キャプチャしてどこにでも貼り付けられます" });
+    Object.assign(salesI18n.ko, { layerTab: "레이어 미리보기", layerHint: "STL / OBJ / 3MF를 넣으면 프린터 레이어로 보여주고, 캡처해 어디든 붙여넣을 수 있습니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -6633,6 +6654,9 @@
       setText('.main-tabs [data-tab="historyView"]', t("historyTab"));
       setText('.main-tabs [data-tab="ordersView"]', orderText("ordersTab"));
       setText('[data-tab="salesView"] .side-label', salesText("salesTab"));
+      setText('[data-tab="layerView"] .side-label', salesText("layerTab"));
+      setText("#layerTitle", salesText("layerTab"));
+      setText("#layerHint", salesText("layerHint"));
       renderSalesLabels();
       renderSales();
       loadSalesLogo().then(() => { renderSalesLogoPreview(); renderSalesShopCard(); });
@@ -10677,6 +10701,10 @@
       if (viewId === "historyView") renderHistory();
       if (viewId === "ordersView") renderOrders();
       if (viewId === "salesView") renderSales();
+      if (viewId === "layerView") {
+        const frame = $("layerFrame");
+        if (frame && !frame.src) frame.src = frame.dataset.src;
+      }
     }
     async function editJob(id) {
       const job = state.jobs.find((item) => item.id === id);
