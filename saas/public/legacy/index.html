@@ -4918,6 +4918,11 @@
     Object.assign(salesI18n.zh, { addOrderLine: "从订单添加" });
     Object.assign(salesI18n.ja, { addOrderLine: "注文から追加" });
     Object.assign(salesI18n.ko, { addOrderLine: "주문에서 추가" });
+    Object.assign(salesI18n.th, { orderLineBumped: "ออเดอร์นี้อยู่ในใบแล้ว เพิ่มจำนวนให้เป็น +1" });
+    Object.assign(salesI18n.en, { orderLineBumped: "That order is already on the document - quantity +1" });
+    Object.assign(salesI18n.zh, { orderLineBumped: "该订单已在单据中，数量 +1" });
+    Object.assign(salesI18n.ja, { orderLineBumped: "この注文は既に入っています。数量を +1 しました" });
+    Object.assign(salesI18n.ko, { orderLineBumped: "이미 있는 주문입니다. 수량 +1" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -10103,6 +10108,14 @@
     function appendOrderLine(order) {
       if (!salesUi.draft) return;
       readSalesForm();
+      const existing = salesUi.draft.items.find((item) => item.orderId === order.id);
+      if (existing) {
+        existing.qty = (Number(existing.qty) || 0) + 1;
+        renderSalesItems();
+        renderSalesTotals();
+        showToast(salesText("orderLineBumped"));
+        return;
+      }
       salesUi.draft.items.push(orderLine(order));
       // The first order stays the document's reference; a later one only adds a line.
       if (!salesUi.draft.orderId) {
