@@ -9016,6 +9016,12 @@
       } catch (error) { return { name: "", phone: "", address: "", taxId: "" }; }
     }
 
+    function docSeller(doc) {
+      const saved = salesSettings().seller;
+      if (saved.name || saved.phone || saved.address || saved.taxId) return { ...(doc && doc.seller) || {}, ...saved };
+      return (doc && doc.seller) || { name: "", phone: "", address: "", taxId: "" };
+    }
+
     function lastSellerUsed() {
       // Settings win, then the last document, then whatever the account knows.
       const saved = salesSettings().seller;
@@ -9291,8 +9297,8 @@
       const settings = salesSettings();
       // The card shows what this document was issued under, with the shop's
       // current logo and tagline for identity.
-      const seller = doc.seller || {};
-      setText("#salesShopName", seller.name || settings.seller.name || "-");
+      const seller = docSeller(doc);
+      setText("#salesShopName", seller.name || "-");
       setText("#salesShopTagline", settings.seller.tagline || "");
 
       const logo = $("salesShopLogo");
@@ -9655,6 +9661,7 @@
       if (!doc) return false;
       if (!doc.items.length) { showToast(salesText("needItem")); return false; }
       doc.updatedAt = new Date().toISOString();
+      doc.seller = docSeller(doc);
       const docs = ensureSalesDocs();
       const at = docs.findIndex((item) => item.id === doc.id);
       if (at >= 0) docs[at] = structuredClone(doc);
@@ -9686,6 +9693,7 @@
       const visible = (doc.items || []).filter((item) => item.visible !== false);
       const photo = doc.showImage === false ? "" : salesImageData(doc);
       const settings = salesSettings();
+      const seller = docSeller(doc);
       const logo = salesLogoData || "";
       const bankSource = hasBankDetails(doc.bank) ? doc.bank : settings.bank;
       const bank = normalizedPayMethod(doc.payMethod) === "transfer" && hasBankDetails(bankSource) ? bankSource : null;
@@ -9766,11 +9774,11 @@
         </div>
 
         <div class="sp-parties">
-          ${party(salesText("issuer"), doc.seller.name, [
-            kv(salesText("fPhone"), doc.seller.phone),
+          ${party(salesText("issuer"), seller.name, [
+            kv(salesText("fPhone"), seller.phone),
             kv(salesText("email"), settings.seller.email),
-            kv(salesText("fAddress"), doc.seller.address),
-            kv(salesText("fTaxId"), doc.seller.taxId)
+            kv(salesText("fAddress"), seller.address),
+            kv(salesText("fTaxId"), seller.taxId)
           ].join(""))}
           ${party(salesText("customerInfo"), doc.customer.name, [
             kv(salesText("fPhone"), doc.customer.phone),
@@ -9837,7 +9845,7 @@
             ${notes.length ? `<strong>${escapeHtml(salesText("note"))}</strong><ul>${notes.map((line) => `<li>${escapeHtml(line)}</li>`).join("")}</ul>` : ""}
           </div>
           <div class="sp-sign">
-            <div class="sp-sign-line">${escapeHtml(salesText("thanksSign"))}<br>${escapeHtml(doc.seller.name || "")}</div>
+            <div class="sp-sign-line">${escapeHtml(salesText("thanksSign"))}<br>${escapeHtml(seller.name || "")}</div>
           </div>
         </div>`;
     }
