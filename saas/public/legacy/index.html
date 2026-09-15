@@ -219,6 +219,7 @@
     .layout > aside.panel .privacy-row { flex-direction: column; }
     .layout > aside.panel .switch-row { white-space: normal; min-width: 0; }
     .panel { background: color-mix(in srgb, var(--panel) 94%, transparent); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; backdrop-filter: blur(14px); }
+    .panel.row-menu-open { overflow: visible; }
     #materialForm { overflow: visible; }
     .add-mode-toggle { display: flex; gap: 6px; padding: 5px; background: var(--panel-head, #eef2f7); border-radius: 12px; margin-bottom: 14px; }
     .add-mode-btn { flex: 1; padding: 9px 12px; border: 0; border-radius: 9px; background: transparent; font-weight: 700; color: var(--ink, #33415a); cursor: pointer; font-size: 14px; transition: background .15s, color .15s; }
@@ -12357,6 +12358,7 @@
         // so anchor the panel relative to it (not the viewport).
         const cb = det.closest(".panel");
         const cbRect = cb ? cb.getBoundingClientRect() : { top: 0, right: window.innerWidth };
+        if (cb) cb.classList.add("row-menu-open");
         panel.style.position = "fixed";
         panel.style.top = (rect.bottom - cbRect.top + 6) + "px";
         panel.style.left = "auto";
@@ -12364,6 +12366,8 @@
         panel.style.zIndex = "9999";
       } else {
         panel.style.position = panel.style.top = panel.style.left = panel.style.right = panel.style.zIndex = "";
+        const cb = det.closest(".panel");
+        if (cb && !cb.querySelector("details.history-row-menu[open]")) cb.classList.remove("row-menu-open");
       }
     }, true);
     document.addEventListener("click", (event) => {
