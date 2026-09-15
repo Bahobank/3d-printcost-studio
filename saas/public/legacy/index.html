@@ -372,6 +372,7 @@
     .tab.active { background: var(--panel); color: var(--ink); box-shadow: 0 4px 12px rgba(34,46,39,.08); }
     .view { display: none; }
     #salesView [hidden] { display: none !important; }
+    .tab[hidden], .view[hidden] { display: none !important; }
     .layer-panel { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: calc(100vh - 140px); }
     .layer-frame { display: block; width: 100%; height: 100%; min-height: 640px; border: 0; background: #0e1116; }
     .sales-check { display: flex; align-items: center; gap: 8px; margin: 4px 0 12px; font-size: 14px; }
@@ -941,7 +942,7 @@
     .history-used-item { display: flex; align-items: center; justify-content: center; width: 100%; white-space: nowrap; font-weight: 400; line-height: 1.35; }
     .history-table td:last-child .actions { flex-direction: column; align-items: center; justify-content: flex-start; gap: 8px; flex-wrap: nowrap; }
     .history-table td:last-child .actions button { width: 58px; min-height: 28px; padding: 0 4px; justify-content: center; }
-    .order-form-grid { display: grid; grid-template-columns: minmax(220px, 1.1fr) minmax(220px, .9fr) minmax(140px, .35fr) max-content; gap: 12px; align-items: end; margin-bottom: 16px; }
+    .order-form-grid { display: grid; grid-template-columns: minmax(220px, 1.2fr) minmax(220px, .9fr) max-content; gap: 12px; align-items: end; margin-bottom: 16px; }
     .order-form-grid #saveOrderBtn { min-width: 180px; white-space: nowrap; }
     .order-list { display: grid; gap: 14px; }
     .order-card { border: 1px solid var(--line); border-radius: 8px; background: var(--card); overflow: hidden; }
@@ -1007,7 +1008,7 @@
     }
     .order-profit-positive { color: #16a34a; }
     .order-profit-negative { color: #dc2626; }
-    .order-table { min-width: 0; table-layout: fixed; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
+    .order-table { width: 100%; min-width: 0; table-layout: fixed; border-left: 1px solid var(--line); border-top: 1px solid var(--line); }
     .order-table th { text-align: center; white-space: normal; word-break: normal; overflow-wrap: normal; line-height: 1.25; }
     .order-table th, .order-table td { border-right: 1px solid var(--line); vertical-align: middle; padding: 10px 12px; overflow: hidden; }
     .order-table tbody tr { border-bottom: 2px solid var(--line); }
@@ -2338,7 +2339,7 @@
             <svg class="icon" viewBox="0 0 24 24"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M15 2v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/><path d="M9 9h2"/></svg>
             <span class="side-label" data-side-label="sales">Sales documents</span>
           </button>
-          <button class="tab" data-tab="layerView" type="button">
+          <button class="tab" data-tab="layerView" type="button" hidden>
             <svg class="icon" viewBox="0 0 24 24"><path d="M12 2 2 7l10 5 10-5-10-5z"/><path d="M2 12l10 5 10-5"/><path d="M2 17l10 5 10-5"/></svg>
             <span class="side-label" data-side-label="layer">Layer preview</span>
           </button>
@@ -2990,7 +2991,7 @@
           </div>
         </section>
 
-        <section id="layerView" class="view">
+        <section id="layerView" class="view" hidden>
           <div class="panel layer-panel">
             <div class="panel-head">
               <h2 id="layerTitle">Layer preview</h2>
@@ -10545,18 +10546,15 @@
       const pageOrders = orders.slice((orderPage - 1) * pageSize, orderPage * pageSize);
       $("ordersList").innerHTML = `<div class="table-wrap"><table class="wide-table order-table"><colgroup>
         <col style="width: 3%">
-        <col style="width: 8%">
-        <col style="width: 7%">
+        <col style="width: 9%">
+        <col style="width: 9%">
+        <col style="width: 17%">
+        <col style="width: 15%">
         <col style="width: 10%">
         <col style="width: 14%">
-        <col style="width: 7%">
-        <col style="width: 12%">
         <col style="width: 6%">
-        <col style="width: 7%">
+        <col style="width: 11%">
         <col style="width: 6%">
-        <col style="width: 10%">
-        <col style="width: 8%">
-        <col style="width: 5%">
       </colgroup><thead><tr>
         <th></th>
         <th>${orderText("orderDate")}</th>
