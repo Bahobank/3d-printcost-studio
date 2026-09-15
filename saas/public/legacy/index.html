@@ -553,8 +553,13 @@
     .sales-paper .sp-kv .c { color: #bbb; }
     .sales-paper .sp-rule { border-top: 1px solid #e6e6e6; margin: 20px 0; }
     .sales-paper .sp-section-title { font-weight: 700; font-size: 15px; margin: 0 0 12px; }
-    .sales-paper .sp-highlight { display: flex; gap: 22px; align-items: flex-start; margin-bottom: 20px; }
+    .sales-paper .sp-highlights { margin-bottom: 20px; }
+    .sales-paper .sp-highlights.is-many { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+    .sales-paper .sp-highlight { display: flex; gap: 22px; align-items: flex-start; }
     .sales-paper .sp-highlight img { width: 46%; max-width: 88mm; border-radius: 8px; object-fit: cover; display: block; }
+    .sales-paper .sp-highlights.is-many .sp-highlight { gap: 12px; border: 1px solid #e6e6e6; border-radius: 8px; padding: 8px; }
+    .sales-paper .sp-highlights.is-many .sp-highlight img { width: 44%; max-width: 40mm; }
+    .sales-paper .sp-highlights.is-many .sp-hl-name { font-size: 14px; }
     .sales-paper .sp-hl-text { flex: 1 1 0; min-width: 0; padding-top: 4px; }
     .sales-paper .sp-hl-name { font-weight: 700; font-size: 16px; }
     .sales-paper .sp-hl-desc { color: #7a7a7a; font-size: 13px; margin-top: 4px; }
@@ -9696,18 +9701,24 @@
         </div>`;
 
       // The job itself, shown once and large, above the priced lines.
-      const lead = visible[0];
-      const showLead = lead && (photo || lead.note || lead.code);
-      const highlight = showLead ? `
-        <div class="sp-section-title">${escapeHtml(salesText("itemDetails"))}</div>
+      const showPhotos = doc.showImage !== false;
+      const featured = visible
+        .map((item) => ({ item, photo: showPhotos ? salesLineImage(item, doc) : "" }))
+        .filter(({ item, photo: pic }) => pic || item.note || item.code);
+      // With nothing of its own to show, the first line still gets the document's photo.
+      if (!featured.length && visible[0] && photo) featured.push({ item: visible[0], photo });
+      const card = ({ item, photo: pic }) => `
         <div class="sp-highlight">
-          ${photo ? `<img src="${photo}" alt="">` : ""}
+          ${pic ? `<img src="${pic}" alt="">` : ""}
           <div class="sp-hl-text">
-            <div class="sp-hl-name">${escapeHtml(lead.name || "")}</div>
-            ${lead.note ? `<div class="sp-hl-desc">${escapeHtml(lead.note)}</div>` : ""}
-            ${lead.code ? `<div class="sp-chip">${escapeHtml(salesText("itemCode"))}: ${escapeHtml(lead.code)}</div>` : ""}
+            <div class="sp-hl-name">${escapeHtml(item.name || "")}</div>
+            ${item.note ? `<div class="sp-hl-desc">${escapeHtml(item.note)}</div>` : ""}
+            ${item.code ? `<div class="sp-chip">${escapeHtml(salesText("itemCode"))}: ${escapeHtml(item.code)}</div>` : ""}
           </div>
-        </div>` : "";
+        </div>`;
+      const highlight = featured.length ? `
+        <div class="sp-section-title">${escapeHtml(salesText("itemDetails"))}</div>
+        <div class="sp-highlights ${featured.length > 1 ? "is-many" : ""}">${featured.map(card).join("")}</div>` : "";
 
       const rows = visible.map((item) => `
         <tr>
