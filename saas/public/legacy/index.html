@@ -390,6 +390,12 @@
     .sales-table .num { text-align: right; white-space: nowrap; }
     .sales-doc-no { font-weight: 700; color: var(--ink); }
     .sales-doc-sub { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .sales-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 5px; }
+    .sales-chip { border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 6px; padding: 2px 8px; font: inherit; font-size: 12px; font-weight: 600; cursor: pointer; }
+    .sales-chip:hover { border-color: var(--accent); color: var(--ink); }
+    .sales-chip.is-current { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
+    .sales-chip.is-cancelled { text-decoration: line-through; opacity: .6; }
+    .sales-chip-arrow { color: var(--muted); font-size: 12px; }
     .sales-badge { display: inline-block; border-radius: 999px; padding: 4px 11px; font-size: 12px; font-weight: 700; white-space: nowrap; background: var(--control); color: var(--control-ink); }
     .sales-badge.is-draft { background: var(--control); color: var(--control-ink); }
     .sales-badge.is-sent { background: rgba(67, 111, 246, .14); color: var(--teal); }
@@ -4923,6 +4929,11 @@
     Object.assign(salesI18n.zh, { orderLineBumped: "该订单已在单据中，数量 +1" });
     Object.assign(salesI18n.ja, { orderLineBumped: "この注文は既に入っています。数量を +1 しました" });
     Object.assign(salesI18n.ko, { orderLineBumped: "이미 있는 주문입니다. 수량 +1" });
+    Object.assign(salesI18n.th, { colDocs: "เอกสารในงาน" });
+    Object.assign(salesI18n.en, { colDocs: "Documents" });
+    Object.assign(salesI18n.zh, { colDocs: "单据" });
+    Object.assign(salesI18n.ja, { colDocs: "書類" });
+    Object.assign(salesI18n.ko, { colDocs: "문서" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -9357,49 +9368,83 @@
     }
 
     // ------------------------------------------------------------- home list
-    function salesFilterMatches(doc) {
-      if (salesUi.filter === "quote") return doc.type === "QT";
-      if (salesUi.filter === "waiting") return doc.status === "waiting";
-      if (salesUi.filter === "paid") return doc.status === "paid";
+    // A sale is a chain of documents: quotation -> bill -> receipt, and maybe a
+    // delivery note. The list shows one row per chain, with the stage reached.
+    const SALES_STAGE_RANK = { QT: 1, PAY: 2, RC: 3, DN: 0 };
+
+    function salesChains() {
+      const docs = ensureSalesDocs();
+      const byId = new Map(docs.map((doc) => [doc.id, doc]));
+      const rootOf = (doc) => {
+        let cur = doc;
+        for (let hops = 0; hops < 8; hops++) {
+          const up = cur.sourceId && byId.get(cur.sourceId);
+          if (!up) break;
+          cur = up;
+        }
+        return cur.id;
+      };
+      const chains = new Map();
+      docs.forEach((doc) => {
+        const root = rootOf(doc);
+        if (!chains.has(root)) chains.set(root, []);
+        chains.get(root).push(doc);
+      });
+      return [...chains.values()].map((members) => {
+        members.sort((a, b) => (SALES_STAGE_RANK[a.type] || 0) - (SALES_STAGE_RANK[b.type] || 0) || String(a.createdAt || "").localeCompare(String(b.createdAt || "")));
+        // The stage reached is the furthest live document; a cancelled one does not count.
+        const live = members.filter((doc) => doc.status !== "cancelled" && doc.type !== "DN");
+        const current = (live.length ? live : members)[(live.length ? live : members).length - 1];
+        const latest = members.reduce((max, doc) => String(doc.updatedAt || doc.createdAt || "") > max ? String(doc.updatedAt || doc.createdAt || "") : max, "");
+        return { members, current, latest };
+      }).sort((a, b) => b.latest.localeCompare(a.latest));
+    }
+
+    function chainFilterMatches(chain) {
+      const { members, current } = chain;
+      if (salesUi.filter === "quote") return current.type === "QT";
+      if (salesUi.filter === "waiting") return members.some((doc) => doc.type === "PAY" && doc.status === "waiting");
+      if (salesUi.filter === "paid") return members.some((doc) => (doc.type === "PAY" && doc.status === "paid") || (doc.type === "RC" && doc.status !== "cancelled"));
       return true;
     }
 
-    function salesSearchMatches(doc) {
+    function chainSearchMatches(chain) {
       const term = salesUi.search.trim().toLowerCase();
       if (!term) return true;
-      return [doc.number, doc.customer && doc.customer.name, doc.orderName]
-        .some((value) => String(value || "").toLowerCase().includes(term));
+      return chain.members.some((doc) => [doc.number, doc.customer && doc.customer.name, doc.orderName]
+        .some((value) => String(value || "").toLowerCase().includes(term)));
     }
 
     function renderSalesList() {
       const host = $("salesList");
       if (!host) return;
-      const docs = ensureSalesDocs();
-      const shown = docs.filter((doc) => salesFilterMatches(doc) && salesSearchMatches(doc));
+      const chains = salesChains();
+      const shown = chains.filter((chain) => chainFilterMatches(chain) && chainSearchMatches(chain));
 
       if (!shown.length) {
-        host.innerHTML = `<p class="sales-empty">${escapeHtml(salesText(docs.length ? "salesNoMatch" : "salesEmpty"))}</p>`;
+        host.innerHTML = `<p class="sales-empty">${escapeHtml(salesText(chains.length ? "salesNoMatch" : "salesEmpty"))}</p>`;
         return;
       }
 
-      const rows = shown.map((doc) => {
-        const totals = salesTotals(doc);
+      const rows = shown.map(({ members, current }) => {
+        const totals = salesTotals(current);
+        const chips = members.map((doc) => `<button type="button" class="sales-chip is-${escapeHtml(doc.type)} ${doc === current ? "is-current" : ""} ${doc.status === "cancelled" ? "is-cancelled" : ""}" data-sales-open="${doc.id}" title="${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}">${escapeHtml(doc.number || "-")}</button>`).join('<span class="sales-chip-arrow">&#8250;</span>');
         return `<tr>
           <td>
-            <span class="sales-doc-no">${escapeHtml(doc.number || "-")}</span>
-            <span class="sales-doc-sub">${escapeHtml(salesText(SALES_TYPE_KEYS[doc.type] || "typeQT"))}</span>
+            <span class="sales-doc-no">${escapeHtml(salesText(SALES_TYPE_KEYS[current.type] || "typeQT"))}</span>
+            <span class="sales-chips">${chips}</span>
           </td>
-          <td>${escapeHtml((doc.customer && doc.customer.name) || "-")}${doc.orderName ? `<span class="sales-doc-sub">${escapeHtml(doc.orderName)}</span>` : ""}</td>
-          <td>${escapeHtml(doc.date || "-")}</td>
+          <td>${escapeHtml((current.customer && current.customer.name) || "-")}${current.orderName ? `<span class="sales-doc-sub">${escapeHtml(current.orderName)}</span>` : ""}</td>
+          <td>${escapeHtml(current.date || "-")}</td>
           <td class="num">${money.format(totals.total)}</td>
-          <td class="num"><span class="sales-badge is-${escapeHtml(doc.status || "draft")}">${escapeHtml(salesStatusLabel(doc))}</span></td>
-          <td class="num"><button class="btn-secondary" type="button" data-sales-open="${doc.id}">${escapeHtml(salesText("openDoc"))}</button></td>
+          <td class="num"><span class="sales-badge is-${escapeHtml(current.status || "draft")}">${escapeHtml(salesStatusLabel(current))}</span></td>
+          <td class="num"><button class="btn-secondary" type="button" data-sales-open="${current.id}">${escapeHtml(salesText("openDoc"))}</button></td>
         </tr>`;
       }).join("");
 
       host.innerHTML = `<table class="sales-table">
         <thead><tr>
-          <th>${escapeHtml(salesText("colNumber"))}</th>
+          <th>${escapeHtml(salesText("colDocs"))}</th>
           <th>${escapeHtml(salesText("colCustomer"))}</th>
           <th>${escapeHtml(salesText("colDate"))}</th>
           <th class="num">${escapeHtml(salesText("colTotal"))}</th>
