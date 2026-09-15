@@ -2961,6 +2961,7 @@
                   </select>
                 </div>
                 <div class="history-bulk-actions">
+                  <button class="btn-secondary" type="button" id="historyRecalc">คำนวณต้นทุนใหม่ทั้งหมด</button>
                   <button class="btn-secondary" type="button" id="historyDeleteSelected" disabled>ลบรายการที่เลือก</button>
                 </div>
                 <div class="pager" id="historyPager"></div>
@@ -4313,7 +4314,7 @@
       th: {
         language: "ภาษา", theme: "ธีม", feedback: "ส่งคำขอ", checkUpdate: "เช็คอัปเดต", appSubtitle: "คำนวณต้นทุนงานพิมพ์ 3D สำหรับ Filament และ Resin พร้อมสต็อกวัสดุ ประวัติงาน และงานเสีย", dashboardHeroTitle: "ภาพรวมธุรกิจ <span>3D Print</span>", dashboardHeroSubtitle: "เครื่องมือสำหรับคำนวณต้นทุน จัดการสต็อก และติดตามงานพิมพ์ 3D", newPrintJob: "งานพิมพ์ใหม่", materialStockBtn: "สต็อกวัสดุ", profitOverview: "ภาพรวมกำไร/ขาดทุน", profitChartNote: "กราฟนี้แสดงกำไร/ขาดทุนของงานล่าสุดตามลำดับที่บันทึก", materialUsage: "วัสดุคงเหลือ", materialUsageHint: "กดประเภทวัสดุเพื่อดูสีที่เหลือในสต็อกและสัดส่วน", recentPrintJobs: "งานพิมพ์ล่าสุด", viewAll: "ดูทั้งหมด", totalRevenue: "รายรับรวม", totalProfit: "กำไรรวม", profitMargin: "อัตรากำไร", jobsTracked: "งานที่บันทึก", saleJobs: "งานขาย", positiveBalance: "กำไรสะสม", lossBalance: "ขาดทุนสะสม", savedHistory: "จากประวัติที่บันทึก", noMaterialUsage: "ยังไม่มีวัสดุคงเหลือ", noRecentJobs: "ยังไม่มีงานล่าสุด", producedAt: "วันที่ผลิต", onboardingTitle: "เลือกประเภทเครื่องพิมพ์", onboardingSubtitle: "สามารถเปลี่ยนภายหลังได้ในหน้าเครื่องพิมพ์", onboardingFdmHint: "วัสดุเส้นแบบม้วน", onboardingResinHint: "น้ำยาเรซิ่น",
         export: "ส่งออก", import: "นำเข้า", reset: "ล้างข้อมูล", settingsTitle: "เครื่องพิมพ์และต้นทุน", printerBrand: "ยี่ห้อเครื่องพิมพ์", printerModel: "รุ่นเครื่องพิมพ์", printerUsed: "เครื่องพิมพ์ที่ใช้", printerUsedHint: "จำค่าจากเครื่องพิมพ์ที่เลือกไว้ เปลี่ยนเฉพาะเวลาจำเป็น", printerNotRecorded: "ไม่ระบุเครื่องพิมพ์", multiplePrinters: "หลายเครื่องพิมพ์", orderPrinters: "เครื่องพิมพ์ในออเดอร์",
-        avgWatts: "กำลังไฟเฉลี่ยตอนพิมพ์ที่ใช้คิด (W)", electricityRate: "ค่าไฟต่อหน่วย", wearRate: "ค่าสึกหรอ/ชั่วโมง", printerPrice: "ราคาเครื่อง", printerLife: "อายุการใช้งานที่คาดไว้ (ชั่วโมงพิมพ์)", wearHint: "ค่าสึกหรอ = ราคาเครื่อง ÷ ชั่วโมงใช้งาน — ใส่ราคากับชั่วโมงแล้วระบบคำนวณให้ หรือพิมพ์ทับเองก็ได้", electricityHint: "ค่าไฟต่องาน = กำลังไฟเฉลี่ย (W) ÷ 1000 × ชั่วโมงพิมพ์ × ค่าไฟต่อหน่วย", wearWorked: "ตอนนี้ = {0} ÷ {1} ชม. = {2}/ชม.", markup: "กำไรเป้าหมาย (%)", saveSettings: "บันทึกตั้งค่า",
+        avgWatts: "กำลังไฟเฉลี่ยตอนพิมพ์ที่ใช้คิด (W)", electricityRate: "ค่าไฟต่อหน่วย", wearRate: "ค่าสึกหรอ/ชั่วโมง", printerPrice: "ราคาเครื่อง", printerLife: "อายุการใช้งานที่คาดไว้ (ชั่วโมงพิมพ์)", wearHint: "ค่าสึกหรอ = ราคาเครื่อง ÷ ชั่วโมงใช้งาน — ใส่ราคากับชั่วโมงแล้วระบบคำนวณให้ หรือพิมพ์ทับเองก็ได้", electricityHint: "ค่าไฟต่องาน = กำลังไฟเฉลี่ย (W) ÷ 1000 × ชั่วโมงพิมพ์ × ค่าไฟต่อหน่วย", wearWorked: "ตอนนี้ = {0} ÷ {1} ชม. = {2}/ชม.", recalcJobs: "คำนวณต้นทุนใหม่ทั้งหมด", recalcConfirm: "คำนวณต้นทุนของงานที่บันทึกไว้ทุกงานใหม่ ด้วยค่าไฟ/ค่าสึกหรอปัจจุบัน?\n\nต้นทุนวัสดุใช้ราคาที่บันทึกไว้ตอนนั้น ราคาขายที่ตั้งเองจะคงเดิม", recalcDone: "คำนวณใหม่แล้ว {0} งาน (เปลี่ยน {1} งาน)", markup: "กำไรเป้าหมาย (%)", saveSettings: "บันทึกตั้งค่า",
         stockTab: "สต็อกวัสดุ", jobTab: "คำนวณงานพิมพ์", catalogTab: "แคตตาล็อก", historyTab: "ประวัติงาน",
         jobTitle: "คำนวณต้นทุนงาน", jobName: "ชื่องาน", jobStatus: "สถานะงานพิมพ์", completed: "ขาย", sale: "ขาย", internal: "ใช้เอง", failed: "งานเสีย / ใช้งานไม่ได้",
         failedHint: "ขาย = คิดราคาขายและกำไร / ใช้เอง = ตัดสต็อกและบันทึกต้นทุนเท่านั้น / งานเสีย = นับเป็นต้นทุนเสียสะสม", jobImage: "รูปงานที่พิมพ์", clearImage: "ลบรูป", pasteImageHint: "กด Ctrl+V เพื่อวางรูปภาพจากคลิปบอร์ด",
@@ -4329,7 +4330,7 @@
       en: {
         language: "Language", theme: "Theme", feedback: "Feedback", checkUpdate: "Check update", appSubtitle: "Calculate 3D print costs for Filament and Resin with material stock, job history, and failed-print tracking.", dashboardHeroTitle: "3D Print <span>Business Overview</span>", dashboardHeroSubtitle: "All in one 3D printing business solution for cost calculation, stock tracking, and print job management.", newPrintJob: "New Print Job", materialStockBtn: "Material Stock", profitOverview: "Profit / Loss Overview", profitChartNote: "This chart shows profit/loss from the latest saved jobs in recorded order.", materialUsage: "Remaining Material", materialUsageHint: "Click a material type to see remaining stock colors and proportions.", recentPrintJobs: "Recent Print Jobs", viewAll: "View All", totalRevenue: "Total Revenue", totalProfit: "Total Profit", profitMargin: "Profit Margin", jobsTracked: "jobs tracked", saleJobs: "sale jobs", positiveBalance: "Positive balance", lossBalance: "Loss balance", savedHistory: "From saved history", noMaterialUsage: "No remaining material yet", noRecentJobs: "No recent jobs yet", producedAt: "Production date", onboardingTitle: "Choose printer type", onboardingSubtitle: "You can change this later in printer settings.", onboardingFdmHint: "Spool material", onboardingResinHint: "Liquid resin",
         export: "Export", import: "Import", reset: "Reset", settingsTitle: "Printer and Costs", printerBrand: "Printer brand", printerModel: "Printer model", printerUsed: "Printer used", printerUsedHint: "Saved from your selected printer. Change only when needed.", printerNotRecorded: "Printer not recorded", multiplePrinters: "Multiple printers", orderPrinters: "Printers in order",
-        avgWatts: "Average printing power for cost (W)", electricityRate: "Electricity rate", wearRate: "Wear cost/hour", printerPrice: "Printer price", printerLife: "Expected working life (print hours)", wearHint: "Wear = printer price ÷ working hours — enter both and it is worked out, or type your own", electricityHint: "Electricity per job = average power (W) ÷ 1000 × print hours × rate per kWh", wearWorked: "Now = {0} ÷ {1} h = {2}/h", markup: "Target margin (%)", saveSettings: "Save settings",
+        avgWatts: "Average printing power for cost (W)", electricityRate: "Electricity rate", wearRate: "Wear cost/hour", printerPrice: "Printer price", printerLife: "Expected working life (print hours)", wearHint: "Wear = printer price ÷ working hours — enter both and it is worked out, or type your own", electricityHint: "Electricity per job = average power (W) ÷ 1000 × print hours × rate per kWh", wearWorked: "Now = {0} ÷ {1} h = {2}/h", recalcJobs: "Recalculate all costs", recalcConfirm: "Recalculate every saved job with the current electricity and wear rates?\n\nMaterial costs keep the prices saved at the time; a sale price you set stays.", recalcDone: "Recalculated {0} jobs ({1} changed)", markup: "Target margin (%)", saveSettings: "Save settings",
         stockTab: "Material stock", jobTab: "Print cost", catalogTab: "Catalog", historyTab: "Job history",
         jobTitle: "Calculate Job Cost", jobName: "Job name", jobStatus: "Print status", completed: "Sale", sale: "Sale", internal: "Personal use", failed: "Failed / unusable",
         failedHint: "Sale calculates price and profit / Personal use deducts stock and records cost only / Failed counts as loss.", jobImage: "Printed job image", clearImage: "Remove image", pasteImageHint: "Press Ctrl+V to paste an image from the clipboard",
@@ -4345,7 +4346,7 @@
       zh: {
         language: "语言", theme: "主题", feedback: "反馈", checkUpdate: "检查更新", appSubtitle: "计算 Filament 和 Resin 的 3D 打印成本，并管理材料库存、工作记录和失败打印。", dashboardHeroTitle: "3D 打印<span>业务概览</span>", dashboardHeroSubtitle: "用于 3D 打印成本计算、库存追踪和打印工作管理。", newPrintJob: "新打印工作", materialStockBtn: "材料库存", profitOverview: "利润/亏损概览", profitChartNote: "此图按记录顺序显示最近保存工作的利润/亏损。", materialUsage: "剩余材料", materialUsageHint: "点击材料类型可查看库存剩余颜色与比例。", recentPrintJobs: "最近打印工作", viewAll: "查看全部", totalRevenue: "总收入", totalProfit: "总利润", profitMargin: "利润率", jobsTracked: "项记录", saleJobs: "销售工作", positiveBalance: "盈利累计", lossBalance: "亏损累计", savedHistory: "来自已保存记录", noMaterialUsage: "暂无剩余材料", noRecentJobs: "暂无最近工作", producedAt: "生产日期", onboardingTitle: "选择打印机类型", onboardingSubtitle: "之后可在打印机设置中更改。", onboardingFdmHint: "卷装线材", onboardingResinHint: "液态树脂",
         export: "导出", import: "导入", reset: "重置", settingsTitle: "打印机与成本", printerBrand: "打印机品牌", printerModel: "打印机型号", printerUsed: "使用的打印机", printerUsedHint: "已沿用所选打印机，仅在需要时更改。", printerNotRecorded: "未记录打印机", multiplePrinters: "多台打印机", orderPrinters: "订单中的打印机",
-        avgWatts: "用于计费的平均打印功率 (W)", electricityRate: "电费", wearRate: "损耗费/小时", printerPrice: "打印机价格", printerLife: "预计使用寿命（打印小时）", wearHint: "损耗 = 打印机价格 ÷ 使用小时 — 填入两者自动计算，也可自行输入", electricityHint: "每单电费 = 平均功率 (W) ÷ 1000 × 打印小时 × 每度电价", wearWorked: "当前 = {0} ÷ {1} 小时 = {2}/小时", markup: "目标利润 (%)", saveSettings: "保存设置",
+        avgWatts: "用于计费的平均打印功率 (W)", electricityRate: "电费", wearRate: "损耗费/小时", printerPrice: "打印机价格", printerLife: "预计使用寿命（打印小时）", wearHint: "损耗 = 打印机价格 ÷ 使用小时 — 填入两者自动计算，也可自行输入", electricityHint: "每单电费 = 平均功率 (W) ÷ 1000 × 打印小时 × 每度电价", wearWorked: "当前 = {0} ÷ {1} 小时 = {2}/小时", recalcJobs: "重新计算全部成本", recalcConfirm: "用当前电费/损耗费重新计算所有已保存的工作？\n\n材料成本沿用当时保存的价格，自行设定的售价不变。", recalcDone: "已重新计算 {0} 项（{1} 项有变化）", markup: "目标利润 (%)", saveSettings: "保存设置",
         stockTab: "材料库存", jobTab: "打印成本", catalogTab: "目录", historyTab: "工作记录",
         jobTitle: "计算工作成本", jobName: "工作名称", jobStatus: "打印状态", completed: "销售", sale: "销售", internal: "自用", failed: "失败 / 不可使用",
         failedHint: "销售会计算售价和利润 / 自用只扣库存并记录成本 / 失败计入损失。", jobImage: "打印作品图片", clearImage: "删除图片", pasteImageHint: "按 Ctrl+V 从剪贴板粘贴图片",
@@ -4361,7 +4362,7 @@
       ja: {
         language: "言語", theme: "テーマ", feedback: "要望送信", checkUpdate: "更新確認", appSubtitle: "Filament と Resin の3Dプリント原価、材料在庫、履歴、失敗プリントを管理します。", dashboardHeroTitle: "3Dプリント<span>事業概要</span>", dashboardHeroSubtitle: "3Dプリントの原価計算、在庫管理、作業履歴をまとめて管理します。", newPrintJob: "新規印刷ジョブ", materialStockBtn: "材料在庫", profitOverview: "利益/損失の概要", profitChartNote: "このグラフは保存された最新ジョブの利益/損失を記録順に表示します。", materialUsage: "残り材料", materialUsageHint: "材料タイプをクリックすると在庫色と比率を確認できます。", recentPrintJobs: "最近の印刷ジョブ", viewAll: "すべて表示", totalRevenue: "総売上", totalProfit: "総利益", profitMargin: "利益率", jobsTracked: "件の記録", saleJobs: "販売ジョブ", positiveBalance: "利益累計", lossBalance: "損失累計", savedHistory: "保存履歴より", noMaterialUsage: "残り材料はまだありません", noRecentJobs: "最近のジョブはまだありません", producedAt: "製造日", onboardingTitle: "プリンター種類を選択", onboardingSubtitle: "あとでプリンター設定から変更できます。", onboardingFdmHint: "フィラメント材料", onboardingResinHint: "液体レジン",
         export: "書き出し", import: "読み込み", reset: "リセット", settingsTitle: "プリンターと原価", printerBrand: "プリンターブランド", printerModel: "プリンターモデル", printerUsed: "使用プリンター", printerUsedHint: "選択済みプリンターを使用します。必要な時だけ変更してください。", printerNotRecorded: "プリンター未記録", multiplePrinters: "複数プリンター", orderPrinters: "注文内のプリンター",
-        avgWatts: "原価計算に使う平均印刷電力 (W)", electricityRate: "電気料金", wearRate: "消耗費/時間", printerPrice: "プリンター価格", printerLife: "想定稼働時間（印刷時間）", wearHint: "消耗費 = 価格 ÷ 稼働時間 — 両方入れれば自動計算、手入力も可", electricityHint: "電気代 = 平均電力 (W) ÷ 1000 × 印刷時間 × 単価/kWh", wearWorked: "現在 = {0} ÷ {1} 時間 = {2}/時間", markup: "目標利益 (%)", saveSettings: "設定を保存",
+        avgWatts: "原価計算に使う平均印刷電力 (W)", electricityRate: "電気料金", wearRate: "消耗費/時間", printerPrice: "プリンター価格", printerLife: "想定稼働時間（印刷時間）", wearHint: "消耗費 = 価格 ÷ 稼働時間 — 両方入れれば自動計算、手入力も可", electricityHint: "電気代 = 平均電力 (W) ÷ 1000 × 印刷時間 × 単価/kWh", wearWorked: "現在 = {0} ÷ {1} 時間 = {2}/時間", recalcJobs: "全ジョブの原価を再計算", recalcConfirm: "保存済みの全ジョブを現在の電気料金/消耗費で再計算しますか？\n\n材料費は保存時の価格のまま、手入力の販売価格は変わりません。", recalcDone: "{0} 件を再計算（{1} 件変更）", markup: "目標利益 (%)", saveSettings: "設定を保存",
         stockTab: "材料在庫", jobTab: "印刷原価", catalogTab: "カタログ", historyTab: "作業履歴",
         jobTitle: "作業原価を計算", jobName: "作業名", jobStatus: "印刷状態", completed: "販売", sale: "販売", internal: "自家用", failed: "失敗 / 使用不可",
         failedHint: "販売は売価と利益を計算 / 自家用は在庫差引と原価記録のみ / 失敗は損失に計上します。", jobImage: "印刷物の画像", clearImage: "画像を削除", pasteImageHint: "Ctrl+V でクリップボードの画像を貼り付け",
@@ -4377,7 +4378,7 @@
       ko: {
         language: "언어", theme: "테마", feedback: "요청 보내기", checkUpdate: "업데이트 확인", appSubtitle: "Filament 및 Resin 3D 프린트 비용, 재료 재고, 작업 이력, 실패 출력 손실을 관리합니다.", dashboardHeroTitle: "3D 프린트 <span>비즈니스 개요</span>", dashboardHeroSubtitle: "3D 프린팅 비용 계산, 재고 추적, 출력 작업 관리를 한곳에서 처리합니다.", newPrintJob: "새 출력 작업", materialStockBtn: "재료 재고", profitOverview: "이익/손실 개요", profitChartNote: "이 차트는 최근 저장된 작업의 이익/손실을 기록 순서대로 보여줍니다.", materialUsage: "남은 재료", materialUsageHint: "재료 유형을 클릭하면 남은 재고 색상과 비율을 볼 수 있습니다.", recentPrintJobs: "최근 출력 작업", viewAll: "전체 보기", totalRevenue: "총 매출", totalProfit: "총 이익", profitMargin: "이익률", jobsTracked: "기록된 작업", saleJobs: "판매 작업", positiveBalance: "누적 이익", lossBalance: "누적 손실", savedHistory: "저장 이력 기준", noMaterialUsage: "남은 재료가 아직 없습니다", noRecentJobs: "최근 작업이 없습니다", producedAt: "제작일", onboardingTitle: "프린터 유형 선택", onboardingSubtitle: "나중에 프린터 설정에서 변경할 수 있습니다.", onboardingFdmHint: "스풀 필라멘트", onboardingResinHint: "액상 레진",
         export: "내보내기", import: "가져오기", reset: "초기화", settingsTitle: "프린터 및 비용", printerBrand: "프린터 브랜드", printerModel: "프린터 모델", printerUsed: "사용 프린터", printerUsedHint: "선택한 프린터를 사용합니다. 필요할 때만 변경하세요.", printerNotRecorded: "프린터 기록 없음", multiplePrinters: "여러 프린터", orderPrinters: "주문 내 프린터",
-        avgWatts: "비용 계산용 평균 출력 전력 (W)", electricityRate: "전기요금", wearRate: "마모 비용/시간", printerPrice: "프린터 가격", printerLife: "예상 사용 수명 (출력 시간)", wearHint: "마모 비용 = 프린터 가격 ÷ 사용 시간 — 둘 다 입력하면 자동 계산, 직접 입력도 가능", electricityHint: "전기료 = 평균 전력 (W) ÷ 1000 × 출력 시간 × kWh 단가", wearWorked: "현재 = {0} ÷ {1} h = {2}/h", markup: "목표 이익 (%)", saveSettings: "설정 저장",
+        avgWatts: "비용 계산용 평균 출력 전력 (W)", electricityRate: "전기요금", wearRate: "마모 비용/시간", printerPrice: "프린터 가격", printerLife: "예상 사용 수명 (출력 시간)", wearHint: "마모 비용 = 프린터 가격 ÷ 사용 시간 — 둘 다 입력하면 자동 계산, 직접 입력도 가능", electricityHint: "전기료 = 평균 전력 (W) ÷ 1000 × 출력 시간 × kWh 단가", wearWorked: "현재 = {0} ÷ {1} h = {2}/h", recalcJobs: "전체 비용 다시 계산", recalcConfirm: "저장된 모든 작업을 현재 전기요금/마모 비용으로 다시 계산할까요?\n\n재료비는 저장 당시 가격을 유지하고, 직접 정한 판매가는 그대로입니다.", recalcDone: "{0}건 다시 계산 ({1}건 변경)", markup: "목표 이익 (%)", saveSettings: "설정 저장",
         stockTab: "재료 재고", jobTab: "출력 비용", catalogTab: "카탈로그", historyTab: "작업 이력",
         jobTitle: "작업 비용 계산", jobName: "작업명", jobStatus: "출력 상태", completed: "판매", sale: "판매", internal: "개인 사용", failed: "실패 / 사용 불가",
         failedHint: "판매는 판매가와 이익 계산 / 개인 사용은 재고 차감과 비용 기록만 / 실패는 손실로 기록됩니다.", jobImage: "출력물 이미지", clearImage: "이미지 삭제", pasteImageHint: "Ctrl+V로 클립보드의 이미지를 붙여넣기",
@@ -6691,6 +6692,7 @@
       setText('label[for="printerPrice"]', `${t("printerPrice")} (${currencyLabel()})`);
       setText('label[for="printerLifeHours"]', t("printerLife"));
       setText("#electricityHint", t("electricityHint"));
+      setText("#historyRecalc", t("recalcJobs"));
       renderWearHint();
       setText('label[for="markup"]', t("markup"));
       setText("#packagePriceLabel", `${packagePriceLabelText()} (${currencyLabel()})`);
@@ -7344,6 +7346,56 @@
         renderWearHint();
       });
     });
+
+    /**
+     * Re-prices one saved job from what it stored. Material cost is the sum of
+     * the per-line snapshots (the price paid then), hours and wattage are the
+     * job's own, and only the electricity and wear rates come from today's
+     * settings for the job's mode. Returns the new record, or null if nothing
+     * moved.
+     */
+    function repriceJob(job) {
+      const mode = job.mode || "filament";
+      const ms = (state.modeSettings && state.modeSettings[mode]) || {};
+      const hours = Number.isFinite(Number(job.hours)) ? Number(job.hours) : jobPrintMinutes(job) / 60;
+      const watts = num(job.printer?.avgWatts || ms.printerWatts);
+      const status = normalizedJobStatus(job);
+      const isFailed = status === "failed", isInternal = status === "internal";
+      const materialCost = (job.materials || []).reduce((sum, line) => sum + num(line.cost), 0);
+      const electricityCost = (watts / 1000) * hours * num(ms.electricityRate);
+      const wearCost = hours * num(ms.wearRate);
+      const labor = num(job.laborCost), other = num(job.otherCost);
+      const failureRate = (isFailed || isInternal) ? 0 : num(job.failureRatePercent) / 100;
+      const directCost = materialCost + electricityCost + wearCost + labor + other;
+      const totalCost = directCost * (1 + failureRate);
+      const near = (a, b) => Math.abs(num(a) - num(b)) < 0.005;
+      if (near(totalCost, job.totalCost) && near(wearCost, job.wearCost)) return null;
+
+      // The sale price: an order prices its jobs; otherwise keep the job's own
+      // margin so a manual price is honoured.
+      const orderPriced = Boolean(job.orderId);
+      const markupRate = num(job.markupPercent) / 100;
+      const suggestedPrice = (isFailed || isInternal || orderPriced) ? 0 : totalCost * (1 + markupRate);
+      const profit = isFailed ? -totalCost : (isInternal || orderPriced) ? 0 : suggestedPrice - totalCost;
+      return {
+        ...job,
+        hours, wearCost, totalCost, suggestedPrice, profit,
+        salePrice: orderPriced ? 0 : suggestedPrice,
+        lossCost: isFailed ? totalCost : 0,
+        updatedAt: new Date().toISOString()
+      };
+    }
+
+    function repriceAllJobs() {
+      let changed = 0;
+      state.jobs = (state.jobs || []).map((job) => {
+        const next = repriceJob(job);
+        if (!next) return job;
+        changed++;
+        return next;
+      });
+      return { total: (state.jobs || []).length, changed };
+    }
 
     function calculateJob() {
       syncJobLinesFromDom();
@@ -12571,6 +12623,13 @@
       if (wasEditingJob) showView("historyView");
       queueAnonymousInsights(wasEditingJob ? "job-update" : "job-create");
       showToast(wasEditingJob ? t("jobHistoryUpdated") : t("jobSaved"));
+    });
+    $("historyRecalc").addEventListener("click", () => {
+      if (!(state.jobs || []).length) return;
+      if (!confirm(t("recalcConfirm"))) return;
+      const { total, changed } = repriceAllJobs();
+      if (changed) persist();
+      showToast(t("recalcDone").replace("{0}", total).replace("{1}", changed));
     });
     $("clearJob").addEventListener("click", clearJobForm);
     $("cancelJobEdit").addEventListener("click", cancelJobEdit);
