@@ -3800,7 +3800,34 @@
       });
       return changed;
     }
-    function localizeCostDefaults() { return migrateCostDefaults("THB", effectiveCurrencyCode()); }
+    // Runs at every start. It used to assume the stored rates were Thai defaults
+    // and convert them to the current currency - so a Thai shop that had once
+    // opened the app in English (currency falls back to the language's) had its
+    // 4.7/8 rewritten to the US 0.15/0.25, and on returning to Thai nothing put
+    // them back: the rates no longer matched the Thai defaults, so they were
+    // treated as the user's own. Every cost came out about 32x too low, shown
+    // in baht. A rate still sitting at any currency's starting value is a
+    // default, not a choice, so it now follows the currency wherever it came from.
+    function localizeCostDefaults() {
+      const target = effectiveCurrencyCode();
+      const to = costDefaultsFor(target);
+      let changed = false;
+      ["filament", "resin"].forEach((mode) => {
+        const ms = state && state.modeSettings && state.modeSettings[mode];
+        if (!ms) return;
+        // Only the pair counts: a single rate can coincide with a real choice
+        // (12 an hour is also the Philippine default), both together cannot.
+        const foreign = Object.entries(COST_DEFAULTS_BY_CURRENCY).some(([code, d]) =>
+          code !== target && Number(ms.electricityRate) === d.electricity && Number(ms.wearRate) === d.wear);
+        if (!foreign) return;
+        if (Number(ms.electricityRate) !== to.electricity || Number(ms.wearRate) !== to.wear) {
+          ms.electricityRate = to.electricity;
+          ms.wearRate = to.wear;
+          changed = true;
+        }
+      });
+      return changed;
+    }
     const qtyFmt = new Intl.NumberFormat("th-TH", { maximumFractionDigits: 1 });
     const fallbackImage = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360"><rect width="640" height="360" fill="#edf3ef"/><rect x="120" y="96" width="400" height="188" rx="16" fill="#fff" stroke="#1f2b25" stroke-width="14"/><path d="M170 257h300M190 257V135h260v122M230 172h180" stroke="#16737a" stroke-width="16" stroke-linecap="round" fill="none"/><rect x="280" y="150" width="80" height="58" rx="8" fill="#153b32"/><path d="M320 208v42" stroke="#153b32" stroke-width="14" stroke-linecap="round"/></svg>`);
     const brandLogos = {
@@ -4243,7 +4270,7 @@
     let state = loadState();
     const startupLanguage = startupLanguageOverride();
     state.settings.language = normalizeLanguage(startupLanguage || state.settings.language);
-    localizeCostDefaults();
+    if (localizeCostDefaults()) { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (error) {} }
     let jobLines = [{ id: crypto.randomUUID(), materialId: "", amount: "" }];
     let jobImageData = "";
     let orderImageData = "";
