@@ -12343,15 +12343,15 @@
       queueAnonymousInsights(editingOrderId ? "order-update" : "order-create");
       showToast(editingOrderId ? orderText("orderUpdated") : orderText("orderSaved"));
     });
-    // The order row's manage menu sits inside overflow:hidden cards, so its dropdown
-    // panel gets clipped/invisible. Float it with fixed positioning while open.
-    $("ordersList").addEventListener("toggle", (event) => {
+    // Every row's manage menu sits inside an overflow-clipped card or table, so
+    // its dropdown gets cut off. Float it with fixed positioning while open.
+    document.addEventListener("toggle", (event) => {
       const det = event.target;
-      if (!det || !det.classList || !det.classList.contains("order-row-menu")) return;
+      if (!det || !det.classList || !det.classList.contains("history-row-menu")) return;
       const panel = det.querySelector(".history-row-menu-panel");
       if (!panel) return;
       if (det.open) {
-        document.querySelectorAll("#ordersList details.order-row-menu[open]").forEach((other) => { if (other !== det) other.open = false; });
+        document.querySelectorAll("details.history-row-menu[open]").forEach((other) => { if (other !== det) other.open = false; });
         const rect = det.querySelector("summary").getBoundingClientRect();
         // .panel has backdrop-filter, which makes it the containing block for position:fixed,
         // so anchor the panel relative to it (not the viewport).
@@ -12367,8 +12367,8 @@
       }
     }, true);
     document.addEventListener("click", (event) => {
-      if (event.target.closest("#ordersList details.order-row-menu")) return;
-      document.querySelectorAll("#ordersList details.order-row-menu[open]").forEach((det) => { det.open = false; });
+      if (event.target.closest("details.history-row-menu")) return;
+      document.querySelectorAll("details.history-row-menu[open]").forEach((det) => { det.open = false; });
     });
     $("ordersList").addEventListener("click", (event) => {
       const detailToggle = event.target.closest("[data-toggle-order-detail]");
