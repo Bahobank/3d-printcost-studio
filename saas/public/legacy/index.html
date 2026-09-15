@@ -465,6 +465,14 @@
     .sales-item-from { font-size: 11px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sales-items th { text-align: left; font-size: 12px; font-weight: 700; color: var(--muted); padding: 0 8px 8px; }
     .sales-items th.num, .sales-items td.num { text-align: right; }
+    .sales-items .sales-group-row th { padding: 6px 8px; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; border-bottom: 0; }
+    .sales-items .sales-group { border-radius: 8px 8px 0 0; text-align: center; }
+    .sales-items .sales-group-customer { background: color-mix(in srgb, var(--green) 12%, transparent); color: var(--green); }
+    .sales-items .sales-group-internal { background: color-mix(in srgb, var(--red) 9%, transparent); color: var(--red); }
+    .sales-items th.is-internal, .sales-items td.is-internal { background: color-mix(in srgb, var(--red) 5%, transparent); }
+    .sales-items th.is-internal { color: var(--red); }
+    .sales-items td.is-internal:first-of-type, .sales-items th.is-internal:first-of-type { border-left: 2px solid color-mix(in srgb, var(--red) 30%, transparent); }
+    .sales-items .sales-line-total { color: var(--green); }
     .sales-items th.mid, .sales-items td.mid { text-align: center; }
     .sales-items td { padding: 8px; border-top: 1px solid var(--line); vertical-align: middle; }
     .sales-items tbody tr:first-child td { border-top: 0; }
@@ -3106,16 +3114,21 @@
                   <div class="sales-items-wrap">
                     <table class="sales-items">
                       <thead>
+                        <tr class="sales-group-row">
+                          <th colspan="6" class="sales-group sales-group-customer" id="salesGroupCustomer">Customer sees</th>
+                          <th colspan="3" class="sales-group sales-group-internal" id="salesGroupInternal">Shop only</th>
+                          <th></th>
+                        </tr>
                         <tr>
                           <th class="sales-col-no">#</th>
                           <th id="salesThName">Item</th>
                           <th class="num" id="salesThQty">Qty</th>
                           <th class="num" id="salesThPrice">Unit price</th>
-                          <th class="num" id="salesThCost">Cost</th>
                           <th class="num" id="salesThTotal">Amount</th>
                           <th id="salesThNote">Note</th>
-                          <th class="mid" id="salesThFree">Free</th>
-                          <th class="mid" id="salesThVisible">Customer sees</th>
+                          <th class="num is-internal" id="salesThCost">Cost</th>
+                          <th class="mid is-internal" id="salesThFree">Free</th>
+                          <th class="mid is-internal" id="salesThVisible">Customer sees</th>
                           <th></th>
                         </tr>
                       </thead>
@@ -4685,7 +4698,7 @@
         fName: "ชื่อ", fPhone: "เบอร์โทร", fAddress: "ที่อยู่", fTaxId: "เลขผู้เสียภาษี",
         docNo: "เลขที่", docDate: "วันที่", validUntil: "ยืนราคาถึง",
         items: "รายการ", addItem: "เพิ่มรายการ", itemName: "ชื่อรายการ",
-        qty: "จำนวน", unitPrice: "ราคาต่อหน่วย", itemCost: "ต้นทุน", lineTotal: "รวม",
+        qty: "จำนวน", unitPrice: "ราคาขาย/หน่วย", itemCost: "ต้นทุน/หน่วย", lineTotal: "รวม",
         freebie: "ของแถม", visible: "ลูกค้าเห็น", removeItem: "ลบ",
         noItems: "ยังไม่มีรายการ กด \u201cเพิ่มรายการ\u201d เพื่อเริ่ม",
         hiddenHint: "รายการที่ไม่ติ๊ก \u201cลูกค้าเห็น\u201d จะถูกคิดรวมต้นทุน แต่ไม่แสดงบนเอกสารที่ส่งให้ลูกค้า",
@@ -4719,7 +4732,7 @@
         fName: "Name", fPhone: "Phone", fAddress: "Address", fTaxId: "Tax ID",
         docNo: "Number", docDate: "Date", validUntil: "Valid until",
         items: "Items", addItem: "Add item", itemName: "Item",
-        qty: "Qty", unitPrice: "Unit price", itemCost: "Cost", lineTotal: "Amount",
+        qty: "Qty", unitPrice: "Sell price / unit", itemCost: "Cost / unit", lineTotal: "Amount",
         freebie: "Free gift", visible: "Customer sees", removeItem: "Remove",
         noItems: "No items yet. Use \u201cAdd item\u201d to start.",
         hiddenHint: "Items without \u201cCustomer sees\u201d ticked count towards your cost but never appear on the customer's copy",
@@ -4753,7 +4766,7 @@
         fName: "名称", fPhone: "电话", fAddress: "地址", fTaxId: "税号",
         docNo: "单号", docDate: "日期", validUntil: "有效期至",
         items: "项目", addItem: "添加项目", itemName: "项目名称",
-        qty: "数量", unitPrice: "单价", itemCost: "成本", lineTotal: "金额",
+        qty: "数量", unitPrice: "售价/单位", itemCost: "成本/单位", lineTotal: "金额",
         freebie: "赠品", visible: "客户可见", removeItem: "删除",
         noItems: "还没有项目，点击\u201c添加项目\u201d开始。",
         hiddenHint: "未勾选\u201c客户可见\u201d的项目会计入成本，但不会出现在给客户的单据上",
@@ -4787,7 +4800,7 @@
         fName: "名前", fPhone: "電話番号", fAddress: "住所", fTaxId: "登録番号",
         docNo: "番号", docDate: "日付", validUntil: "有効期限",
         items: "明細", addItem: "明細を追加", itemName: "品目",
-        qty: "数量", unitPrice: "単価", itemCost: "原価", lineTotal: "金額",
+        qty: "数量", unitPrice: "販売単価", itemCost: "原価/単位", lineTotal: "金額",
         freebie: "サービス品", visible: "お客様に表示", removeItem: "削除",
         noItems: "明細がありません。\u300c明細を追加\u300dから始めてください。",
         hiddenHint: "\u300cお客様に表示\u300dのない明細は原価には入りますが、お客様用の書類には出ません",
@@ -4821,7 +4834,7 @@
         fName: "이름", fPhone: "전화번호", fAddress: "주소", fTaxId: "사업자번호",
         docNo: "번호", docDate: "날짜", validUntil: "유효기간",
         items: "항목", addItem: "항목 추가", itemName: "항목명",
-        qty: "수량", unitPrice: "단가", itemCost: "원가", lineTotal: "금액",
+        qty: "수량", unitPrice: "판매단가", itemCost: "원가/단위", lineTotal: "금액",
         freebie: "무료 증정", visible: "고객에게 표시", removeItem: "삭제",
         noItems: "항목이 없습니다. \u201c항목 추가\u201d로 시작하세요.",
         hiddenHint: "\u201c고객에게 표시\u201d를 선택하지 않은 항목은 원가에는 포함되지만 고객용 문서에는 나타나지 않습니다",
@@ -4884,6 +4897,11 @@
     Object.assign(salesI18n.zh, { layerTab: "分层预览", layerHint: "拖入 STL / OBJ / 3MF 即可按打印层查看，再截图粘贴到任何地方" });
     Object.assign(salesI18n.ja, { layerTab: "レイヤープレビュー", layerHint: "STL / OBJ / 3MF を入れると印刷レイヤーで表示。キャプチャしてどこにでも貼り付けられます" });
     Object.assign(salesI18n.ko, { layerTab: "레이어 미리보기", layerHint: "STL / OBJ / 3MF를 넣으면 프린터 레이어로 보여주고, 캡처해 어디든 붙여넣을 수 있습니다" });
+    Object.assign(salesI18n.th, { groupCustomer: "ส่วนที่ลูกค้าเห็น", groupInternal: "ภายในร้าน (ลูกค้าไม่เห็น)" });
+    Object.assign(salesI18n.en, { groupCustomer: "What the customer sees", groupInternal: "Shop only (hidden)" });
+    Object.assign(salesI18n.zh, { groupCustomer: "客户可见部分", groupInternal: "仅店内（客户不可见）" });
+    Object.assign(salesI18n.ja, { groupCustomer: "お客様に見える部分", groupInternal: "社内のみ（非表示）" });
+    Object.assign(salesI18n.ko, { groupCustomer: "고객에게 보이는 부분", groupInternal: "상점 내부 (고객 비표시)" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -9464,13 +9482,13 @@
               </div>
             </div>
           </td>
-          <td class="num" style="width:88px"><input type="number" min="0" step="1" data-sales-field="qty" value="${Number(item.qty) || 0}"></td>
-          <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="unitPrice" value="${Number(item.unitPrice) || 0}" ${item.freebie ? "disabled" : ""}></td>
-          <td class="num" style="width:120px"><input type="number" min="0" step="0.01" data-sales-field="cost" value="${Number(item.cost) || 0}"></td>
+          <td class="num" style="width:80px"><input type="number" min="0" step="1" data-sales-field="qty" value="${Number(item.qty) || 0}"></td>
+          <td class="num" style="width:124px"><input type="number" min="0" step="0.01" data-sales-field="unitPrice" value="${Number(item.unitPrice) || 0}" placeholder="0.00" ${item.freebie ? "disabled" : ""}></td>
           <td class="num sales-line-total" data-sales-line-total>${money.format(salesLineTotal(item))}</td>
           <td><input type="text" data-sales-field="note" value="${escapeHtml(item.note || "")}" placeholder="${escapeHtml(salesText("itemNote"))}"></td>
-          <td class="mid"><input type="checkbox" data-sales-field="freebie" ${item.freebie ? "checked" : ""} title="${escapeHtml(salesText("freebie"))}"></td>
-          <td class="mid"><input type="checkbox" data-sales-field="visible" ${item.visible === false ? "" : "checked"} title="${escapeHtml(salesText("visible"))}"></td>
+          <td class="num is-internal" style="width:116px"><input type="number" min="0" step="0.01" data-sales-field="cost" value="${Number(item.cost) || 0}" placeholder="0.00"></td>
+          <td class="mid is-internal"><input type="checkbox" data-sales-field="freebie" ${item.freebie ? "checked" : ""} title="${escapeHtml(salesText("freebie"))}"></td>
+          <td class="mid is-internal"><input type="checkbox" data-sales-field="visible" ${item.visible === false ? "" : "checked"} title="${escapeHtml(salesText("visible"))}"></td>
           <td class="num"><button class="btn-ghost" type="button" data-sales-remove="${index}" title="${escapeHtml(salesText("removeItem"))}">
             <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button></td>
@@ -10121,6 +10139,8 @@
       label("#salesShopEditText", "editShop");
       label("#salesSummaryTitle", "summary");
       label("#salesThNote", "itemNote");
+      label("#salesGroupCustomer", "groupCustomer");
+      label("#salesGroupInternal", "groupInternal");
       label("#salesSetTaglineLabel", "tagline");
       label("#salesSetEmailLabel", "email");
       label("#salesSetLogoPick", "logoPick");
