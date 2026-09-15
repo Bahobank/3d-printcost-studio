@@ -3106,10 +3106,16 @@
                 <div class="sales-items-panel">
                   <div class="sales-section-head">
                     <h3 id="salesItemsTitle">Items</h3>
-                    <button class="btn-primary" type="button" id="salesAddItemBtn">
-                      <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
-                      <span id="salesAddItemText">Add item</span>
-                    </button>
+                    <div class="sales-head-actions">
+                      <button class="btn-secondary" type="button" id="salesAddOrderLineBtn">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M6 3h12l2 4v14H4V7z"/><path d="M6 7h12"/><path d="M12 11v6"/><path d="M9 14h6"/></svg>
+                        <span id="salesAddOrderLineText">Add from order</span>
+                      </button>
+                      <button class="btn-primary" type="button" id="salesAddItemBtn">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+                        <span id="salesAddItemText">Add item</span>
+                      </button>
+                    </div>
                   </div>
                   <div class="sales-items-wrap">
                     <table class="sales-items">
@@ -4902,6 +4908,11 @@
     Object.assign(salesI18n.zh, { groupCustomer: "客户可见部分", groupInternal: "仅店内（客户不可见）" });
     Object.assign(salesI18n.ja, { groupCustomer: "お客様に見える部分", groupInternal: "社内のみ（非表示）" });
     Object.assign(salesI18n.ko, { groupCustomer: "고객에게 보이는 부분", groupInternal: "상점 내부 (고객 비표시)" });
+    Object.assign(salesI18n.th, { addOrderLine: "เพิ่มจากออเดอร์" });
+    Object.assign(salesI18n.en, { addOrderLine: "Add from order" });
+    Object.assign(salesI18n.zh, { addOrderLine: "从订单添加" });
+    Object.assign(salesI18n.ja, { addOrderLine: "注文から追加" });
+    Object.assign(salesI18n.ko, { addOrderLine: "주문에서 추가" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8913,7 +8924,7 @@
       draft: "stDraft", sent: "stSent", accepted: "stAccepted", rejected: "stRejected",
       waiting: "stWaiting", paid: "stPaid", cancelled: "stCancelled"
     };
-    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "" };
+    const salesUi = { filter: "all", search: "", draft: null, isNew: false, pickedOrderId: "", pickerMode: "new" };
 
     function salesItem(patch) {
       return { name: "", note: "", code: "", qty: 1, unitPrice: 0, cost: 0, freebie: false, visible: true, ...(patch || {}) };
@@ -9404,6 +9415,12 @@
       salesUi.draft = structuredClone(doc);
       markLineFromOrder(salesUi.draft);
       const pending = salesUi.draft;
+      const lineOrders = (pending.items || [])
+        .map((item) => item.orderId && !salesImageCache.has(`order:${item.orderId}`) ? (state.orders || []).find((o) => o.id === item.orderId) : null)
+        .filter(Boolean);
+      if (lineOrders.length) {
+        Promise.all(lineOrders.map(loadOrderThumb)).then(() => { if (salesUi.draft === pending) refreshSalesThumbs(); });
+      }
       if (salesImageCacheKey(pending) && !salesImageData(pending)) {
         loadSalesImage(pending).then(() => {
           if (salesUi.draft !== pending) return;
@@ -9430,9 +9447,15 @@
       renderSalesList();
     }
 
+    function salesLineImage(item, doc) {
+      // A line that names its own order shows that order's photo; the older
+      // shape, marked only fromOrder, falls back to the document's photo.
+      if (item.orderId) return salesImageCache.get(`order:${item.orderId}`) || (item.orderId === doc.orderId ? salesImageData(doc) : "");
+      return item.fromOrder ? salesImageData(doc) : "";
+    }
+
     function salesItemThumb(item, doc) {
-      // Only the line that came from the order has a picture to show.
-      const data = item.fromOrder ? salesImageData(doc) : "";
+      const data = salesLineImage(item, doc);
       return data ? `<span class="sales-item-thumb" style="background-image:url(&quot;${data}&quot;)"></span>` : "";
     }
 
@@ -9440,13 +9463,13 @@
       const doc = salesUi.draft;
       const body = $("salesItemRows");
       if (!doc || !body) return;
-      const data = salesImageData(doc);
       body.querySelectorAll("[data-sales-index]").forEach((row) => {
         const item = (doc.items || [])[Number(row.dataset.salesIndex)];
         const main = row.querySelector(".sales-item-main");
         if (!main || !item) return;
         const existing = main.querySelector(".sales-item-thumb");
-        if (item.fromOrder && data) {
+        const data = salesLineImage(item, doc);
+        if (data) {
           if (existing) existing.style.backgroundImage = `url("${data}")`;
           else main.insertAdjacentHTML("afterbegin", `<span class="sales-item-thumb" style="background-image:url(&quot;${data}&quot;)"></span>`);
         } else if (existing) {
@@ -9477,7 +9500,7 @@
                 <input type="text" data-sales-field="name" value="${escapeHtml(item.name || "")}" placeholder="${escapeHtml(salesText("itemName"))}">
                 <div class="sales-item-sub">
                   <input type="text" class="sales-item-code" data-sales-field="code" value="${escapeHtml(item.code || "")}" placeholder="${escapeHtml(salesText("itemCode"))}">
-                  ${item.fromOrder && doc.orderName ? `<span class="sales-item-from">${escapeHtml(salesText("refOrder"))} ${escapeHtml(doc.orderName)}</span>` : ""}
+                  ${item.fromOrder && (item.orderName || doc.orderName) ? `<span class="sales-item-from">${escapeHtml(salesText("refOrder"))} ${escapeHtml(item.orderName || doc.orderName)}</span>` : ""}
                 </div>
               </div>
             </div>
@@ -10042,21 +10065,43 @@
       if (modal) modal.classList.remove("show");
     }
 
+    function orderLine(order) {
+      // Snapshot: the jobs inside the order become one priced line, and the cost
+      // is frozen here so later edits to the order leave this document alone.
+      return salesItem({
+        name: order.name || "",
+        qty: 1,
+        unitPrice: Number(order.salePrice) || 0,
+        cost: orderCostTotal(order.id),
+        fromOrder: true,
+        orderId: order.id,
+        orderName: order.name || "",
+        imageKey: order.imageKey || ""
+      });
+    }
+
     function startQuoteFromOrder(order) {
       const doc = blankSalesDoc("QT");
       doc.orderId = order.id;
       doc.orderName = order.name || "";
       doc.imageKey = order.imageKey || "";
-      // Snapshot: the jobs inside the order become one priced line, and the cost
-      // is frozen here so later edits to the order leave this document alone.
-      doc.items = [salesItem({
-        name: order.name || "",
-        qty: 1,
-        unitPrice: Number(order.salePrice) || 0,
-        cost: orderCostTotal(order.id),
-        fromOrder: true
-      })];
+      doc.items = [orderLine(order)];
       openSalesEditor(doc, true);
+    }
+
+    function appendOrderLine(order) {
+      if (!salesUi.draft) return;
+      readSalesForm();
+      salesUi.draft.items.push(orderLine(order));
+      // The first order stays the document's reference; a later one only adds a line.
+      if (!salesUi.draft.orderId) {
+        salesUi.draft.orderId = order.id;
+        salesUi.draft.orderName = order.name || "";
+        salesUi.draft.imageKey = order.imageKey || "";
+      }
+      renderSalesItems();
+      renderSalesTotals();
+      loadOrderThumb(order).then(() => refreshSalesThumbs());
     }
 
     // ------------------------------------------------------------- listeners
@@ -10079,6 +10124,7 @@
       label("#salesValidUntilLabel", "validUntil");
       label("#salesItemsTitle", "items");
       label("#salesAddItemText", "addItem");
+      label("#salesAddOrderLineText", "addOrderLine");
       label("#salesHiddenHint", "hiddenHint");
       label("#salesThName", "itemName");
       label("#salesThQty", "qty");
@@ -10194,8 +10240,19 @@
         return;
       }
 
+      if (event.target.closest("#salesAddOrderLineBtn")) {
+        salesUi.pickerMode = "append";
+        salesUi.pickedOrderId = "";
+        const search = $("salesOrderSearch");
+        if (search) search.value = "";
+        renderSalesOrderList();
+        openSalesModal("salesOrderModal");
+        return;
+      }
+
       if (event.target.closest("#salesChoiceOrder")) {
         closeSalesModal("salesChoiceModal");
+        salesUi.pickerMode = "new";
         salesUi.pickedOrderId = "";
         const search = $("salesOrderSearch");
         if (search) search.value = "";
@@ -10223,7 +10280,8 @@
         const order = (state.orders || []).find((item) => item.id === salesUi.pickedOrderId);
         if (!order) { showToast(salesText("pickOrderNone")); return; }
         closeSalesModal("salesOrderModal");
-        startQuoteFromOrder(order);
+        if (salesUi.pickerMode === "append") appendOrderLine(order);
+        else startQuoteFromOrder(order);
         return;
       }
 
