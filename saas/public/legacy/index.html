@@ -6327,6 +6327,19 @@
         if (img && data) img.src = data;
       }
     }
+    // swatchHtml() is used by eleven renderers - the calculator's material
+    // picker, the dashboard, history - but only the stock table asked for the
+    // photos to be loaded, so everywhere else showed an empty frame. Watch the
+    // page instead, and hydrate whatever photo swatch appears, wherever from.
+    const materialPhotoObserver = new MutationObserver(() => {
+      if (materialPhotoObserver.pending) return;
+      materialPhotoObserver.pending = true;
+      requestAnimationFrame(() => {
+        materialPhotoObserver.pending = false;
+        hydrateMaterialPhotos();
+      });
+    });
+    materialPhotoObserver.observe(document.body, { childList: true, subtree: true });
     bindMaterialPhoto();
     applyPhotoLabels();
     renderMaterialPhotoEditor();
