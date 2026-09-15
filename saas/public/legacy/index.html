@@ -2954,10 +2954,6 @@
                   </div>
                   <span class="drop-hint" id="orderImageHint"></span>
                 </div>
-                <div class="field">
-                  <label for="orderExtraCostInput" id="orderExtraCostLabel">Other cost</label>
-                  <input id="orderExtraCostInput" type="number" min="0" step="0.01" value="0">
-                </div>
                 <input id="orderSalePriceInput" type="hidden" value="0">
                 <button class="btn-primary" type="button" id="saveOrderBtn">
                   <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -4861,6 +4857,11 @@
     Object.assign(salesI18n.zh, { paidOrders: "已收款订单", awaitingAmount: "待收款", paidOnlyHint: "只统计客户已付款的订单" });
     Object.assign(salesI18n.ja, { paidOrders: "入金済みの注文", awaitingAmount: "入金待ち", paidOnlyHint: "入金済みの注文のみを集計します" });
     Object.assign(salesI18n.ko, { paidOrders: "입금된 주문", awaitingAmount: "입금 대기", paidOnlyHint: "고객이 결제한 주문만 집계합니다" });
+    Object.assign(salesI18n.th, { paidSales: "การขายที่รับเงินแล้ว" });
+    Object.assign(salesI18n.en, { paidSales: "paid sales" });
+    Object.assign(salesI18n.zh, { paidSales: "已收款销售" });
+    Object.assign(salesI18n.ja, { paidSales: "入金済みの販売" });
+    Object.assign(salesI18n.ko, { paidSales: "입금된 판매" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -8388,7 +8389,7 @@
     function renderLineChart(buckets, jobs) {
       const zoom = Math.min(3, Math.max(1, num(state.settings.dashboardZoom || 1)));
       const seriesVisible = state.settings.dashboardSeries || defaultState.settings.dashboardSeries;
-      const paidIds = paidOrderIds();
+      const settledDocs = settledSalesDocs();
       const activeSeries = ["cost", "loss", "revenue", "profit"].filter((key) => seriesVisible[key] !== false);
       const visibleSeriesKeys = activeSeries.length ? activeSeries : ["cost", "loss", "revenue", "profit"];
       let series = buckets.map((bucket) => {
@@ -8401,11 +8402,11 @@
           return status === "failed" ? sum + num(job.lossCost || job.totalCost) : sum;
         }, 0) + bucketOrders.reduce((sum, order) => sum + orderSummary(order).lossCost, 0);
         // Cost and loss happen whether or not the customer pays; revenue and
-        // profit wait for the money.
-        const settled = bucketOrders.filter((order) => paidIds.has(order.id));
-        const revenue = settled.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
-        const profit = settled.reduce((sum, order) => sum + orderSummary(order).profit, 0);
-        return { ...bucket, cost, loss, revenue, profit, hasRecords: bucketJobs.length > 0 || bucketOrders.length > 0 };
+        // profit wait for the money, and are read from the settled documents.
+        const settledHere = settledDocs.filter((doc) => { const d = salesDocDate(doc); return d >= bucket.start && d < bucket.end; });
+        const revenue = settledHere.reduce((sum, doc) => sum + salesTotals(doc).total, 0);
+        const profit = settledHere.reduce((sum, doc) => sum + salesTotals(doc).profit, 0);
+        return { ...bucket, cost, loss, revenue, profit, hasRecords: bucketJobs.length > 0 || bucketOrders.length > 0 || settledHere.length > 0 };
       });
       const values = series.flatMap((point) => [...visibleSeriesKeys.map((key) => point[key]), 0]);
       const min = Math.min(...values);
@@ -8571,13 +8572,12 @@
       const jobs = state.jobs.filter((job) => (job.mode || "filament") === state.mode);
       const orders = visibleOrders();
       const totalCost = jobs.reduce((sum, job) => sum + num(job.totalCost), 0);
-      const paidIds = paidOrderIds();
-      const paidOrders = orders.filter((order) => paidIds.has(order.id));
-      const awaitingOrders = orders.filter((order) => !paidIds.has(order.id) && orderSummary(order).hasSaleJobs);
-      const totalRevenue = paidOrders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
-      const totalProfit = paidOrders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
-      const awaitingRevenue = awaitingOrders.reduce((sum, order) => sum + orderSummary(order).revenue, 0);
-      const awaitingProfit = awaitingOrders.reduce((sum, order) => sum + orderSummary(order).profit, 0);
+      const settled = settledSalesDocs();
+      const owed = awaitingSalesDocs();
+      const totalRevenue = settled.reduce((sum, doc) => sum + salesTotals(doc).total, 0);
+      const totalProfit = settled.reduce((sum, doc) => sum + salesTotals(doc).profit, 0);
+      const awaitingRevenue = owed.reduce((sum, doc) => sum + salesTotals(doc).total, 0);
+      const awaitingProfit = owed.reduce((sum, doc) => sum + salesTotals(doc).profit, 0);
       const margin = totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0;
       // Nothing is hidden - what has not been collected is named as such.
       const awaiting = (amount) => amount ? ` &middot; ${escapeHtml(salesText("awaitingAmount"))} ${money.format(amount)}` : "";
@@ -8585,7 +8585,7 @@
       $("dashboardModeLabel").textContent = state.mode === "resin" ? "Resin / SLA" : "Filament / FDM";
       $("dashboardStats").innerHTML = `
         <div class="metric-card"><span>${dt("totalCost")}</span><strong>${money.format(totalCost)}</strong><small>${jobs.length} ${t("jobsTracked")}</small></div>
-        <div class="metric-card"><span>${t("totalRevenue")}</span><strong>${money.format(totalRevenue)}</strong><small>${paidOrders.length} ${escapeHtml(salesText("paidOrders"))}${awaiting(awaitingRevenue)}</small></div>
+        <div class="metric-card"><span>${t("totalRevenue")}</span><strong>${money.format(totalRevenue)}</strong><small>${settled.length} ${escapeHtml(salesText("paidSales"))}${awaiting(awaitingRevenue)}</small></div>
         <div class="metric-card"><span>${t("totalProfit")}</span><strong class="${profitClass}">${money.format(totalProfit)}</strong><small>${totalProfit >= 0 ? t("positiveBalance") : t("lossBalance")}${awaiting(awaitingProfit)}</small></div>
         <div class="metric-card"><span>${t("profitMargin")}</span><strong>${Number.isFinite(margin) ? margin.toFixed(1) : "0.0"}%</strong><small>${escapeHtml(salesText("paidOnlyHint"))}</small></div>`;
 
@@ -9027,6 +9027,34 @@
 
     // An order has been earned when its payment request is marked paid, or a
     // receipt exists for it. A cancelled receipt does not count.
+    function salesDocMode(doc) {
+      const order = doc.orderId ? (state.orders || []).find((item) => item.id === doc.orderId) : null;
+      return order ? (order.mode || "filament") : "";
+    }
+
+    function salesDocsInMode() {
+      return ensureSalesDocs().filter((doc) => {
+        const mode = salesDocMode(doc);
+        return !mode || mode === state.mode;
+      });
+    }
+
+    function settledSalesDocs() {
+      const docs = salesDocsInMode();
+      const receipted = new Set(docs.filter((doc) => doc.type === "RC" && doc.status !== "cancelled").map((doc) => doc.sourceId));
+      return docs.filter((doc) =>
+        (doc.type === "RC" && doc.status !== "cancelled")
+        || (doc.type === "PAY" && doc.status === "paid" && !receipted.has(doc.id)));
+    }
+
+    function awaitingSalesDocs() {
+      return salesDocsInMode().filter((doc) => doc.type === "PAY" && doc.status === "waiting");
+    }
+
+    function salesDocDate(doc) {
+      return parseStoredDate(doc.paidAt || doc.date || doc.createdAt);
+    }
+
     function paidOrderIds() {
       const ids = new Set();
       ensureSalesDocs().forEach((doc) => {
@@ -10514,19 +10542,13 @@
         <th>${orderText("orderMaterialsUsed")}</th>
         <th>${orderText("orderMaterialColor")}</th>
         <th>${orderText("orderMaterialAmount")}</th>
-        <th>${orderText("orderExtraCost")}</th>
         <th>${orderText("totalOrderCost")}</th>
-        <th>${orderText("orderRevenue")}</th>
-        <th>${orderText("orderProfit")}</th>
         <th>${t("manage")}</th>
       </tr></thead><tbody>${pageOrders.map((order) => {
         const summary = orderSummary(order);
         const isEditing = editingOrderRowId === order.id;
         const collapsed = !isEditing && !collapsedOrderIds.has(order.id);
         const orderClosed = isOrderClosed(order);
-        const saleMode = order.salePriceMode === "percent" ? "percent" : "fixed";
-        const salePercent = Number.isFinite(order.salePricePercent) ? order.salePricePercent : 0;
-        const profitClass = summary.profit < 0 ? "order-profit-negative" : "order-profit-positive";
         const dateCell = isEditing
           ? `<div class="order-inline-form"><input type="date" value="${escapeHtml(dateInputValue(order.createdAt))}" data-order-edit-date="${order.id}"></div>`
           : formatDateDisplay(order.createdAt);
@@ -10552,21 +10574,6 @@
         const imageCell = isEditing
           ? `<div class="order-image-edit order-image-drop" tabindex="0" data-order-image-row-drop="${order.id}">${orderImageButton}<input class="native-file" type="file" accept="image/*" data-order-image-input="${order.id}"><div class="file-picker-ui"><button class="btn-secondary" type="button" data-order-image-row-trigger="${order.id}">${t("chooseFile")}</button><span class="file-name" data-order-image-row-name="${order.id}">${t("noFileSelected")}</span></div><span class="drop-hint">${t("imageDropShort")}</span></div>`
           : (order.imageKey || order.image ? orderImageButton : "-");
-        const revenueCell = !summary.hasSaleJobs
-          ? `<span class="hint">${orderText("orderNoSalePrice")}</span>`
-          : isEditing
-          ? `<div class="order-inline-form">
-              <select data-order-edit-mode="${order.id}">
-                <option value="fixed" ${saleMode === "fixed" ? "selected" : ""}>${orderText("orderSaleFixed")}</option>
-                <option value="percent" ${saleMode === "percent" ? "selected" : ""}>${orderText("orderSalePercent")}</option>
-              </select>
-              <input type="number" min="0" step="0.01" value="${saleMode === "percent" ? salePercent : num(order.salePrice)}" data-order-edit-price="${order.id}">
-              <span class="hint">${saleMode === "percent" ? orderText("orderSalePercentLabel") : orderText("orderSalePrice")}</span>
-            </div>`
-          : `<div><strong>${money.format(summary.revenue)}</strong><div class="hint">${saleMode === "percent" ? `${orderText("orderSalePercentLabel")} ${qtyFmt.format(salePercent)}%` : orderText("orderSaleFixed")}</div></div>`;
-        const extraCostCell = isEditing
-          ? `<div class="order-inline-form"><input type="number" min="0" step="0.01" value="${num(order.extraCost)}" data-order-edit-extra-cost="${order.id}"></div>`
-          : money.format(summary.extraCost);
         const totalCostCell = `<div><strong>${money.format(summary.totalCost)}</strong><div class="order-cost-breakdown">
           <span>${orderText("orderTotalTime")}: ${formatMinutes(summary.totalMinutes)}</span>
           <span>${orderText("orderWearCost")}: ${money.format(summary.wearCost)} (${qtyFmt.format(summary.wearPercent)}%)</span>
@@ -10595,10 +10602,7 @@
           <td>${collapsed ? `<span class="hint">${materials.length} ${orderText("orderMaterialsUsed")}</span>` : materialRows}</td>
           <td>${collapsed ? compactColorRows : colorRows}</td>
           <td>${collapsed ? compactAmountRows : amountRows}</td>
-          <td>${extraCostCell}</td>
           <td>${totalCostCell}</td>
-          <td>${revenueCell}</td>
-          <td>${summary.hasSaleJobs ? `<strong class="${profitClass}">${money.format(summary.profit)}</strong>` : `<span class="hint">-</span>`}</td>
           <td>${actionCell}</td>
         </tr>`;
       }).join("")}</tbody></table></div>`;
@@ -12333,7 +12337,7 @@
         }
       }
       if (editingOrderId) {
-        state.orders = state.orders.map((order) => order.id === editingOrderId ? { ...order, name, ...(imageKey ? { imageKey } : {}), extraCost: num(fields.orderExtraCostInput?.value), salePrice: num(fields.orderSalePriceInput.value), updatedAt: new Date().toISOString() } : order);
+        state.orders = state.orders.map((order) => order.id === editingOrderId ? { ...order, name, ...(imageKey ? { imageKey } : {}), updatedAt: new Date().toISOString() } : order);
       } else {
         const orderId = crypto.randomUUID();
         if (imageKey && !imageKey.endsWith(orderId)) {
@@ -12416,9 +12420,6 @@
         const row = saveRowBtn.closest("tr");
         const name = row?.querySelector("[data-order-edit-name]")?.value.trim() || "";
         const dateValue = row?.querySelector("[data-order-edit-date]")?.value || "";
-        const mode = row?.querySelector("[data-order-edit-mode]")?.value || "fixed";
-        const value = num(row?.querySelector("[data-order-edit-price]")?.value);
-        const extraCost = num(row?.querySelector("[data-order-edit-extra-cost]")?.value);
         if (!name) {
           showToast(orderText("orderName"));
           return;
@@ -12427,10 +12428,6 @@
           ...order,
           name,
           createdAt: dateValue || order.createdAt,
-          extraCost,
-          salePriceMode: mode,
-          salePrice: mode === "fixed" ? value : num(order.salePrice),
-          salePricePercent: mode === "percent" ? value : num(order.salePricePercent),
           updatedAt: new Date().toISOString()
         } : order);
         editingOrderRowId = "";
@@ -12500,14 +12497,6 @@
         await saveOrderRowImageFile(orderId, file);
         return;
       }
-      const modeSelect = event.target.closest("[data-order-edit-mode]");
-      if (!modeSelect) return;
-      const order = state.orders.find((item) => item.id === modeSelect.dataset.orderEditMode);
-      const row = modeSelect.closest("tr");
-      const priceInput = row?.querySelector("[data-order-edit-price]");
-      const hint = priceInput?.nextElementSibling;
-      if (priceInput) priceInput.value = modeSelect.value === "percent" ? num(order?.salePricePercent) : num(order?.salePrice);
-      if (hint) hint.textContent = modeSelect.value === "percent" ? orderText("orderSalePercentLabel") : orderText("orderSalePrice");
     });
     $("ordersList").addEventListener("dragover", (event) => {
       const zone = event.target.closest("[data-order-image-row-drop]");
