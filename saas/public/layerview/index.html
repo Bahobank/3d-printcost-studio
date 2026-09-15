@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LayerView — พรีวิวเลเยอร์งานพิมพ์ 3D</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🧱</text></svg>" />
-  <script type="module" crossorigin src="/layerview/assets/index-B0xs6_Od.js"></script>
-  <link rel="stylesheet" crossorigin href="/layerview/assets/index-ZhmcpWpE.css">
+  <script type="module" crossorigin src="/layerview/assets/index-C__X-_eS.js"></script>
+  <link rel="stylesheet" crossorigin href="/layerview/assets/index-CieliIxk.css">
 </head>
 <body>
 <div id="app">
@@ -121,6 +121,33 @@
         <button data-view="top">ด้านบน</button>
       </div>
       <button class="primary capture" id="btnCapture" title="คัดลอกภาพหน้าจอไปวางที่อื่นได้ทันที">📷 แคปรูป (คัดลอก)</button>
+    </section>
+
+    <section class="card" id="paintCard">
+      <h2>ลงสี</h2>
+      <label class="row check"><input type="checkbox" id="paintOn" /><span>เปิดโหมดลงสี (คลิกที่ผิวงาน)</span></label>
+      <div class="palette" id="palette">
+        <button class="sw" data-color="#f2f2f2" style="--c:#f2f2f2"></button>
+        <button class="sw" data-color="#1f1f1f" style="--c:#1f1f1f"></button>
+        <button class="sw" data-color="#e53935" style="--c:#e53935"></button>
+        <button class="sw" data-color="#fb8c00" style="--c:#fb8c00"></button>
+        <button class="sw" data-color="#fdd835" style="--c:#fdd835"></button>
+        <button class="sw" data-color="#43a047" style="--c:#43a047"></button>
+        <button class="sw" data-color="#1e88e5" style="--c:#1e88e5"></button>
+        <button class="sw" data-color="#8e24aa" style="--c:#8e24aa"></button>
+        <label class="sw custom" title="สีอื่น"><input type="color" id="paintCustom" value="#ff69b4" /><span>+</span></label>
+      </div>
+      <label class="row">
+        <span>หยุดสีที่มุมเกิน</span>
+        <span class="val"><input type="number" id="paintAngle" min="1" max="180" step="1" value="30" style="width:64px" />°</span>
+      </label>
+      <input type="range" id="paintAngleRange" min="1" max="180" step="1" value="30" />
+      <p class="hint">สีไหลไปตามผิวเรียบ และหยุดตรงสัน/มุมที่หักเกินองศานี้ — ค่าน้อย = แยกละเอียด, ค่ามาก = เทกว้าง</p>
+      <div class="views">
+        <button id="paintAll">ทาทั้งชิ้น</button>
+        <button id="paintUndo">เลิกทำ</button>
+        <button id="paintClear">ล้างสีที่ทา</button>
+      </div>
     </section>
 
     <section class="card stats">
