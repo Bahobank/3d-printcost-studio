@@ -10360,10 +10360,10 @@
       const map = new Map();
       jobs.forEach((job) => {
         (job.materials || []).forEach((line) => {
-          const swatch = line.swatch || {};
+          const swatch = lineSwatchItem(line) || {};
           const type = line.material || line.label?.split("/").pop()?.trim() || "-";
           const color = line.colorName || swatch.colorName || "-";
-          const key = `${type}__${color}__${swatch.colorHex || ""}__${swatch.finish || ""}`;
+          const key = `${type}__${color}__${swatch.id || swatch.colorHex || ""}__${swatch.finish || ""}`;
           const current = map.get(key) || { type, color, amount: 0, swatch: { ...swatch, colorName: color } };
           current.amount += num(line.amount);
           map.set(key, current);
@@ -10820,12 +10820,18 @@
         ${rows.map((p) => `<tr><td>${p.mode === "resin" ? t("printerTypeResin") : t("printerTypeFilament")}</td><td>${escapeHtml(p.brand)}</td><td><strong>${escapeHtml(p.model)}</strong></td><td>${p.watts}W<br><span class="hint">${t("avgPrintingPower")}</span></td><td>${p.maxWatts ? `${p.maxWatts}W` : "-"}<br><span class="hint">${dt("avgMaxNote")}</span></td><td><a class="source-link" href="${p.source}" target="_blank" rel="noreferrer">${t("openSource")}</a></td></tr>`).join("")}
       </tbody></table>`;
     }
+    function lineSwatchItem(line) {
+      const stockItem = materialById(line.id);
+      if (stockItem && stockItem.showPhoto && stockItem.photo) return stockItem;
+      return line.swatch || stockItem;
+    }
+
     function historyMaterialHtml(job) {
       const rows = job.materials || [];
       if (!rows.length) return escapeHtml(job.materialLabel || "-");
       return `<div class="history-materials">${rows.map((line) => {
         const stockItem = materialById(line.id);
-        const swatchItem = line.swatch || stockItem;
+        const swatchItem = lineSwatchItem(line);
         const label = line.label || (stockItem ? `${stockItem.brand || ""} ${stockItem.name || ""} / ${stockItem.material || ""}` : "-");
         const meta = line.colorName || swatchItem?.colorName || "";
         return `<div class="history-material">${swatchItem ? swatchHtml(swatchItem) : ""}<span class="history-material-copy"><strong>${escapeHtml(label)}</strong><span>${escapeHtml(meta)}</span></span></div>`;
