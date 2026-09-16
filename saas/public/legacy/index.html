@@ -3042,6 +3042,10 @@
                 <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9c.2.61.76 1 1.51 1H21a2 2 0 1 1 0 4h-.09c-.75 0-1.31.39-1.51 1z"/></svg>
                 <span id="salesSettingsText">Settings</span>
               </button>
+              <button class="btn-secondary" type="button" id="salesRefreshCostBtn">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                <span id="salesRefreshCostText">Refresh costs</span>
+              </button>
               <button class="btn-primary" type="button" id="salesNewBtn">
                 <svg class="icon" viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
                 <span id="salesNewText">New quotation</span>
@@ -4974,6 +4978,11 @@
     Object.assign(salesI18n.zh, { colDocs: "单据" });
     Object.assign(salesI18n.ja, { colDocs: "書類" });
     Object.assign(salesI18n.ko, { colDocs: "문서" });
+    Object.assign(salesI18n.th, { refreshCost: "อัปเดตต้นทุนจากออเดอร์", refreshCostConfirm: "ดึงต้นทุนของทุกเอกสารจากออเดอร์ต้นทางอีกครั้ง?\n\nใช้เมื่อคำนวณต้นทุนงานใหม่แล้ว — ราคาขายที่เสนอลูกค้าไม่เปลี่ยน เปลี่ยนเฉพาะต้นทุนและกำไรที่เราเห็น", refreshCostDone: "อัปเดตต้นทุนแล้ว {0} รายการ ใน {1} เอกสาร", refreshCostNone: "ต้นทุนตรงกับออเดอร์อยู่แล้ว" });
+    Object.assign(salesI18n.en, { refreshCost: "Refresh costs from orders", refreshCostConfirm: "Pull the cost of every document's lines from their orders again?\n\nUse this after recalculating job costs - the price quoted to the customer does not change, only the cost and profit you see.", refreshCostDone: "Refreshed {0} lines across {1} documents", refreshCostNone: "Costs already match the orders" });
+    Object.assign(salesI18n.zh, { refreshCost: "从订单更新成本", refreshCostConfirm: "重新从订单读取所有单据的成本？\n\n重新计算工作成本后使用 — 给客户的报价不变，只更新你看到的成本与利润。", refreshCostDone: "已更新 {1} 份单据中的 {0} 个项目", refreshCostNone: "成本与订单已一致" });
+    Object.assign(salesI18n.ja, { refreshCost: "注文から原価を更新", refreshCostConfirm: "すべての書類の原価を注文から取り直しますか？\n\n原価の再計算後に使います — お客様への提示価格は変わらず、社内の原価と利益だけ更新されます。", refreshCostDone: "{1} 件の書類の {0} 明細を更新しました", refreshCostNone: "原価は注文と一致しています" });
+    Object.assign(salesI18n.ko, { refreshCost: "주문에서 원가 갱신", refreshCostConfirm: "모든 문서의 원가를 주문에서 다시 가져올까요?\n\n작업 원가를 다시 계산한 뒤 사용하세요 — 고객에게 제시한 가격은 그대로이고 내부 원가와 이익만 갱신됩니다.", refreshCostDone: "문서 {1}건의 {0}개 항목을 갱신했습니다", refreshCostNone: "원가가 이미 주문과 일치합니다" });
     Object.entries(salesI18n).forEach(([code, values]) => {
       i18n[code] = { ...(i18n[code] || {}), ...values };
     });
@@ -9490,6 +9499,29 @@
       if (toggle) toggle.checked = doc.showImage !== false;
     }
 
+    /**
+     * Re-reads the cost of every line that came from an order. A line knows its
+     * own order; older lines only carry the document's. The quoted price is
+     * left alone - only what the sale cost us is corrected.
+     */
+    function refreshDocCosts() {
+      let lines = 0, docs = 0;
+      ensureSalesDocs().forEach((doc) => {
+        let touched = false;
+        (doc.items || []).forEach((item) => {
+          const orderId = item.orderId || (item.fromOrder ? doc.orderId : "");
+          if (!orderId || !(state.orders || []).some((order) => order.id === orderId)) return;
+          const cost = orderCostTotal(orderId);
+          if (Math.abs(Number(item.cost) - cost) < 0.005) return;
+          item.cost = cost;
+          lines++;
+          touched = true;
+        });
+        if (touched) { doc.updatedAt = new Date().toISOString(); docs++; }
+      });
+      return { lines, docs };
+    }
+
     function salesStatusLabel(doc) {
       return salesText(SALES_STATUS_KEYS[doc.status] || "stDraft");
     }
@@ -10369,6 +10401,7 @@
       label("#salesPayMethodLabel", "payMethod");
       label("#salesImageTitle", "orderImage");
       label("#salesSettingsText", "settings");
+      label("#salesRefreshCostText", "refreshCost");
       label("#salesSettingsTitle", "settings");
       label("#salesSettingsShopTitle", "settingsShop");
       label("#salesSettingsShopHint", "shopHint");
@@ -10426,6 +10459,22 @@
     document.addEventListener("click", (event) => {
       const close = event.target.closest("[data-sales-close]");
       if (close) { closeSalesModal(close.dataset.salesClose); return; }
+
+      if (event.target.closest("#salesRefreshCostBtn")) {
+        if (!ensureSalesDocs().length) return;
+        if (!confirm(salesText("refreshCostConfirm"))) return;
+        const { lines, docs } = refreshDocCosts();
+        if (!lines) { showToast(salesText("refreshCostNone")); return; }
+        // The open draft is a copy, so bring it back from the stored document.
+        if (salesUi.draft) {
+          const stored = ensureSalesDocs().find((item) => item.id === salesUi.draft.id);
+          if (stored) salesUi.draft = structuredClone(stored);
+        }
+        persist({ skipRender: true });
+        renderSales();
+        showToast(salesText("refreshCostDone").replace("{0}", lines).replace("{1}", docs));
+        return;
+      }
 
       if (event.target.closest("#salesSetLogoPick")) { $("salesSetLogoInput").click(); return; }
       if (event.target.closest("#salesSetLogoClear")) { clearSalesLogo(); return; }
