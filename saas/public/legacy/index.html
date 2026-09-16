@@ -9508,6 +9508,7 @@
       let lines = 0, docs = 0;
       ensureSalesDocs().forEach((doc) => {
         let touched = false;
+        markLineFromOrder(doc);
         (doc.items || []).forEach((item) => {
           const orderId = item.orderId || (item.fromOrder ? doc.orderId : "");
           if (!orderId || !(state.orders || []).some((order) => order.id === orderId)) return;
@@ -9623,12 +9624,24 @@
     // ---------------------------------------------------------------- editor
     function salesEditorOpen() { return Boolean(salesUi.draft); }
 
+    // Lines from the first build carry no order marking; the document alone knows
+    // where it came from. Claim the line that belongs to it - by name, or the
+    // first line when nothing at all claims an order. Bailing out as soon as any
+    // one line was marked left earlier lines unclaimed for good, so their cost
+    // never refreshed and their photo never appeared.
     function markLineFromOrder(doc) {
       if (!doc || !doc.orderId) return;
       const items = doc.items || [];
-      if (!items.length || items.some((item) => item.fromOrder)) return;
-      const match = items.find((item) => item.name && item.name === doc.orderName) || items[0];
-      if (match) match.fromOrder = true;
+      const unclaimed = items.filter((item) => !item.fromOrder && !item.orderId);
+      if (!unclaimed.length) return;
+      const claim = (item) => {
+        item.fromOrder = true;
+        item.orderId = doc.orderId;
+        item.orderName = doc.orderName || "";
+      };
+      const byName = unclaimed.find((item) => item.name && item.name === doc.orderName);
+      if (byName) { claim(byName); return; }
+      if (!items.some((item) => item.fromOrder || item.orderId)) claim(unclaimed[0]);
     }
 
     function openSalesEditor(doc, isNew) {
