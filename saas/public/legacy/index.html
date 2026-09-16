@@ -9505,9 +9505,13 @@
      * left alone - only what the sale cost us is corrected.
      */
     function refreshDocCosts() {
-      let lines = 0, docs = 0;
-      ensureSalesDocs().forEach((doc) => {
-        let touched = false;
+      const all = ensureSalesDocs();
+      let lines = 0;
+      const moved = new Set();
+      const bump = (doc) => { doc.updatedAt = new Date().toISOString(); moved.add(doc.id); };
+
+      // First pass: lines that name an order take that order's cost.
+      all.forEach((doc) => {
         markLineFromOrder(doc);
         (doc.items || []).forEach((item) => {
           const orderId = item.orderId || (item.fromOrder ? doc.orderId : "");
@@ -9516,11 +9520,36 @@
           if (Math.abs(Number(item.cost) - cost) < 0.005) return;
           item.cost = cost;
           lines++;
-          touched = true;
+          bump(doc);
         });
-        if (touched) { doc.updatedAt = new Date().toISOString(); docs++; }
       });
-      return { lines, docs };
+
+      // Second pass: a bill or receipt copied its lines from the document before
+      // it, and those copies often carry no order of their own - especially on
+      // documents issued by the first build. Take the cost from the source line
+      // instead, walking quotation -> bill -> receipt in order.
+      const byId = new Map(all.map((doc) => [doc.id, doc]));
+      const depth = (doc) => {
+        let n = 0, cur = doc;
+        while (cur && cur.sourceId && byId.get(cur.sourceId) && n < 8) { cur = byId.get(cur.sourceId); n++; }
+        return n;
+      };
+      all.filter((doc) => doc.sourceId).sort((a, b) => depth(a) - depth(b)).forEach((doc) => {
+        const src = byId.get(doc.sourceId);
+        if (!src) return;
+        const srcItems = src.items || [];
+        (doc.items || []).forEach((item, index) => {
+          if (item.orderId || item.fromOrder) return; // already handled above
+          const from = (srcItems.length === (doc.items || []).length && srcItems[index])
+            || srcItems.find((s) => s.name && s.name === item.name);
+          if (!from || Math.abs(Number(item.cost) - Number(from.cost)) < 0.005) return;
+          item.cost = Number(from.cost) || 0;
+          lines++;
+          bump(doc);
+        });
+      });
+
+      return { lines, docs: moved.size };
     }
 
     function salesStatusLabel(doc) {
