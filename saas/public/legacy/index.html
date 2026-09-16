@@ -9283,9 +9283,11 @@
     }
 
     function orderCostTotal(orderId) {
-      const jobs = orderJobs(orderId);
       const order = (state.orders || []).find((item) => item.id === orderId);
-      const total = jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + (Number(order && order.extraCost) || 0);
+      if (!order) return 0;
+      const mode = order.mode || "filament";
+      const jobs = (state.jobs || []).filter((job) => job.orderId === orderId && (job.mode || "filament") === mode);
+      const total = jobs.reduce((sum, job) => sum + (Number(job.totalCost) || 0), 0) + num(order.extraCost);
       return Math.round(total * 100) / 100;
     }
 
@@ -9670,7 +9672,10 @@
       };
       const byName = unclaimed.find((item) => item.name && item.name === doc.orderName);
       if (byName) { claim(byName); return; }
-      if (!items.some((item) => item.fromOrder || item.orderId)) claim(unclaimed[0]);
+      // Nothing claims this document's own order yet, so the first line without
+      // an order of its own is it - however it has since been renamed.
+      const claimsThisOrder = items.some((item) => item.orderId === doc.orderId || (item.fromOrder && !item.orderId));
+      if (!claimsThisOrder) claim(unclaimed[0]);
     }
 
     function openSalesEditor(doc, isNew) {
